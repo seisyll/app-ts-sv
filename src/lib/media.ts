@@ -37,6 +37,8 @@ export type MediaRow = {
 	height    : number | null
 	createdAt : string
 	uploader  : string | null
+	// Served without a session ( see /media ): a logo, an image in an email.
+	public    : boolean
 	url       : string
 	thumbUrl  : string
 }

@@ -7,7 +7,10 @@
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right'
 	import DownloadIcon from '@lucide/svelte/icons/download'
 	import FileTextIcon from '@lucide/svelte/icons/file-text'
+	import GlobeIcon from '@lucide/svelte/icons/globe'
 	import ImageIcon from '@lucide/svelte/icons/image'
+	import LinkIcon from '@lucide/svelte/icons/link'
+	import LockIcon from '@lucide/svelte/icons/lock'
 	import MaximizeIcon from '@lucide/svelte/icons/maximize'
 	import MinimizeIcon from '@lucide/svelte/icons/minimize'
 	import PanelRightIcon from '@lucide/svelte/icons/panel-right'
@@ -26,15 +29,18 @@
 	        Escape closes ) over a dark backdrop — dark in every theme, as photos read best on
 	        black, which is why it carries its own colours. Wheel / buttons / + − 0 zoom
 	        around the pointer, drag pans when zoomed, swipe or ← → move between items, pinch
-	        on touch, double-click toggles 2.5×. A details panel ( uploader, type, size ) and,
-	        when `ondelete` is given, delete with a confirm. A document shows its name and a
-	        download instead of a zoomable image. */
-	let { items, index = $bindable( 0 ), open = $bindable( false ), ondelete } : {
+	        on touch, double-click toggles 2.5×. A details panel ( uploader, type, size,
+	        public or private ) and, when `ondelete` is given, delete with a confirm; when
+	        `onpublic` is given, make it public or private again. A document shows its name
+	        and a download instead of a zoomable image. */
+	let { items, index = $bindable( 0 ), open = $bindable( false ), ondelete, onpublic } : {
 		items       : MediaRow[]
 		index ?     : number
 		open ?      : boolean
 		// Answer true once it is gone; the caller removes it from `items`.
 		ondelete ?  : ( item : MediaRow ) => Promise<boolean>
+		// Set `public` on it; the caller updates the row in `items`.
+		onpublic ?  : ( item : MediaRow, value : boolean ) => Promise<unknown>
 	} = $props()
 
 	const MIN_SCALE = 1
@@ -55,6 +61,8 @@
 	let details = $state( true )
 	let confirming = $state( false )
 	let deleting = $state( false )
+	let publishing = $state( false )
+	let copied = $state( false )
 
 	const current = $derived( items[ index ] )
 	const isImage = $derived( current?.kind === 'image' )
@@ -258,6 +266,34 @@
 		}
 	}
 
+	async function togglePublic() {
+		if ( !current || !onpublic || publishing )
+			return
+
+		publishing = true
+
+		try {
+			await onpublic( current, !current.public )
+		} finally {
+			publishing = false
+		}
+	}
+
+	// The absolute address, for an email or another site. Said in place: a toast would sit
+	// under the dialog's top layer.
+	async function copyLink() {
+		if ( !current )
+			return
+
+		try {
+			await navigator.clipboard.writeText( new URL( current.url, location.origin ).href )
+			copied = true
+			setTimeout( () => ( copied = false ), 2000 )
+		} catch {
+			// Clipboard refused ( permissions ): nothing to say beyond the button not changing.
+		}
+	}
+
 	// The open dialog follows `open`; closing it ( Escape, the X ) writes it back.
 	$effect( () => {
 		if ( !dialog )
@@ -397,7 +433,26 @@
 						{/if}
 						<div class="lightbox__field"><dt>{m.media_field_size()}</dt><dd>{formatBytes( current.size )}</dd></div>
 						<div class="lightbox__field"><dt>{m.media_field_uploaded()}</dt><dd class="lightbox__mono">{date( current.createdAt )}</dd></div>
+						<div class="lightbox__field">
+							<dt>{m.media_field_visibility()}</dt>
+							<dd class="lightbox__visibility">
+								{#if current.public}<GlobeIcon class="size-4" />{m.media_public_desc()}{:else}<LockIcon class="size-4" />{m.media_private_desc()}{/if}
+							</dd>
+						</div>
 					</dl>
+
+					{#if onpublic || current.public}
+						<div class="lightbox__actions">
+							{#if onpublic}
+								<button type="button" class="lightbox__action" disabled={publishing} onclick={togglePublic}>
+									{#if current.public}<LockIcon class="size-4" />{m.media_make_private()}{:else}<GlobeIcon class="size-4" />{m.media_make_public()}{/if}
+								</button>
+							{/if}
+							{#if current.public}
+								<button type="button" class="lightbox__action" onclick={copyLink}><LinkIcon class="size-4" />{copied ? m.media_link_copied() : m.media_copy_link()}</button>
+							{/if}
+						</div>
+					{/if}
 
 					{#if ondelete}
 						<button type="button" class="lightbox__delete" onclick={() => ( confirming = true )}><Trash2Icon class="size-4" />{m.media_delete()}</button>
@@ -766,6 +821,44 @@
 	.lightbox__mono {
 		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 		font-size: 0.78rem;
+	}
+
+	.lightbox__visibility {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	.lightbox__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 1.25rem;
+	}
+
+	.lightbox__action {
+		display: inline-flex;
+		flex: 1;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4rem;
+		padding: 0.55rem 0.75rem;
+		border-radius: 0.5rem;
+		font-size: 0.85rem;
+		font-weight: 500;
+		white-space: nowrap;
+		color: #f0f1f4;
+		background: rgb(255 255 255 / 0.06);
+		border: 1px solid rgb(255 255 255 / 0.12);
+		transition: background 0.15s ease;
+	}
+
+	.lightbox__action:hover:not(:disabled) {
+		background: rgb(255 255 255 / 0.12);
+	}
+
+	.lightbox__action:disabled {
+		opacity: 0.6;
 	}
 
 	.lightbox__delete {

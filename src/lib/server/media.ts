@@ -81,9 +81,9 @@ export function mediaPath( tenantId : string, id : string, createdAt : Date, mim
 // Display names only: no directories, no control characters, a sane length.
 const cleanName = ( name : string ) => name.split( /[\\/]/ ).pop()!.replace( /[\u0000-\u001f\u007f]/g, '' ).trim().slice( 0, 200 ) || 'file'
 
-const SELECT = { id: true, kind: true, name: true, mime: true, size: true, width: true, height: true, createdAt: true, uploader: { select: { name: true } } } as const
+const SELECT = { id: true, kind: true, name: true, mime: true, size: true, width: true, height: true, public: true, createdAt: true, uploader: { select: { name: true } } } as const
 
-type Selected = { id : string, kind : MediaKind, name : string, mime : string, size : number, width : number | null, height : number | null, createdAt : Date, uploader : { name : string } | null }
+type Selected = { id : string, kind : MediaKind, name : string, mime : string, size : number, width : number | null, height : number | null, public : boolean, createdAt : Date, uploader : { name : string } | null }
 
 const toRow = ( media : Selected ) : MediaRow => ( {
 	...media,
@@ -152,8 +152,9 @@ export async function listMedia( query : PageQuery ) : Promise<Paged<MediaRow>> 
 }
 
 // A file to send, or null when this tenant has no such media ( RLS hides other tenants' ).
+// Whether the caller may have it is the route's call: `public`, or a member's session.
 export async function readMedia( id : string, variant ?: 'thumb' ) {
-	const media = await db.media.findUnique( { where: { id }, select: { tenantId: true, kind: true, name: true, mime: true, createdAt: true } } )
+	const media = await db.media.findUnique( { where: { id }, select: { tenantId: true, kind: true, name: true, mime: true, public: true, createdAt: true } } )
 
 	if ( !media || ( variant && media.kind !== 'image' ) )
 		return null
@@ -166,6 +167,14 @@ export async function readMedia( id : string, variant ?: 'thumb' ) {
 		return null
 
 	return { ...media, size, body: () => Readable.toWeb( createReadStream( file ) ) as ReadableStream }
+}
+
+// Public or private again. Null when this tenant has no such media.
+export async function setMediaPublic( id : string, value : boolean ) : Promise<MediaRow | null> {
+	if ( !await db.media.findUnique( { where: { id }, select: { id: true } } ) )
+		return null
+
+	return toRow( await db.media.update( { where: { id }, data: { public: value }, select: SELECT } ) )
 }
 
 // The row first ( RLS: only this tenant's ), then its files. A file that fails to go is

@@ -3,13 +3,14 @@ import { requireApiPermission } from '$lib/server/guards'
 import { readMedia } from '$lib/server/media'
 import type { RequestHandler } from './$types'
 
-/* ―― » A stored file, to signed-in members of its workspace only: the row is looked up
-        through RLS, so another workspace's id is a 404. Never cached by shared caches
-        ( private ); never changes ( the id is the version ), so the browser keeps it.
-        `sandbox` CSP: should a file ever be opened as a page, it can run nothing. */
+/* ―― » A stored file. The row is looked up through RLS first, so another workspace's id is
+        a 404 whoever asks. A PUBLIC file then goes to anyone on this workspace's host ( a
+        logo on the public site, an image in an email ); a private one only to signed-in
+        members. Public copies may be cached by anyone for a day, so making a file private
+        again takes up to that long to reach every cache; private ones only by the browser.
+        Both never change ( the id is the version ). `sandbox` CSP: should a file ever be
+        opened as a page, it can run nothing. */
 export const GET : RequestHandler = async( event ) => {
-	await requireApiPermission( event, { media: [ 'list' ] } )
-
 	const variant = event.params.variant
 
 	if ( variant !== undefined && variant !== 'thumb' )
@@ -20,11 +21,14 @@ export const GET : RequestHandler = async( event ) => {
 	if ( !media )
 		error( 404 )
 
+	if ( !media.public )
+		await requireApiPermission( event, { media: [ 'list' ] } )
+
 	return new Response( media.body(), {
 		headers: {
 			'content-type'           : media.mime,
 			'content-length'         : String( media.size ),
-			'cache-control'          : 'private, max-age=31536000, immutable',
+			'cache-control'          : media.public ? 'public, max-age=86400' : 'private, max-age=31536000, immutable',
 			'content-security-policy': 'default-src \'none\'; sandbox',
 			// Images show in place; documents always download, under the name they came with.
 			'content-disposition'    : `${ media.kind === 'image' ? 'inline' : 'attachment' }; filename*=UTF-8''${ encodeURIComponent( media.name ) }`

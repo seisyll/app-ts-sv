@@ -5,8 +5,10 @@
 <script lang="ts">
 	import CheckIcon from '@lucide/svelte/icons/check'
 	import FileTextIcon from '@lucide/svelte/icons/file-text'
+	import GlobeIcon from '@lucide/svelte/icons/globe'
 	import { date } from '$lib/format'
 	import { formatBytes, type MediaRow } from '$lib/media'
+	import { m } from '$lib/paraglide/messages'
 	import { cn } from '$lib/utils'
 
 	/* ―― » The fundraiser app's media grid: masonry ( natural heights ), a square grid, or a
@@ -25,6 +27,9 @@
 </script>
 
 {#snippet check( item : MediaRow )}
+	{#if item.public}
+		<span class="absolute top-2 left-2 flex size-6 items-center justify-center rounded-full bg-background/80 text-foreground shadow" title={m.media_public()}><GlobeIcon class="size-3.5" /><span class="sr-only">{m.media_public()}</span></span>
+	{/if}
 	{#if item.id === selected}
 		<span class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow"><CheckIcon class="size-4" /></span>
 	{/if}
@@ -63,7 +68,7 @@
 					<span class="flex size-14 shrink-0 items-center justify-center rounded-md border bg-muted text-muted-foreground"><FileTextIcon class="size-6" /></span>
 				{/if}
 				<span class="flex min-w-0 flex-1 flex-col">
-					<span class="truncate text-sm font-medium">{item.name}</span>
+					<span class="flex items-center gap-1.5 truncate text-sm font-medium">{item.name}{#if item.public}<GlobeIcon class="size-3.5 shrink-0 text-muted-foreground" aria-label={m.media_public()} />{/if}</span>
 					<span class="truncate text-xs text-muted-foreground">
 						{#if item.width && item.height}{item.width} × {item.height} px · {/if}{formatBytes( item.size )} · {date( item.createdAt, { dateStyle: 'medium' } )}
 					</span>

@@ -64,6 +64,10 @@ export class MediaFeed {
 		this.total += mine.length
 	}
 
+	replace( row : MediaRow ) : void {
+		this.rows = this.rows.map( ( current ) => ( current.id === row.id ? row : current ) )
+	}
+
 	remove( id : string ) : void {
 		this.rows = this.rows.filter( ( row ) => row.id !== id )
 		this.total = Math.max( 0, this.total - 1 )
