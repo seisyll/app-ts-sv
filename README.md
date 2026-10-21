@@ -31,6 +31,38 @@ database). Everything under it returns 404 outside `vite dev`.
 | `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory and server-paged against a mock endpoint |
 | `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
+| `/hello/site` | Every public-site theme, switchable, with sign-up on or off |
+
+## Public site and themes
+
+`/` is the public site: a landing page (hero, features, how it works, stats, testimonials,
+pricing, FAQ, call to action) with a header and footer. Its look is a **theme**, and only
+the active theme is built: `$theme` points at `src/lib/themes/<THEME>` (`svelte.config.js`),
+and the `(site)` routes import nothing else.
+
+```bash
+THEME=plain bun run dev     # or THEME=… in .env; restart after changing it
+```
+
+| Theme | Look |
+|---|---|
+| `aurora` (default) | billing-app's landing page: dark ink, teal, a light serif display, the network globe |
+| `plain` | The app's own tokens and ui/ components, light and dark. A neutral starting point |
+
+- **Copy:** the words live in `src/lib/themes/content.ts` and the `site_*` messages, shared
+  by every theme. Change your marketing copy there, not in a theme.
+- **Contract:** a theme is a folder whose `index.ts` exports `id`, `Header`, `Footer` and
+  `Home`, typed by `src/lib/themes/contract.ts`. Style it under `.theme-<id>` (the `(site)`
+  wrapper has that class) so nothing reaches `/app` or `/login`. Re-pointing the shadcn
+  tokens there (`--background`, `--primary`, …) restyles any ui/ component used inside.
+- **New theme:** copy `plain/` and change `id`, then add it to the lists in
+  `src/lib/themes/themes.svelte.test.ts` (contract tests) and `/hello/site`.
+  `bun run check` fails if it breaks the contract.
+- **No database:** the public site works before `db:setup`, and on a shared deployment's
+  bare domain.
+- **Detach:** delete `src/routes/(site)`, `src/lib/themes` and `/hello/site`, remove `$theme`
+  from `svelte.config.js` and the `site_*` messages. The `@fontsource-variable` packages
+  other than Inter are aurora's.
 
 ## DataTable
 

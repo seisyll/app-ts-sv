@@ -1,0 +1,72 @@
+/* ―― » `aurora` — billing-app's landing page: deep ink, one teal, a light serif display.
+        Dark only, whatever the app's mode. Everything sits under `.theme-aurora` ( the
+        (site) wrapper ), so none of it reaches /app or /login.
+
+        The shadcn tokens are re-pointed too, so any ui/ component used inside the site
+        ( buttons, the locale switch ) picks the palette up without a variant. The fonts are
+        self-hosted and only downloaded when a rule here uses them. */
+
+@import '@fontsource-variable/cormorant-garamond';
+@import '@fontsource-variable/cormorant-garamond/wght-italic.css';
+@import '@fontsource-variable/space-grotesk';
+@import '@fontsource-variable/jetbrains-mono';
+
+.theme-aurora {
+	/* ―― » Palette. Text steps from foreground ( headings, body ) down to faint ( labels ). */
+	--ink: #07090c;
+	--teal: #56e7d1;
+	--teal-soft: #8aeddd;
+	--teal-dim: #56c9b6;
+	--glow: rgb(42 128 116);
+	--soft: #c6ccd1;
+	--faint: #6e767f;
+
+	--background: var(--ink);
+	--foreground: #eaeef0;
+	--card: rgb(255 255 255 / 0.03);
+	--card-foreground: var(--foreground);
+	--popover: #0d1114;
+	--popover-foreground: var(--foreground);
+	--primary: var(--teal);
+	--primary-foreground: var(--ink);
+	--secondary: rgb(255 255 255 / 0.06);
+	--secondary-foreground: var(--foreground);
+	--muted: rgb(255 255 255 / 0.12);
+	--muted-foreground: #8b939c;
+	--accent: rgb(255 255 255 / 0.08);
+	--accent-foreground: var(--foreground);
+	--border: rgb(255 255 255 / 0.08);
+	--input: rgb(255 255 255 / 0.12);
+	--ring: var(--teal-dim);
+
+	/* `font-serif` / `font-mono` read these. The body face is set directly: the app's
+	   `font-sans` is baked in by `@theme inline`, so overriding its variable does nothing. */
+	--font-serif: 'Cormorant Garamond Variable', Georgia, serif;
+	--font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+	font-family: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+
+	color-scheme: dark;
+	background-color: var(--background);
+	color: var(--foreground);
+	-webkit-font-smoothing: antialiased;
+}
+
+.theme-aurora ::selection {
+	background: rgb(86 231 209 / 0.25);
+	color: #fff;
+}
+
+/* ―― » The FAQ answer slides in as its <details> opens. */
+@keyframes aurora-faq-in {
+	from { opacity: 0; transform: translateY(-6px); }
+}
+
+.theme-aurora details[open] > .aurora-answer {
+	animation: aurora-faq-in 0.42s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.theme-aurora details[open] > .aurora-answer {
+		animation: none;
+	}
+}
