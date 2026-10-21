@@ -3,6 +3,7 @@
 	import SettingsIcon from '@lucide/svelte/icons/settings'
 	import ShieldIcon from '@lucide/svelte/icons/shield'
 	import UserIcon from '@lucide/svelte/icons/user'
+	import UsersIcon from '@lucide/svelte/icons/users'
 	import { AppShell, filterNav, LocaleSwitcher, ThemeToggle, type NavGroup } from '$lib/layout'
 	import { m } from '$lib/paraglide/messages'
 	import { hasPermission } from '$lib/permissions'
@@ -21,7 +22,10 @@
 		},
 		{
 			label: m.app_nav_admin(),
-			items: [ { title: m.app_nav_settings(), href: '/app/settings', icon: SettingsIcon, permission: { settings: [ 'update' ] } } ]
+			items: [
+				{ title: m.app_nav_users(), href: '/app/users', icon: UsersIcon, permission: { user: [ 'list' ] } },
+				{ title: m.app_nav_settings(), href: '/app/settings', icon: SettingsIcon, permission: { settings: [ 'update' ] } }
+			]
 		}
 	] satisfies NavGroup[], ( permission ) => hasPermission( data.user.role, permission ) ) )
 

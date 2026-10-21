@@ -1,3 +1,4 @@
+import { error } from '@sveltejs/kit'
 import { APIError } from 'better-auth/api'
 import { m } from '$lib/paraglide/messages'
 
@@ -18,3 +19,12 @@ export function authErrorMessage( error : unknown ) : string {
 }
 
 export const isAuthError = ( error : unknown, code : string ) : boolean => error instanceof APIError && error.body?.code === code
+
+// In an endpoint: a better-auth refusal becomes the same HTTP status with its message;
+// anything else is rethrown untouched. Use as `.catch( rethrowAuthError )`.
+export function rethrowAuthError( caught : unknown ) : never {
+	if ( caught instanceof APIError )
+		error( caught.statusCode, { message: caught.message || m.http_failed() } )
+
+	throw caught
+}

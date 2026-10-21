@@ -2,10 +2,10 @@ import * as v from 'valibot'
 import { m } from '$lib/paraglide/messages'
 
 // Auth forms, validated in the browser and again by the form actions.
-const email = v.pipe( v.string(), v.trim(), v.nonEmpty(), v.email() )
-const name = v.pipe( v.string(), v.trim(), v.nonEmpty(), v.maxLength( 60 ) )
+export const email = v.pipe( v.string(), v.trim(), v.nonEmpty(), v.email() )
+export const name = v.pipe( v.string(), v.trim(), v.nonEmpty(), v.maxLength( 60 ) )
 // Matches emailAndPassword.minPasswordLength in $lib/server/auth.
-const newPassword = v.pipe( v.string(), v.minLength( 10 ), v.maxLength( 128 ) )
+export const newPassword = v.pipe( v.string(), v.minLength( 10 ), v.maxLength( 128 ) )
 
 export const loginSchema = v.object( {
 	email,

@@ -56,7 +56,7 @@ const config : UserConfig = {
 		// Plain-JS deps declared up front, so the first visit to a page that uses them
 		// doesn't trigger a re-optimize + reload that swallows the click. Never list Svelte
 		// component libs ( bits-ui … ): a pre-bundle inlines a second Svelte runtime.
-		include: [ '@tanstack/table-core', '@internationalized/date', 'clsx', 'tailwind-merge', 'tailwind-variants' ],
+		include: [ '@tanstack/table-core', '@internationalized/date', 'clsx', 'tailwind-merge', 'tailwind-variants', 'better-auth/plugins/access', 'better-auth/plugins/admin/access' ],
 		// Per-icon deep imports: pre-bundling them re-optimizes on every new icon.
 		exclude: [ '@lucide/svelte' ]
 	},

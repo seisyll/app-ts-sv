@@ -123,6 +123,21 @@ from one tenant doesn't exist in another; the same email can sign up separately 
 - **Env:** `BETTER_AUTH_SECRET` (≥ 32 chars), `BETTER_AUTH_URL` (single tenancy; shared
   derives it per request), `AUTH_SIGNUP`.
 
+### Users (`/app/users`)
+
+Admins list, add, re-role, ban, sign out and delete the tenant's users. Reads go through
+the tenant-scoped `db` (`listUsers` in `src/lib/server/users.ts`); changes go through
+better-auth's admin API, which hashes the password, ends a banned user's sessions and checks
+the caller's permission again. Your own row has no actions, and the endpoints refuse them
+(`400`), so a tenant can't lock out its last admin.
+
+- **Endpoints:** `GET`/`POST /api/users`, `PATCH /api/users/:id` with
+  `{ action: 'set-role' | 'ban' | 'unban' | 'revoke-sessions' }`, `DELETE /api/users/:id`.
+- **A list endpoint of your own:** `listArgs( parsePageQuery( url.searchParams ), spec )` in
+  `src/lib/server/list.ts` turns the DataTable's query into Prisma
+  `{ where, orderBy, skip, take }`. The `spec` allow-lists the search, facet and sort fields.
+  Date ranges are calendar days in `APP.timeZone`.
+
 ## Testing
 
 ```bash
