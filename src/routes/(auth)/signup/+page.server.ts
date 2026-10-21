@@ -9,6 +9,7 @@ import { validateForm } from '$lib/server/forms'
 import { mailReady } from '$lib/server/mail/gate'
 import { notify } from '$lib/server/notifications/gate'
 import { authHeaders, captchaWidget } from '$lib/server/sign-in-guard'
+import { enabledSocialProviders } from '$lib/server/social'
 import type { Actions, PageServerLoad } from './$types'
 
 // Off unless AUTH_SIGNUP=true. With the mail module a new account verifies its email, so the
@@ -25,7 +26,7 @@ export const load : PageServerLoad = async( event ) => {
 		redirect( 303, '/app' )
 
 	// ?sent: signed up, now check your inbox.
-	return { form: await superValidate( valibot( signupSchema ) ), sent: event.url.searchParams.has( 'sent' ), captcha: await captchaWidget() }
+	return { form: await superValidate( valibot( signupSchema ) ), sent: event.url.searchParams.has( 'sent' ), captcha: await captchaWidget(), social: enabledSocialProviders() }
 }
 
 export const actions : Actions = {

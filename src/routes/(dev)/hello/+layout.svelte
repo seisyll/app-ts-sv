@@ -22,6 +22,7 @@
 		{ href: '/hello/shell', label: m.demo_shell_title() },
 		{ href: '/hello/brand', label: m.demo_brand_title(), module: 'appearance' },
 		{ href: '/hello/captcha', label: 'Captcha', module: 'captcha' },
+		{ href: '/hello/social', label: m.demo_social_title() },
 		{ href: '/hello/site', label: m.demo_site_title(), module: 'site' }
 	]
 	const pages = all.filter( ( item ) => !item.module || isBuilt( item.module ) )

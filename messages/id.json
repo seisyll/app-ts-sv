@@ -755,5 +755,20 @@
 	"demo_captcha_test_key": "Kunci situs uji dari penyedia.",
 	"demo_captcha_get": "Ambil jawaban",
 	"demo_captcha_reset": "Atur ulang",
-	"demo_captcha_none": "Belum ada jawaban"
+	"demo_captcha_none": "Belum ada jawaban",
+	"auth_or": "atau",
+	"auth_continue_with": "Lanjutkan dengan {provider}",
+	"auth_social_failed": "Masuk dengan akun itu tidak berhasil. Coba lagi, atau gunakan email dan kata sandi Anda.",
+	"social_title": "Akun terhubung",
+	"social_desc": "Masuk dengan akun ini selain email dan kata sandi Anda.",
+	"social_connected": "Terhubung",
+	"social_connect": "Hubungkan",
+	"social_disconnect": "Putuskan",
+	"social_last_method": "Ini satu-satunya cara Anda masuk, jadi tidak bisa diputuskan. Atur kata sandi dulu: Lupa kata sandi? di halaman masuk mengirim tautan.",
+	"social_unlinked": "{provider} diputuskan.",
+	"social_link_failed": "Akun itu tidak bisa dihubungkan: penyedia menolak, atau akun itu sudah dimiliki orang lain di sini.",
+	"demo_social_title": "Masuk dengan akun sosial",
+	"demo_social_desc": "SocialButtons dan ConnectedAccounts dengan kedua penyedia. Di sini tombolnya tidak ke mana-mana; di aplikasi perlu kredensial GOOGLE_* / APPLE_*.",
+	"demo_social_buttons": "Di bawah formulir masuk dan daftar",
+	"demo_social_accounts": "Di halaman profil"
 }

@@ -3,6 +3,7 @@
 	import { valibot } from 'sveltekit-superforms/adapters'
 	import { page } from '$app/state'
 	import { CaptchaWidget } from '$lib/components/captcha'
+	import { SocialButtons } from '$lib/components/social'
 	import { Alert, AlertDescription } from '$lib/components/ui/alert'
 	import { Button } from '$lib/components/ui/button'
 	import * as Card from '$lib/components/ui/card'
@@ -41,7 +42,7 @@
 		<Card.Title><h1 class="text-xl">{m.auth_login_title()}</h1></Card.Title>
 		<Card.Description>{m.auth_login_desc()}</Card.Description>
 	</Card.Header>
-	<Card.Content>
+	<Card.Content class="flex flex-col gap-6">
 		<form method="POST" use:enhance novalidate>
 			<Field.Group>
 				{#if $message}
@@ -51,6 +52,10 @@
 				{:else if data.linkError}
 					<Alert variant="destructive">
 						<AlertDescription>{m.auth_verify_link_expired()}</AlertDescription>
+					</Alert>
+				{:else if data.socialError}
+					<Alert variant="destructive">
+						<AlertDescription>{m.auth_social_failed()}</AlertDescription>
 					</Alert>
 				{/if}
 
@@ -83,6 +88,7 @@
 				</Button>
 			</Field.Group>
 		</form>
+		<SocialButtons providers={data.social} redirectTo={page.url.searchParams.get( 'redirectTo' )} />
 	</Card.Content>
 	{#if data.signUp}
 		<Card.Footer class="text-muted-foreground justify-center text-sm">

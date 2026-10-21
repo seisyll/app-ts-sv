@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms'
 	import { CaptchaWidget } from '$lib/components/captcha'
+	import { SocialButtons } from '$lib/components/social'
 	import { valibot } from 'sveltekit-superforms/adapters'
 	import { Alert, AlertDescription } from '$lib/components/ui/alert'
 	import { Button } from '$lib/components/ui/button'
@@ -49,7 +50,7 @@
 			<Card.Title><h1 class="text-xl">{m.auth_signup_title()}</h1></Card.Title>
 			<Card.Description>{m.auth_signup_desc()}</Card.Description>
 		</Card.Header>
-		<Card.Content>
+		<Card.Content class="flex flex-col gap-6">
 			<form method="POST" use:enhance novalidate>
 				<Field.Group>
 					{#if $message}
@@ -89,6 +90,7 @@
 					</Button>
 				</Field.Group>
 			</form>
+			<SocialButtons providers={data.social} />
 		</Card.Content>
 		<Card.Footer class="text-muted-foreground justify-center text-sm">
 			{m.auth_have_account()}&nbsp;<a href="/login" class="text-foreground underline underline-offset-4">{m.auth_login_link()}</a>

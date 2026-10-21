@@ -755,5 +755,20 @@
 	"demo_captcha_test_key": "The provider's test site key.",
 	"demo_captcha_get": "Get answer",
 	"demo_captcha_reset": "Reset",
-	"demo_captcha_none": "No answer yet"
+	"demo_captcha_none": "No answer yet",
+	"auth_or": "or",
+	"auth_continue_with": "Continue with {provider}",
+	"auth_social_failed": "Signing in with that account didn't work. Try again, or use your email and password.",
+	"social_title": "Connected accounts",
+	"social_desc": "Sign in with these as well as your email and password.",
+	"social_connected": "Connected",
+	"social_connect": "Connect",
+	"social_disconnect": "Disconnect",
+	"social_last_method": "This is your only way to sign in, so it can't be disconnected. Set a password first: Forgot password? on the sign-in page sends a link.",
+	"social_unlinked": "{provider} disconnected.",
+	"social_link_failed": "Couldn't connect that account: the provider refused, or it already belongs to someone else here.",
+	"demo_social_title": "Social sign-in",
+	"demo_social_desc": "SocialButtons and ConnectedAccounts with both providers. The buttons go nowhere here; in the app they need GOOGLE_* / APPLE_* credentials.",
+	"demo_social_buttons": "Under the sign-in and sign-up forms",
+	"demo_social_accounts": "On the profile page"
 }

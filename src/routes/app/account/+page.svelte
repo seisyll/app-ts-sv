@@ -6,10 +6,11 @@
 	import * as Field from '$lib/components/ui/field'
 	import { Input } from '$lib/components/ui/input'
 	import { SaveBar } from '$lib/components/save-bar'
+	import { ConnectedAccounts } from '$lib/components/social'
 	import { profileSchema } from '$lib/auth-schemas'
 	import { m } from '$lib/paraglide/messages'
 
-	let { data } = $props()
+	let { data, form: action } = $props()
 
 	// svelte-ignore state_referenced_locally
 	const form = superForm( data.form, {
@@ -32,7 +33,7 @@
 
 <h1 class="text-2xl font-semibold tracking-tight">{m.app_nav_profile()}</h1>
 
-<form method="POST" use:enhance novalidate>
+<form method="POST" action="?/profile" use:enhance novalidate>
 	<Card.Root class="max-w-xl">
 		<Card.Header>
 			<Card.Title>{m.app_profile_title()}</Card.Title>
@@ -56,3 +57,5 @@
 
 	<SaveBar show={form.isTainted( $tainted )} saving={$submitting} saveType="submit" ondiscard={() => form.reset()} />
 </form>
+
+<ConnectedAccounts accounts={data.accounts} canDisconnect={data.canDisconnect} message={action?.social ?? ( data.linkError ? m.social_link_failed() : null )} />

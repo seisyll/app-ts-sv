@@ -44,6 +44,7 @@ it.
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
 | `/hello/brand` | `BrandMark` with and without a logo, `FaviconPreview`, the sign-in header |
 | `/hello/captcha` | `CaptchaWidget` with Turnstile's and hCaptcha's test keys |
+| `/hello/social` | `SocialButtons` and `ConnectedAccounts` (`src/lib/components/social`), posting to stand-in actions |
 | `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox` (with the public switch), `MediaDropzone` against a mock library |
 | `/hello/editor` | `RichEditor` with images and template variables; the server's validation and its HTML and email renders |
 | `/hello/notifications` | `NotificationBell`, `NotificationList` and the all-clear moment against a mock inbox |
@@ -494,6 +495,33 @@ own limiter) as well as `/api/auth/*`:
   `src/lib/server/captcha.ts`, `src/lib/components/captcha`, `/app/settings/security`,
   `/hello/captcha` and the migration. The throttle goes with `src/lib/server/sign-in-guard.ts`
   and its two hooks in `src/lib/server/auth.ts`.
+
+### Social sign-in
+
+**Google** and **Apple**, each on when its credentials are in the environment
+(`src/lib/server/social.ts`, see `.env.example`): "Continue with …" under the sign-in and
+sign-up forms, and **Connected accounts** on the profile page.
+
+- **Anyone** may sign in with a provider: a new person gets an account (a member) even with
+  `AUTH_SIGNUP` off, and the admins are notified as for a sign-up. An existing account with
+  the same email is linked on first use (both providers are trusted for linking).
+- **Profile:** connect a provider (off to it and back) or disconnect one — never the last way
+  to sign in (better-auth refuses; a social-only person sets a password through *Forgot
+  password?*). Disconnecting wants a recent sign-in.
+- **Plain forms:** the buttons post to `/login/social`, which sends the browser on to the
+  provider — no JavaScript needed. The provider comes back through
+  `/api/auth/callback/<provider>`; a refusal lands on `/login?social&error=…`.
+- **Redirect URIs:** each provider's app lists `https://<host>/api/auth/callback/<provider>`
+  — every workspace host, in shared tenancy (Google takes many; Apple a list of domains).
+- **Apple:** the client secret is a JWT signed with your key that lasts at most six months —
+  `bun run apple:secret -- --team … --key-id … --client-id … --key AuthKey.p8` makes one; set a
+  reminder to make the next. Apple posts its answer from `appleid.apple.com`, so
+  `svelte.config.js` trusts that origin for form posts.
+- **Not built:** more providers (better-auth has ~35: a provider here is one entry in
+  `socialProviders()`, a label and an icon), per-workspace OAuth apps.
+- **Detach:** delete `src/lib/social.ts`, `src/lib/server/social.ts`,
+  `src/lib/components/social`, `/login/social`, `/hello/social`, `scripts/apple-client-secret.ts`,
+  and the social lines in `src/lib/server/auth.ts`, the auth pages and `/app/account`.
 
 ### Users (`/app/users`)
 

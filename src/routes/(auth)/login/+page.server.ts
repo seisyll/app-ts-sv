@@ -8,6 +8,7 @@ import { validateForm } from '$lib/server/forms'
 import { safeRedirect } from '$lib/server/guards'
 import { mailReady } from '$lib/server/mail/gate'
 import { authHeaders, signInCaptcha } from '$lib/server/sign-in-guard'
+import { enabledSocialProviders } from '$lib/server/social'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load : PageServerLoad = async( event ) => {
@@ -21,8 +22,11 @@ export const load : PageServerLoad = async( event ) => {
 		// With the mail module, sign-up sends a verification email, so it needs mail too.
 		signUp   : signUpEnabled() && ( !MODULES.mail || mail ),
 		forgot   : mail,
-		// Back from a verification link that had expired ( better-auth adds ?error= ).
-		linkError: event.url.searchParams.has( 'error' ),
+		// Back from a verification link that had expired ( better-auth adds ?error= ) — or from a
+		// provider that refused ( ?social&error= ).
+		linkError  : event.url.searchParams.has( 'error' ) && !event.url.searchParams.has( 'social' ),
+		socialError: event.url.searchParams.has( 'social' ) && event.url.searchParams.has( 'error' ),
+		social     : enabledSocialProviders(),
 		// Shown from the start in always-mode, or when this address already failed often.
 		captcha  : await signInCaptcha( event )
 	}

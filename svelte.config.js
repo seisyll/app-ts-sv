@@ -20,7 +20,9 @@ const config = {
 			$theme : `${ THEMES_DIR }/${ theme }`,
 			// The module registry and client configs, shared with vite.config.ts.
 			$config: 'config'
-		}
+		},
+		// Sign in with Apple posts its answer from Apple's origin ( src/lib/server/social.ts ).
+		csrf: { trustedOrigins: [ 'https://appleid.apple.com' ] }
 	}
 }
 

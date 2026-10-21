@@ -8,7 +8,9 @@ import { ac, DEFAULT_ROLE, roles } from '$lib/permissions'
 import { currentTenant, db, tenantTransaction } from '$lib/server/db'
 import type { PrismaClient } from '$lib/server/db/generated/client'
 import { sendMail } from '$lib/server/mail/gate'
+import { notify } from '$lib/server/notifications/gate'
 import { afterAuth, beforeAuth, CLIENT_IP } from '$lib/server/sign-in-guard'
+import { socialProviders } from '$lib/server/social'
 import { appUrl } from '$lib/server/url'
 
 /* ―― » better-auth on the tenant-scoped database: users, sessions and accounts are rows
@@ -87,6 +89,7 @@ async function sendResetEmail( user : { id : string, email : string, name : stri
 // `cookies: false` for code that runs outside a SvelteKit request ( tests, scripts ).
 export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 	const shared = process.env.TENANCY === 'shared'
+	const social = socialProviders()
 
 	return betterAuth( {
 		appName : APP.name,
@@ -109,6 +112,23 @@ export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 			onPasswordReset              : async( { user } ) => {
 				if ( !user.emailVerified )
 					await db.user.update( { where: { id: user.id }, data: { emailVerified: true } } )
+			}
+		},
+		// Google / Apple when their credentials are set ( src/lib/server/social.ts ). They may
+		// create accounts even with sign-up off; an account with the same email is linked.
+		socialProviders: social,
+		account        : { accountLinking: { enabled: true, trustedProviders: Object.keys( social ) } },
+		// Apple posts its answer back from its own origin.
+		trustedOrigins : 'apple' in social ? [ 'https://appleid.apple.com' ] : [],
+		databaseHooks  : {
+			user: {
+				create: {
+					// A new person through a provider: the admins hear, as with sign-up.
+					after: async( user, context ) => {
+						if ( context?.path?.startsWith( '/callback/' ) )
+							await notify( { type: 'user.joined', params: { name: user.name, email: user.email }, to: { roles: [ 'admin' ] } } )
+					}
+				}
 			}
 		},
 		emailVerification: MODULES.mail ? {

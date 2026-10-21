@@ -24,7 +24,8 @@
 		"db:reset": "docker compose -f docker-compose.dev.yml down -v && bun run db:setup",
 		"tenant:modules": "bun scripts/tenant-modules.ts",
 		"generate:palettes": "bun run scripts/generate-palettes.ts",
-		"sync:ui": "bun run scripts/sync-ui.ts"
+		"sync:ui": "bun run scripts/sync-ui.ts",
+		"apple:secret": "bun scripts/apple-client-secret.ts"
 	},
 	"devDependencies": {
 		"@electric-sql/pglite": "^0.4.3",
