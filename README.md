@@ -33,6 +33,7 @@ database). Everything under it returns 404 outside `vite dev`.
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
 | `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox`, `MediaDropzone` against a mock library |
 | `/hello/editor` | `RichEditor` with images and template variables; the server's validation and its HTML and email renders |
+| `/hello/notifications` | `NotificationBell`, `NotificationList` and the all-clear moment against a mock inbox |
 | `/hello/site` | Every public-site theme, switchable, with sign-up on or off |
 
 The palette button in the playground's header tries every palette, style and radius on every
@@ -149,6 +150,35 @@ const mail = renderEmailHTML( body, { baseUrl, values: { customer_name: 'Ada' } 
   resizing of images.
 - **Detach:** delete `src/lib/editor`, `src/lib/components/editor`, `/hello/editor` and the
   `@tiptap/*` and `svelte-tiptap` packages.
+
+## Notifications
+
+In-app notifications (from the fundraiser app): a bell with an unread badge in the `/app`
+header, the inbox at `/app/notifications`, and per-type preferences at
+`/app/account/notifications`.
+
+```ts
+await notify( { type: 'user.joined', params: { name, email }, to: { roles: [ 'admin' ], except: [ actorId ] } } )
+```
+
+- **The catalog** (`src/lib/server/notifications/catalog.ts`) says what each type means: a
+  params schema, labels for the preferences page, and a `render` to title / body / link. The
+  database stores only type + params, so rewording needs no migration and each reader gets
+  their own language. Adding a type: one catalog entry, messages, and an icon in
+  `src/lib/components/notifications/icons.ts`.
+- **`notify()` never throws** — a notification can't fail the action that sent it. One event
+  row, one recipient row per reader: roles and/or users, minus `except`, minus anyone who
+  turned the type off, and only users visible in the current workspace (RLS).
+- **Shipped types:** `user.joined` (admins, on sign-up or when an admin adds someone) and
+  `role.changed` (the person whose role changed).
+- **The queue** shows what's unread; opening an item or its check marks it read. Emptying it
+  plays the all-clear. The badge comes with the server render, then polls every 30 s and on
+  returning to the tab.
+- **Not built:** email/push delivery (with the mailer), live push (SSE), a read-history view,
+  cleanup of old rows.
+- **Detach:** delete `src/lib/server/notifications`, `src/lib/components/notifications`,
+  `src/lib/notifications.ts`, `/app/notifications`, `/app/account/notifications`,
+  `/api/notifications`, the `notify()` calls and the migration.
 
 ## DataTable
 

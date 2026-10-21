@@ -17,6 +17,10 @@ model Tenant {
   appearance    AppearanceSetting?
   media         Media[]
 
+  notificationEvents      NotificationEvent[]
+  notificationRecipients  NotificationRecipient[]
+  notificationPreferences NotificationPreference[]
+
   @@map("tenants")
 }
 

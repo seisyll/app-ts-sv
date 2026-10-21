@@ -5,6 +5,7 @@ import { auth } from '$lib/server/auth'
 import { isAuthError, rethrowAuthError } from '$lib/server/auth-errors'
 import { readJson } from '$lib/server/forms'
 import { requireApiPermission } from '$lib/server/guards'
+import { notify } from '$lib/server/notifications'
 import { createUser, listUsers } from '$lib/server/users'
 import { newUserSchema } from '$lib/users'
 import type { RequestHandler } from './$types'
@@ -17,7 +18,7 @@ export const GET : RequestHandler = async( event ) => {
 }
 
 export const POST : RequestHandler = async( event ) => {
-	await requireApiPermission( event, { user: [ 'create' ] } )
+	const { user } = await requireApiPermission( event, { user: [ 'create' ] } )
 	const input = await readJson( event.request, newUserSchema )
 
 	await createUser( auth(), event.request.headers, input ).catch( ( caught ) => {
@@ -26,6 +27,9 @@ export const POST : RequestHandler = async( event ) => {
 
 		rethrowAuthError( caught )
 	} )
+
+	// The other admins hear about it; the one who added them already knows.
+	await notify( { type: 'user.joined', params: { name: input.name, email: input.email }, to: { roles: [ 'admin' ], except: [ user.id ] } } )
 
 	return json( { ok: true }, { status: 201 } )
 }

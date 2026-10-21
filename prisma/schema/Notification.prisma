@@ -1,0 +1,51 @@
+// In-app notifications ( src/lib/server/notifications ), from the fundraiser app. An event
+// is stored ONCE as a catalog type + params — never rendered text, so rewording is a code
+// edit and every reader sees it in their own language — and fanned out to one recipient
+// row per reader, which holds that reader's read state. All three are tenant-scoped.
+model NotificationEvent {
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId  String   @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  // A catalog key, e.g. user.joined.
+  type      String
+  // The template's inputs, validated against the catalog when emitted.
+  params    Json     @default("{}") @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant     Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  recipients NotificationRecipient[]
+
+  @@index([tenantId, type, createdAt])
+  @@map("notification_events")
+}
+
+model NotificationRecipient {
+  id       String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId String    @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  eventId  String    @map("event_id") @db.Uuid
+  userId   String    @map("user_id") @db.Uuid
+  // Null until the reader opens or dismisses it.
+  readAt   DateTime? @map("read_at") @db.Timestamptz
+
+  tenant Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  event  NotificationEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user   User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  // The inbox and the unread badge.
+  @@index([userId, readAt])
+  @@map("notification_recipients")
+}
+
+// A type a reader turned off. No row means on.
+model NotificationPreference {
+  tenantId String  @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  userId   String  @map("user_id") @db.Uuid
+  type     String
+  enabled  Boolean @default(true)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, type])
+  @@map("notification_preferences")
+}

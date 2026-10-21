@@ -4,6 +4,7 @@ import { auth } from '$lib/server/auth'
 import { rethrowAuthError } from '$lib/server/auth-errors'
 import { readJson } from '$lib/server/forms'
 import { requireApiPermission, requireApiUser } from '$lib/server/guards'
+import { notify } from '$lib/server/notifications'
 import { changeUser, deleteUser } from '$lib/server/users'
 import { userChangeSchema, type UserChange } from '$lib/users'
 import type { RequestHandler } from './$types'
@@ -22,6 +23,9 @@ export const PATCH : RequestHandler = async( event ) => {
 	const { user } = await requireApiPermission( event, NEEDS[ change.action ] )
 
 	await changeUser( auth(), event.request.headers, user.id, event.params.id, change ).catch( rethrowAuthError )
+
+	if ( change.action === 'set-role' )
+		await notify( { type: 'role.changed', params: { role: change.role, by: user.name }, to: { users: [ event.params.id ] } } )
 
 	return json( { ok: true } )
 }

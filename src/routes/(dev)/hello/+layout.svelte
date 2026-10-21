@@ -15,6 +15,7 @@
 		{ href: '/hello/forms', label: m.demo_forms_title() },
 		{ href: '/hello/media', label: m.media_title() },
 		{ href: '/hello/editor', label: m.demo_editor_title() },
+		{ href: '/hello/notifications', label: m.notif_title() },
 		{ href: '/hello/shell', label: m.demo_shell_title() },
 		{ href: '/hello/site', label: m.demo_site_title() }
 	]

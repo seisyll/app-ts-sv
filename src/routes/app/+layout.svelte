@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BellIcon from '@lucide/svelte/icons/bell'
 	import HouseIcon from '@lucide/svelte/icons/house'
 	import ImagesIcon from '@lucide/svelte/icons/images'
 	import PaletteIcon from '@lucide/svelte/icons/palette'
@@ -8,6 +9,7 @@
 	import UsersIcon from '@lucide/svelte/icons/users'
 	import { paintAppearance } from '$lib/appearance'
 	import { AppearancePicker, AppShell, filterNav, LocaleSwitcher, ThemeToggle, type NavGroup } from '$lib/layout'
+	import { NotificationBell, NotificationStore, setNotifications } from '$lib/components/notifications'
 	import { mutate } from '$lib/mutate'
 	import { m } from '$lib/paraglide/messages'
 	import { hasPermission } from '$lib/permissions'
@@ -26,7 +28,8 @@
 			label: m.app_nav_account(),
 			items: [
 				{ title: m.app_nav_profile(), href: '/app/account', icon: UserIcon },
-				{ title: m.app_nav_security(), href: '/app/account/security', icon: ShieldIcon, keywords: [ 'password' ] }
+				{ title: m.app_nav_security(), href: '/app/account/security', icon: ShieldIcon, keywords: [ 'password' ] },
+				{ title: m.app_nav_notifications(), href: '/app/account/notifications', icon: BellIcon, keywords: [ 'preferences' ] }
 			]
 		},
 		{
@@ -40,6 +43,12 @@
 	] satisfies NavGroup[], ( permission ) => hasPermission( data.user.role, permission ) ) )
 
 	let logoutForm = $state<HTMLFormElement>()
+
+	// One store for the bell and the inbox page, re-seeded when the layout data reloads.
+	// svelte-ignore state_referenced_locally
+	const notifications = setNotifications( new NotificationStore( data.notifications ) )
+
+	$effect( () => notifications.hydrate( data.notifications ) )
 
 	// <html> is never re-rendered: keep its appearance classes on the server's answer, which
 	// changes when an admin saves the workspace default or this person saves elsewhere.
@@ -59,6 +68,7 @@
 	onlogout={() => logoutForm?.requestSubmit()}
 >
 	{#snippet actions()}
+		<NotificationBell />
 		{#if data.appearance.setting.allowUserOverride}
 			<AppearancePicker setting={data.appearance.setting} override={data.appearance.override} onsave={saveAppearance} />
 		{/if}

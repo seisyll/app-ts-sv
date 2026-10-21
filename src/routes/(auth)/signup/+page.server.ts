@@ -6,6 +6,7 @@ import { m } from '$lib/paraglide/messages'
 import { auth, signUpEnabled } from '$lib/server/auth'
 import { authErrorMessage, isAuthError } from '$lib/server/auth-errors'
 import { validateForm } from '$lib/server/forms'
+import { notify } from '$lib/server/notifications'
 import type { Actions, PageServerLoad } from './$types'
 
 // Off unless AUTH_SIGNUP=true: then this page doesn't exist.
@@ -30,7 +31,9 @@ export const actions : Actions = {
 		return validateForm( event, signupSchema, async( form ) => {
 			try {
 				// Creates the account and signs in ( session cookie via sveltekitCookies ).
-				await auth().api.signUpEmail( { body: form.data, headers: event.request.headers } )
+				const { user } = await auth().api.signUpEmail( { body: form.data, headers: event.request.headers } )
+
+				await notify( { type: 'user.joined', params: { name: user.name, email: user.email }, to: { roles: [ 'admin' ], except: [ user.id ] } } )
 			} catch ( caught ) {
 				form.data.password = ''
 

@@ -1,4 +1,5 @@
 import type { MediaRow } from '$lib/media'
+import type { NotificationItem } from '$lib/notifications'
 
 // Deterministic fake customers for the playground ( no faker: same rows every run ).
 export type Customer = {
@@ -56,5 +57,26 @@ export const mockMedia = ( n : number, name = `${ NAMES[ n % NAMES.length ] }.jp
 		uploader : 'Ada Lovelace',
 		url      : `/api/hello/media/${ n }`,
 		thumbUrl : `/api/hello/media/${ n }`
+	}
+}
+
+// Mock notifications for the playground's bell, held in memory.
+const freshNotifications = () : NotificationItem[] => [
+	{ type: 'role.changed', title: 'You\'re now Admin', body: 'Changed by Grace Hopper', href: null, minutes: 2 },
+	{ type: 'user.joined', title: 'Linus Torvalds joined the workspace', body: 'linus@example.test', href: null, minutes: 45 },
+	{ type: 'user.joined', title: 'Margaret Hamilton joined the workspace', body: 'margaret@example.test', href: null, minutes: 60 * 26 }
+].map( ( { minutes, ...item }, index ) => ( { ...item, id: `00000000-0000-7000-9000-00000000000${ index }`, readAt: null, createdAt: new Date( Date.now() - minutes * 60_000 ).toISOString() } ) )
+
+export const mockNotifications = {
+	items: freshNotifications(),
+	reset() {
+		this.items = freshNotifications()
+	},
+	markRead( ids ?: string[] ) {
+		let count = 0
+
+		this.items = this.items.map( ( item ) => ( item.readAt || ( ids?.length && !ids.includes( item.id ) ) ? item : ( count++, { ...item, readAt: new Date().toISOString() } ) ) )
+
+		return count
 	}
 }

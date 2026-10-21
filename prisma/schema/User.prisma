@@ -24,6 +24,9 @@ model User {
   accounts Account[]
   uploads  Media[]
 
+  notifications           NotificationRecipient[]
+  notificationPreferences NotificationPreference[]
+
   // better-auth lowercases emails, so plain uniqueness is case-insensitive in practice.
   @@unique([tenantId, email])
   @@map("users")
