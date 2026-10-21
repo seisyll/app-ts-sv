@@ -25,3 +25,8 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Vitest
+/coverage
+__screenshots__
+.vitest-attachments

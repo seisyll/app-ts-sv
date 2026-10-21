@@ -10,12 +10,13 @@
 	const pages = [
 		{ href: '/hello', label: m.nav_overview() },
 		{ href: '/hello/save-bar', label: 'SaveBar' },
+		{ href: '/hello/data-table', label: 'DataTable' },
 		{ href: '/hello/shell', label: m.demo_shell_title() }
 	]
 </script>
 
 <!-- pb-32 keeps the last card clear of floating bars. -->
-<div class="mx-auto flex max-w-3xl flex-col gap-6 p-6 pb-32">
+<div class="mx-auto flex max-w-5xl flex-col gap-6 p-6 pb-32">
 	<header class="flex flex-col gap-4">
 		<div class="flex flex-wrap items-start justify-between gap-4">
 			<div class="flex flex-col gap-1">

@@ -28,7 +28,54 @@ database). Everything under it returns 404 outside `vite dev`.
 |---|---|
 | `/hello` | i18n, formatting, the mock API |
 | `/hello/save-bar` | `SaveBar` + `Draft` (`src/lib/components/save-bar`) |
+| `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory and server-paged against a mock endpoint |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
+
+## DataTable
+
+```svelte
+<DataTable data={rows} {columns} />                           <!-- in memory -->
+<DataTable source={new TableSource( { path, initial } )} {columns} />  <!-- server-paged -->
+```
+
+- **Server mode**: create the `TableSource` in the page component from the load's first
+  page (so the server render already has rows). The endpoint reads the request with
+  `parsePageQuery( url.searchParams )` and answers `Paged<T>` —
+  see `src/routes/(dev)/api/hello/customers/+server.ts`. `parsePageQuery` only shapes the
+  input: allow-list `sort`, `searchBy` and filter columns in the endpoint.
+- A column with a string `header` gets a sort button; `enableSorting: false` opts out.
+- Helpers: `selectColumn()`, `rowNumberColumn()`, `facetedFilter`, `dateRangeFilter`,
+  `textCell()` (escapes HTML), `runBulk()` for bulk actions.
+
+## Testing
+
+```bash
+bun run test           # everything, once
+bun run test:server    # Node only — fast
+bun run test:client    # components in headless Chromium
+bun run test:watch     # watch mode
+bun run test:coverage  # + coverage report in /coverage
+```
+
+Two Vitest projects, chosen by file name (config in `vite.config.ts`):
+
+| File | Runs in | For |
+|---|---|---|
+| `*.test.ts` | Node | logic, stores, endpoints — e.g. `table-source.test.ts`, `query.test.ts` |
+| `*.svelte.test.ts` | real Chromium | components — e.g. `SaveBar.svelte.test.ts`, `DataTable.svelte.test.ts` |
+
+Put the test next to the file it tests. Component tests have no SvelteKit runtime, so
+route `$app/*` to the test kit in `src/lib/test/`:
+
+```ts
+vi.mock( '$app/state', () => import( '$lib/test/app-state.svelte' ) )      // page, navigating, setPath()
+vi.mock( '$app/navigation', () => import( '$lib/test/app-navigation' ) )   // goto spy, attemptNavigation()
+```
+
+`render()` from `vitest-browser-svelte` returns a promise — `await` it. Query the way a
+user would (`page.getByRole( 'button', { name: 'Save' } )`) and assert with
+`expect.element(…)`, which retries until the DOM settles. Playwright is pinned to the
+version whose Chromium is installed; after bumping it, run `bunx playwright install chromium`.
 
 ## Dashboard shell
 
