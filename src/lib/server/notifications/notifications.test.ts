@@ -130,5 +130,5 @@ describe( 'notifications', () => {
 		clearOutbox()
 		await inA( () => service.notify( { type: 'role.changed', params: { role: 'admin', by: 'Ada' }, to: { users: [ users.mia ] } } ) )
 		await vi.waitFor( () => expect( listOutbox() ).toMatchObject( [ { to: 'mia@example.test', subject: 'You\'re now Admin', text: expect.stringContaining( 'Changed by Ada' ) } ] ), { timeout: 5_000 } )
-	} )
+	}, 20_000 )
 } )

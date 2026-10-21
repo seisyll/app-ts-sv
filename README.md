@@ -41,6 +41,7 @@ it.
 | `/hello/save-bar` | `SaveBar` + `Draft` (`src/lib/components/save-bar`) |
 | `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory, and server-paged against a mock endpoint with its query in the URL |
 | `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
+| `/hello/components` | The `ui/` components the app doesn't use yet: chart, tabs, accordion, calendar, carousel, empty, item, input-otp, native-select, slider, progress, radio-group, button-group, pagination, menubar, navigation-menu, context-menu, drawer, hover-card |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
 | `/hello/brand` | `BrandMark` with and without a logo, `FaviconPreview`, the sign-in header |
 | `/hello/captcha` | `CaptchaWidget` with Turnstile's and hCaptcha's test keys |
@@ -167,6 +168,12 @@ people may override it; each person overrides any knob from the palette button i
 - **Components:** `src/lib/components/ui/` is shadcn-svelte's *authoring* flavour — bare `cn-*`
   markers — and `src/lib/styles/style-<id>.css` holds each style's look. Update or add components
   with `bun run sync:ui -- --source <shadcn-svelte checkout> [name …]`, not `shadcn-svelte add`.
+  The vendored set was synced from upstream commit `bc3c203`; syncing a newer checkout also
+  refreshes every existing component — do that as an upgrade, on purpose. Deliberate
+  divergences (a self-providing tooltip, dialogs that scroll inside the screen, the sidebar's
+  context key) are `PATCHES` in `scripts/sync-ui.ts`, so a sync keeps them. Chart needs
+  `layerchart` + `d3-scale`, drawer `vaul-svelte`, carousel `embla-carousel-svelte`; charts
+  colour series with `var( --chart-1…5 )`.
 - **Adding a palette:** a row in `PALETTES`, then `bun run generate:palettes`. **Shipping fewer
   styles:** drop rows from `STYLES` and the matching `@import`s in `app.css`.
 - **Rules** for new palettes, styles and house styles (and for public themes): `DESIGN.md`.

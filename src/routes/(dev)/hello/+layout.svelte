@@ -19,6 +19,7 @@
 		{ href: '/hello/editor', label: m.demo_editor_title(), module: 'editor' },
 		{ href: '/hello/notifications', label: m.notif_title(), module: 'notifications' },
 		{ href: '/hello/mail', label: m.demo_mail_title(), module: 'mail' },
+		{ href: '/hello/components', label: m.demo_ui_title() },
 		{ href: '/hello/shell', label: m.demo_shell_title() },
 		{ href: '/hello/brand', label: m.demo_brand_title(), module: 'appearance' },
 		{ href: '/hello/captcha', label: 'Captcha', module: 'captcha' },

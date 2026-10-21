@@ -91,11 +91,24 @@ function transformIcons( body : string, file : string ) : string {
 
 /* ―― » Deliberate divergences from upstream, by anchor: a changed upstream FAILS here for a
         human decision instead of drifting. Tooltip.Root stays self-providing ( upstream
-        moved the Provider out of Root; the app's tooltips are written for Root alone ). */
+        moved the Provider out of Root; the app's tooltips are written for Root alone ).
+        Dialogs taller than the screen scroll inside it instead of running off the edge. The
+        sidebar's context key is the one the app was written with ( from the appearance port ). */
+const DIALOG_SCROLL = 'max-h-[calc(100dvh-2rem)] w-full -translate-x-1/2 -translate-y-1/2 overflow-y-auto overscroll-contain outline-none'
+
 const PATCHES : Record<string, [ string, string ][]> = {
 	'tooltip/tooltip.svelte': [
 		[ 'import { Tooltip as TooltipPrimitive } from "bits-ui";', 'import { Tooltip as TooltipPrimitive } from "bits-ui";\n\timport TooltipProvider from "./tooltip-provider.svelte";' ],
 		[ '<TooltipPrimitive.Root bind:open {...restProps} />', '<TooltipProvider>\n\t<TooltipPrimitive.Root bind:open {...restProps} />\n</TooltipProvider>' ]
+	],
+	'dialog/dialog-content.svelte': [
+		[ 'z-50 w-full -translate-x-1/2 -translate-y-1/2 outline-none', `z-50 ${ DIALOG_SCROLL }` ]
+	],
+	'alert-dialog/alert-dialog-content.svelte': [
+		[ 'z-50 grid w-full -translate-x-1/2 -translate-y-1/2 outline-none', `z-50 grid ${ DIALOG_SCROLL }` ]
+	],
+	'sidebar/context.svelte.ts': [
+		[ 'const SYMBOL_KEY = "scn-sidebar";', 'const SYMBOL_KEY = "sba-sidebar";' ]
 	]
 }
 

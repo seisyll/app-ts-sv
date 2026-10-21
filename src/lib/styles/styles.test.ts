@@ -27,7 +27,11 @@ describe( 'styles', () => {
 			'cn-alert-dialog-action', 'cn-alert-dialog-cancel', 'cn-avatar-group', 'cn-breadcrumb', 'cn-card-action',
 			'cn-command-item-indicator', 'cn-field-orientation-horizontal', 'cn-field-orientation-responsive',
 			'cn-field-orientation-vertical', 'cn-font-heading', 'cn-menu-target', 'cn-scroll-area-viewport',
-			'cn-select-item-indicator-icon', 'cn-sidebar-trigger'
+			'cn-select-item-indicator-icon', 'cn-sidebar-trigger',
+			'cn-accordion-trigger-icon', 'cn-context-menu-trigger', 'cn-input-otp-caret', 'cn-input-otp-input',
+			'cn-native-select-wrapper', 'cn-navigation-menu-item', 'cn-pagination', 'cn-pagination-link',
+			'cn-pagination-next-text', 'cn-pagination-previous-text', 'cn-rtl-flip', 'cn-tabs-list-variant-default',
+			'cn-tabs-list-variant-line'
 		] )
 		const styled = new Set( sheets.flatMap( ( file ) => read( `lib/styles/${ file }` ).match( /cn-[a-z0-9-]+/g ) ?? [] ) )
 		const used = new Set<string>()
