@@ -51,8 +51,10 @@ export type HomeContent = {
 }
 
 export type ThemeModule = {
-	id     : string
-	Header : Component<{ site : Site }>
-	Footer : Component<{ site : Site }>
-	Home   : Component<{ content : HomeContent }>
+	id         : string
+	// A 1200×630 picture for link previews of public pages that bring none of their own.
+	shareImage : string
+	Header     : Component<{ site : Site }>
+	Footer     : Component<{ site : Site }>
+	Home       : Component<{ content : HomeContent }>
 }

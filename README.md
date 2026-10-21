@@ -57,6 +57,7 @@ it.
 | `/hello/notifications` | `NotificationBell`, `NotificationList` and the all-clear moment against a mock inbox |
 | `/hello/mail` | The dev outbox: every email the app sent, as HTML and text, plus a sample of each email |
 | `/hello/site` | Every public-site theme, switchable, with sign-up, a logo and a workspace's footer details on or off |
+| `/hello/seo` | `<Seo>`: the tags it writes and a link preview with the theme's share image |
 
 The palette button in the playground's header tries every palette, style and radius on every
 page here (it only paints; reload to go back).
@@ -689,6 +690,23 @@ the caller's permission again. Your own row has no actions, and the endpoints re
   `src/lib/server/list.ts` turns the DataTable's query into Prisma
   `{ where, orderBy, skip, take }`. The `spec` allow-lists the search, facet and sort fields.
   Date ranges are calendar days in `APP.timeZone`.
+
+## SEO
+
+- **`<Seo>`** (`$lib/components/seo`): a page's title, description, canonical URL (this host,
+  no query), Open Graph and Twitter tags, and optional JSON-LD — in the server-rendered HTML
+  crawlers read. Render it from **pages only**: `<svelte:head>` appends, so a layout writing
+  meta too would leave duplicates. The home page sends `Organization` data (name, address,
+  logo); `/privacy`, `/terms` and `/about` describe themselves with their opening words.
+- **Share image:** each theme exports `shareImage` (1200×630, no words — previews print the
+  title beside it); a page can pass its own `image`. Replace `src/lib/themes/<id>/share.png`
+  with your own.
+- **Indexing:** only the public site — every other response says `X-Robots-Tag: noindex`
+  (`hooks.server.ts`), and `/robots.txt` disallows `/app` and `/api`. `SEO_INDEX=false` keeps
+  crawlers out of everything, for a staging copy.
+- **`/sitemap.xml`:** home and the pages this host's workspace has published, built per
+  request — each workspace has its own in shared tenancy. `/robots.txt` points at it.
+- `/hello/seo` shows the tags `<Seo>` writes and a link preview.
 
 ## Security
 

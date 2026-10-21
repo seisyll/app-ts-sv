@@ -4,3 +4,5 @@ export const id = 'plain'
 export { default as Footer } from './Footer.svelte'
 export { default as Header } from './Header.svelte'
 export { default as Home } from './Home.svelte'
+// A plain mark on the light ground, no words: previews print the page's title beside it.
+export { default as shareImage } from './share.png'

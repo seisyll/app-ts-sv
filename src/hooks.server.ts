@@ -49,7 +49,7 @@ export const handleError : HandleServerError = ( { error, event, status, message
 }
 
 /* ―― » Headers every response carries ( the content security policy is SvelteKit's, from
-        svelte.config.js ):
+        svelte.config.js, and X-Robots-Tag is below ):
           · nosniff — an upload served as image/webp stays one;
           · the referrer leaves the site as its origin only, never a page's path or query;
           · no camera, microphone, location or payment, which nothing here asks for;
@@ -71,6 +71,11 @@ const handleHeaders : Handle = async( { event, resolve } ) => {
 
 		if ( !dev && event.url.protocol === 'https:' )
 			response.headers.set( 'strict-transport-security', 'max-age=31536000; includeSubDomains' )
+
+		// Search engines index the public site and nothing else — never /app, the API or the
+		// sign-in pages; nothing at all where SEO_INDEX=false ( a staging copy ).
+		if ( process.env.SEO_INDEX === 'false' || !event.route.id?.startsWith( '/(site)' ) )
+			response.headers.set( 'x-robots-tag', 'noindex' )
 	} catch {
 		// Immutable headers ( a response passed through from fetch ): leave them as they are.
 	}

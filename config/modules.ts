@@ -25,7 +25,7 @@ export type ModuleDefinition = {
 export const MODULES_REGISTRY = {
 	site: {
 		description: 'The public site ( landing page ) in the theme the client config picks',
-		routes     : [ '/(site)', '/app/settings/site', '/(dev)/hello/site' ],
+		routes     : [ '/(site)', '/app/settings/site', '/(dev)/hello/site', '/(dev)/hello/seo' ],
 		whenOff    : '/app'
 	},
 	users: {

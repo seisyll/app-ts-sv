@@ -5,3 +5,5 @@ export const id = 'aurora'
 export { default as Footer } from './Footer.svelte'
 export { default as Header } from './Header.svelte'
 export { default as Home } from './Home.svelte'
+// Its night sky and horizon, no words: previews print the page's title beside it.
+export { default as shareImage } from './share.png'

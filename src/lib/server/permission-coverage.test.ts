@@ -26,6 +26,8 @@ const PUBLIC : Record<string, string> = {
 	'(auth)/signup/+page.server.ts#load'            : 'open sign-up, when AUTH_SIGNUP is on',
 	'(auth)/signup/+page.server.ts#default'         : 'open sign-up, when AUTH_SIGNUP is on',
 	'(site)/[page=site_page]/+page.server.ts#load'  : 'the public site',
+	'(site)/sitemap.xml/+server.ts#GET'             : 'the public site’s list of pages, for crawlers',
+	'robots.txt/+server.ts#GET'                     : 'for crawlers',
 	'csp/+server.ts#POST'                           : 'browsers report policy violations without a session',
 	'health/+server.ts#GET'                         : 'up or down, nothing more',
 	'internal/tls-ask/+server.ts#GET'               : 'Caddy, on the internal network; the Caddyfile keeps it from the public'

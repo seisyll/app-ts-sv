@@ -1002,5 +1002,10 @@
 	"auth_agree": "Dengan mendaftar, Anda menyetujui",
 	"auth_and": "dan",
 	"demo_site_details": "Rincian ruang kerja",
-	"module_social": "Masuk dengan akun sosial"
+	"module_social": "Masuk dengan akun sosial",
+	"demo_seo_title": "SEO",
+	"demo_seo_preview": "Pratinjau tautan",
+	"demo_seo_preview_desc": "Kira-kira cara aplikasi obrolan atau media sosial menampilkan tautan ke halaman ini: gambar bagikan tema, host, judul, dan deskripsi.",
+	"demo_seo_tags": "Di head",
+	"demo_seo_tags_desc": "Yang ditulis <Seo> untuk halaman ini, dalam HTML hasil render server yang dibaca crawler."
 }

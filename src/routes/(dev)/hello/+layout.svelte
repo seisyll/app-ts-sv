@@ -28,7 +28,8 @@
 		{ href: '/hello/captcha', label: 'Captcha', module: 'captcha' },
 		{ href: '/hello/sign-ins', label: m.signins_title(), module: 'signins' },
 		{ href: '/hello/social', label: m.demo_social_title(), module: 'social' },
-		{ href: '/hello/site', label: m.demo_site_title(), module: 'site' }
+		{ href: '/hello/site', label: m.demo_site_title(), module: 'site' },
+		{ href: '/hello/seo', label: m.demo_seo_title(), module: 'site' }
 	]
 	const pages = all.filter( ( item ) => !item.module || isBuilt( item.module ) )
 </script>

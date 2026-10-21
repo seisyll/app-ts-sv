@@ -1002,5 +1002,10 @@
 	"auth_agree": "By signing up you agree to our",
 	"auth_and": "and",
 	"demo_site_details": "Workspace details",
-	"module_social": "Social sign-in"
+	"module_social": "Social sign-in",
+	"demo_seo_title": "SEO",
+	"demo_seo_preview": "Link preview",
+	"demo_seo_preview_desc": "Roughly how a chat app or social network shows a link to this page: the theme's share image, the host, the title and the description.",
+	"demo_seo_tags": "In the head",
+	"demo_seo_tags_desc": "What <Seo> wrote for this page, in the server-rendered HTML crawlers read."
 }

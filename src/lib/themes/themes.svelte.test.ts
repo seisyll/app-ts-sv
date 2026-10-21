@@ -12,6 +12,14 @@ import * as plain from './plain'
 const themes : ThemeModule[] = [ aurora, plain ]
 
 describe.each( themes.map( ( theme ) => [ theme.id, theme ] as const ) )( 'theme %s', ( _, theme ) => {
+	it( 'share image: a 1200×630 picture for link previews', async() => {
+		const image = new Image()
+
+		image.src = theme.shareImage
+		await image.decode()
+		expect( [ image.naturalWidth, image.naturalHeight ] ).toEqual( [ 1200, 630 ] )
+	} )
+
 	it( 'header: home, the section links, and sign-in while sign-up is off', async() => {
 		const { container } = await render( theme.Header, { site: siteChrome( { signUp: false } ) } )
 
