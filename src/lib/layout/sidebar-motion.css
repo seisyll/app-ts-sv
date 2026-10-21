@@ -1,0 +1,109 @@
+/* ―― » Sidebar motion, layered over the vendored shadcn sidebar ( ported from billing-app ).
+        Lives here, not in components/ui, so `shadcn-svelte update` never deletes it.
+        Unlayered on purpose: it beats Tailwind's layers without !important.
+        Every selector is rooted in the sidebar; nothing else is touched.
+
+        Upstream animates the width on `ease-linear`, clips labels mid-word as the rail
+        narrows, and doesn't animate sections at all. This fixes all three. */
+
+:root {
+	--sidebar-motion-duration: 200ms;
+	--sidebar-motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+	/* Collapsing: labels gone in 100ms, before the edge reaches them. Expanding: wait
+	   until the rail is ~60% back, then fade in, landing just after the rail settles. */
+	--sidebar-label-out-duration: 100ms;
+	--sidebar-label-in-duration: 150ms;
+	--sidebar-label-in-delay: 120ms;
+}
+
+/* 1. The spacer and the fixed panel move in lockstep on one curve. */
+[data-slot='sidebar-gap'],
+[data-slot='sidebar-container'] {
+	transition-timing-function: var(--sidebar-motion-ease);
+	transition-duration: var(--sidebar-motion-duration);
+}
+
+/* 2. Labels fade instead of being guillotined. Targets the text only: direct spans,
+      and the two-line grid in `size=lg` rows ( brand, user ) — never the first child
+      ( icon / logo / avatar stays put ) and never the chevron, whose rotate transition
+      this shorthand would otherwise replace. */
+[data-slot='sidebar'] [data-sidebar='menu-button'] > span,
+[data-slot='sidebar'] [data-sidebar='menu-button'] > div:not(:first-child) {
+	transition: opacity var(--sidebar-label-in-duration) var(--sidebar-motion-ease) var(--sidebar-label-in-delay);
+}
+
+[data-slot='sidebar'][data-collapsible='icon'] [data-sidebar='menu-button'] > span,
+[data-slot='sidebar'][data-collapsible='icon'] [data-sidebar='menu-button'] > div:not(:first-child) {
+	opacity: 0;
+	pointer-events: none;
+	transition-duration: var(--sidebar-label-out-duration);
+	transition-delay: 0ms;
+}
+
+/* Group labels already fade and slide upstream; only the curve changes ( a `transition`
+   shorthand here would drop the margin animation ). */
+[data-slot='sidebar'] [data-slot='sidebar-group-label'] {
+	transition-timing-function: var(--sidebar-motion-ease);
+}
+
+[data-slot='sidebar'] [data-sidebar='menu-button'] > svg:first-child {
+	flex-shrink: 0;
+}
+
+/* 3. Sections open and close with the height bits-ui measures. */
+@keyframes sidebar-section-open {
+	from {
+		height: 0;
+		opacity: 0;
+	}
+
+	to {
+		height: var(--bits-collapsible-content-height);
+		opacity: 1;
+	}
+}
+
+@keyframes sidebar-section-close {
+	from {
+		height: var(--bits-collapsible-content-height);
+		opacity: 1;
+	}
+
+	to {
+		height: 0;
+		opacity: 0;
+	}
+}
+
+[data-slot='sidebar'] [data-slot='collapsible-content'] {
+	overflow: hidden;
+}
+
+[data-slot='sidebar'] [data-slot='collapsible-content'][data-state='open'] {
+	animation: sidebar-section-open 220ms var(--sidebar-motion-ease);
+}
+
+/* `forwards` matters: bits-ui hides the content only after animationend, so without it
+   the section flashes back to full height for one frame on every close. */
+[data-slot='sidebar'] [data-slot='collapsible-content'][data-state='closed'] {
+	animation: sidebar-section-close 180ms var(--sidebar-motion-ease) forwards;
+}
+
+/* 4. Reduced motion: state changes still complete, the tweens don't play. 0.01ms ( not
+      none ) so transitionend / animationend still fire for anything waiting on them. */
+@media (prefers-reduced-motion: reduce) {
+	[data-slot='sidebar-gap'],
+	[data-slot='sidebar-container'],
+	[data-slot='sidebar-rail'],
+	[data-slot='sidebar'] [data-sidebar='menu-button'] > span,
+	[data-slot='sidebar'] [data-sidebar='menu-button'] > div:not(:first-child),
+	[data-slot='sidebar'] [data-slot='sidebar-group-label'] {
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	[data-slot='sidebar'] [data-slot='collapsible-content'][data-state='open'],
+	[data-slot='sidebar'] [data-slot='collapsible-content'][data-state='closed'] {
+		animation-duration: 0.01ms !important;
+	}
+}

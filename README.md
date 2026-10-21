@@ -21,5 +21,17 @@ The locale is resolved per request from the `PARAGLIDE_LOCALE` cookie, then `bas
 
 ## Playground
 
-`src/routes/(dev)/` holds the playground (`/hello`) and its mock API (`/api/hello`,
-fixed JSON, no database). Both return 404 outside `vite dev`.
+`src/routes/(dev)/` holds the playground and its mock API (`/api/hello`, fixed JSON, no
+database). Everything under it returns 404 outside `vite dev`.
+
+| Page | Shows |
+|---|---|
+| `/hello` | i18n, formatting, the mock API |
+| `/hello/save-bar` | `SaveBar` + `Draft` (`src/lib/components/save-bar`) |
+| `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
+
+## Dashboard shell
+
+`AppShell` takes the whole sidebar as one `NavGroup[]` config (`src/lib/layout/nav.ts`);
+breadcrumbs and the command palette are derived from it. Pass `open` from the
+`sidebar_state` cookie in a server load (see `src/routes/(dev)/hello/shell/+layout.server.ts`).
