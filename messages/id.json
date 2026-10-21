@@ -548,5 +548,12 @@
 	"demo_notif_bell": "Lonceng dan antrean",
 	"demo_notif_bell_desc": "Buka lonceng, tandai selesai dengan centangnya, atau tandai semua dibaca. Kosongkan antrean untuk melihat hadiahnya.",
 	"demo_notif_reset": "Isi ulang",
-	"demo_notif_replay": "Putar lagi"
+	"demo_notif_replay": "Putar lagi",
+	"error_title": "Ada yang tidak beres",
+	"error_404": "Halaman tidak ditemukan",
+	"error_404_desc": "Halaman yang Anda cari tidak ada atau sudah dipindahkan.",
+	"error_500": "Terjadi kesalahan",
+	"error_500_desc": "Coba lagi sebentar lagi. Jika terus terjadi, beri tahu kami.",
+	"error_home": "Ke beranda",
+	"error_back": "Kembali"
 }

@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "transactionId": "1792582389738102800-0",
+  "skills": {
+    "best-practices": {
+      "source": {
+        "type": "remote",
+        "source": "better-auth/skills/best-practices",
+        "commit_sha": "20c9e88a5c007461a703f1c213572b073196113e",
+        "skill_path": "better-auth/best-practices"
+      },
+      "sourceStatus": {
+        "type": "verified",
+        "artifact_id": "sha256:316c28f8b3e5960ec4b42526e6623aaa692626632831279ee80ef0821dbaf889",
+        "content_sha256": "316c28f8b3e5960ec4b42526e6623aaa692626632831279ee80ef0821dbaf889",
+        "installed_sha256": "309246c647278509c31ba9fc16eb46a29a8fb6d7e8acac48ee9e4ad71c11cf09",
+        "attestation_key_id": "skilld-production-2026-08"
+      },
+      "targets": [
+        {
+          "agent": "claude-code",
+          "mode": "copy"
+        }
+      ]
+    },
+    "prisma-cli": {
+      "source": {
+        "type": "remote",
+        "source": "prisma/skills/prisma-cli",
+        "commit_sha": "b491588a44bfeb9e12771d6893a8c657cf85f1e3",
+        "skill_path": "prisma-cli"
+      },
+      "sourceStatus": {
+        "type": "verified",
+        "artifact_id": "sha256:78b587404391694ac5fd40fd577b7cc0efaa2f038547a763156ac1b8b79eb389",
+        "content_sha256": "78b587404391694ac5fd40fd577b7cc0efaa2f038547a763156ac1b8b79eb389",
+        "installed_sha256": "fb6e0d536cb662f0131ed529403b4893c7884653c3ea771e8db5a04b15967d70",
+        "attestation_key_id": "skilld-production-2026-08"
+      },
+      "targets": [
+        {
+          "agent": "claude-code",
+          "mode": "copy"
+        }
+      ]
+    },
+    "prisma-client-api": {
+      "source": {
+        "type": "remote",
+        "source": "prisma/skills/prisma-client-api",
+        "commit_sha": "808913c1dac11dc425631c2454f7fcb2d5ade5ca",
+        "skill_path": "prisma-client-api"
+      },
+      "sourceStatus": {
+        "type": "verified",
+        "artifact_id": "sha256:9495943bee14b65169f6eddfc9c70f524a517a2abe56007566983e1cfadb68a0",
+        "content_sha256": "9495943bee14b65169f6eddfc9c70f524a517a2abe56007566983e1cfadb68a0",
+        "installed_sha256": "ddbda807778d56a2586f74c61c3aba2ea56324a0d3251055902c1e0fb84d3a06",
+        "attestation_key_id": "skilld-production-2026-08"
+      },
+      "targets": [
+        {
+          "agent": "claude-code",
+          "mode": "copy"
+        }
+      ]
+    },
+    "security": {
+      "source": {
+        "type": "remote",
+        "source": "better-auth/skills/security",
+        "commit_sha": "682a153593bb314004d22e7e0ea771f4c6c37d62",
+        "skill_path": "security"
+      },
+      "sourceStatus": {
+        "type": "verified",
+        "artifact_id": "sha256:2f90904d30312968d8bce75a8f31536fdcbf3126bd39ed4a75cf18c6edd745cd",
+        "content_sha256": "2f90904d30312968d8bce75a8f31536fdcbf3126bd39ed4a75cf18c6edd745cd",
+        "installed_sha256": "fd7d244a3400ebd76299f9acad074aca9977cfe917ade3157793f55ee8c5c950",
+        "attestation_key_id": "skilld-production-2026-08"
+      },
+      "targets": [
+        {
+          "agent": "claude-code",
+          "mode": "copy"
+        }
+      ]
+    },
+    "shadcn-svelte": {
+      "source": {
+        "type": "remote",
+        "source": "huntabyte/shadcn-svelte/shadcn-svelte",
+        "commit_sha": "99e2246b6e9d4a3e9d3b154f085a46a55d7c46a9",
+        "skill_path": "skills/shadcn-svelte"
+      },
+      "sourceStatus": {
+        "type": "verified",
+        "artifact_id": "sha256:5c1d42ce3e982902aad40c4d2bf1803c5c4b5e09bb1dc5daa392ecc668206347",
+        "content_sha256": "5c1d42ce3e982902aad40c4d2bf1803c5c4b5e09bb1dc5daa392ecc668206347",
+        "installed_sha256": "2d448194d85396b14fbaf37a02eb05fba3c3357098fcc330eb6a3d480ac2eb33",
+        "attestation_key_id": "skilld-production-2026-08"
+      },
+      "targets": [
+        {
+          "agent": "claude-code",
+          "mode": "copy"
+        }
+      ]
+    },
+    "supabase-postgres-best-practices": {
+      "source": {
+        "type": "remote",
+        "source": "supabase/agent-skills/supabase-postgres-best-practices",
+        "commit_sha": "32912161e2732c3e5001c6811a76c1f8308ed0da",
+        "skill_path": "skills/supabase-postgres-best-practices"
+      },
+      "sourceStatus": {
+        "type": "verified",
+        "artifact_id": "sha256:d9656ea8860785264680c7aaac1d50979f83530f24ab9434c79c32cca23c2d8d",
+        "content_sha256": "d9656ea8860785264680c7aaac1d50979f83530f24ab9434c79c32cca23c2d8d",
+        "installed_sha256": "579e3e76bc2fe962cf0dd5545fb911633b52ca42f4beb216b8d53b53b1b5ecd5",
+        "attestation_key_id": "skilld-production-2026-08"
+      },
+      "targets": [
+        {
+          "agent": "claude-code",
+          "mode": "copy"
+        }
+      ]
+    },
+    "svelte-code-writer": {
+      "source": {
+        "type": "remote",
+        "source": "sveltejs/ai-tools/svelte-code-writer",
+        "commit_sha": "f47bce873ee2dd090bb776bb4058f5d431c34380",
+        "skill_path": "tools/skills/svelte-code-writer"
+      },
+      "sourceStatus": {
+        "type": "verified",
+        "artifact_id": "sha256:3569e4ade8c764431fbea6abbe92eb132ca0cdd0b926c8b546fbbf926c1a3c9c",
+        "content_sha256": "3569e4ade8c764431fbea6abbe92eb132ca0cdd0b926c8b546fbbf926c1a3c9c",
+        "installed_sha256": "99b5bae0c91d821cb0b96d69b06c974843bd4e700bfaf1089ca5d7026cb45fba",
+        "attestation_key_id": "skilld-production-2026-08"
+      },
+      "targets": [
+        {
+          "agent": "claude-code",
+          "mode": "copy"
+        }
+      ]
+    },
+    "svelte-core-bestpractices": {
+      "source": {
+        "type": "remote",
+        "source": "sveltejs/ai-tools/svelte-core-bestpractices",
+        "commit_sha": "1a3ba88bba598c6734533c48e23cb5d37424b618",
+        "skill_path": "tools/skills/svelte-core-bestpractices"
+      },
+      "sourceStatus": {
+        "type": "verified",
+        "artifact_id": "sha256:e4f684896b57db2caf07aa377d82ff709311932a229c78e512e5e6602ae525a0",
+        "content_sha256": "e4f684896b57db2caf07aa377d82ff709311932a229c78e512e5e6602ae525a0",
+        "installed_sha256": "1e1569a586ab82698ec3f64067e265efb6a660d5ddb52461cd94968e668ef567",
+        "attestation_key_id": "skilld-production-2026-08"
+      },
+      "targets": [
+        {
+          "agent": "claude-code",
+          "mode": "copy"
+        }
+      ]
+    },
+    "vitest": {
+      "source": {
+        "type": "remote",
+        "source": "antfu/skills/vitest",
+        "commit_sha": "d02c48452d782231e4c32d7069cde731a4c7db42",
+        "skill_path": "skills/vitest"
+      },
+      "sourceStatus": {
+        "type": "verified",
+        "artifact_id": "sha256:1c1cdd75fd4750a518ac24ac9eb30491f6300a06e35d0e87eb961a8fb3c772a2",
+        "content_sha256": "1c1cdd75fd4750a518ac24ac9eb30491f6300a06e35d0e87eb961a8fb3c772a2",
+        "installed_sha256": "8ef7e79601183f7be1bcf9b4e3b803797b32e37a8471060f43bdc7b1320a7872",
+        "attestation_key_id": "skilld-production-2026-08"
+      },
+      "targets": [
+        {
+          "agent": "claude-code",
+          "mode": "copy"
+        }
+      ]
+    }
+  }
+}

@@ -15,9 +15,18 @@ bun run check
 | Default locale (`en`) and the locale list | `project.inlang/settings.json` → `baseLocale`, `locales` |
 | Translations | `messages/<locale>.json` |
 | Currency (`USD`), time zone (`UTC`) | `src/lib/config.ts` |
+| Error page (plain, every route) | `src/routes/+error.svelte`; `src/error.html` when even that can't render |
 
 The locale is resolved per request from the `PARAGLIDE_LOCALE` cookie, then `baseLocale`
 (see `strategy` in `vite.config.ts`). Formatting helpers live in `src/lib/format.ts`.
+
+## Agent skills
+
+`CLAUDE.md` is the agent's brief: the stack, the rules that override a skill's defaults, the
+checks. Skills live in `.claude/skills/` ( vendor skills via [skilld](https://skilld.dev),
+pinned in `.skills/skilld-lock.yaml` ) — design work goes through `/impeccable`. A new project
+runs `/impeccable init` once to write its `PRODUCT.md`. Refresh with `npx skilld update` and
+`npx impeccable update` ( on Windows, stop the dev server first ).
 
 ## Playground
 

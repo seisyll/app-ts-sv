@@ -548,5 +548,12 @@
 	"demo_notif_bell": "Bell and queue",
 	"demo_notif_bell_desc": "Open the bell, mark items done with their check, or mark all read. Empty the queue to see the reward.",
 	"demo_notif_reset": "Refill",
-	"demo_notif_replay": "Play again"
+	"demo_notif_replay": "Play again",
+	"error_title": "Something's not right",
+	"error_404": "Page not found",
+	"error_404_desc": "The page you're looking for doesn't exist or has moved.",
+	"error_500": "Something went wrong",
+	"error_500_desc": "Try again in a moment. If it keeps happening, let us know.",
+	"error_home": "Go home",
+	"error_back": "Go back"
 }

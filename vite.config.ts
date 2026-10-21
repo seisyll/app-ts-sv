@@ -52,6 +52,11 @@ const config : UserConfig = {
 			strategy: [ 'cookie', 'baseLocale' ]
 		} )
 	],
+	// Not source: agent skills ( Windows can't rename a folder the watcher holds open, which
+	// breaks `skilld install` ) and uploaded media ( every upload would wake the watcher ).
+	server: {
+		watch: { ignored: [ '**/.skills/**', '**/.claude/**', '**/uploads/**' ] }
+	},
 	optimizeDeps: {
 		// Plain-JS deps declared up front, so the first visit to a page that uses them
 		// doesn't trigger a re-optimize + reload that swallows the click. Never list Svelte

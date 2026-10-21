@@ -36,3 +36,6 @@ __screenshots__
 
 # Uploads ( UPLOAD_ROOT )
 /uploads
+
+# Impeccable engine: the launcher downloads ( and checksums ) the right one per platform
+/.claude/skills/impeccable/scripts/bin/
