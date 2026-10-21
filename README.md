@@ -294,6 +294,9 @@ from one tenant doesn't exist in another; the same email can sign up separately 
 
 Admins list, add, re-role, ban, sign out and delete the tenant's users. Reads go through
 the tenant-scoped `db` (`listUsers` in `src/lib/server/users.ts`); changes go through
+- **Demo admin:** the seed also creates `DEMO_EMAIL` / `DEMO_PASSWORD` (`.env.example` ships
+  a known pair) for local work and coding agents' browser checks — never when
+  `NODE_ENV=production`. Empty either one to skip it.
 better-auth's admin API, which hashes the password, ends a banned user's sessions and checks
 the caller's permission again. Your own row has no actions, and the endpoints refuse them
 (`400`), so a tenant can't lock out its last admin.

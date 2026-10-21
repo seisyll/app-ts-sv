@@ -34,6 +34,8 @@ module; `DESIGN.md` holds the visual rules. Read the section for what you're tou
 
 ## Checks
 
+Browser checks sign in as the seeded demo admin ( `DEMO_EMAIL` / `DEMO_PASSWORD` in `.env` ).
+
 ```bash
 bun run check        # svelte-check
 bun run test         # server ( node + PGlite ) and client ( Chromium ) projects
