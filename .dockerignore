@@ -1,0 +1,16 @@
+# What the image build never needs ( and must never see: .env holds secrets ).
+.git
+.github
+.claude
+.skills
+node_modules
+.svelte-kit
+build
+coverage
+uploads
+deploy
+.env
+.env.*
+!.env.example
+**/*.test.ts
+graphify-out

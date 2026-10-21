@@ -1,0 +1,114 @@
+# ―― » Production: the app behind Caddy, with Postgres, Redis and daily backups. Everything
+#      runs from this folder with its two env files — .env for the stack, app.env for the
+#      app ( first-run.sh writes both ). Guide: deploy/README.md.
+#
+#        docker compose up -d          start, or apply a new image ( migrations run first )
+#        docker compose logs -f app    the app's log
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+    volumes:
+      # Postgres 18 images keep data under a versioned subfolder of this path.
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: [ CMD-SHELL, pg_isready -U postgres -d app ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  # The sign-in throttle's counters: nothing worth keeping, so nothing on disk.
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: [ redis-server, --save, '', --appendonly, 'no' ]
+    healthcheck:
+      test: [ CMD, redis-cli, ping ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  # One shot, before every start of the app: migrations, app_rls's password, the tenant and
+  # first admin ( bun run db:deploy ). The only container with the owner's password.
+  migrate:
+    image: ${IMAGE:?set in .env}
+    env_file: app.env
+    environment:
+      DATABASE_OWNER_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/app
+      APP_RLS_PASSWORD: ${APP_RLS_PASSWORD:?set in .env}
+    command: [ bun, run, db:deploy ]
+    restart: 'no'
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    image: ${IMAGE}
+    restart: unless-stopped
+    env_file: app.env
+    environment:
+      DATABASE_URL: postgresql://app_rls:${APP_RLS_PASSWORD}@db:5432/app
+      REDIS_URL: redis://redis:6379
+      UPLOAD_ROOT: /app/uploads
+      # adapter-node behind Caddy: the visitor's address is the one Caddy writes into
+      # X-Forwarded-For ( never what the client sent ), and the URL is the one the browser
+      # used — any workspace host, in shared tenancy.
+      ADDRESS_HEADER: X-Forwarded-For
+      XFF_DEPTH: '1'
+      PROTOCOL_HEADER: X-Forwarded-Proto
+      HOST_HEADER: X-Forwarded-Host
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+    environment:
+      DOMAIN: ${DOMAIN:?set in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+
+  # Once a day: the database ( and its roles ) and the uploads, into ./backups.
+  backup:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      PGHOST: db
+      PGUSER: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: app
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    entrypoint: [ sh, /backup.sh ]
+    volumes:
+      - ./backup.sh:/backup.sh:ro
+      - ./backups:/backups
+      - uploads:/uploads:ro
+    # After migrate: the first dump, taken at start, holds the tables.
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  db-data:
+  uploads:
+  caddy-data:
+  caddy-config:

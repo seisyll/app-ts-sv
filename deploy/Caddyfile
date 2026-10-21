@@ -1,0 +1,43 @@
+# ―― » HTTPS in front of the app ( deploy/docker-compose.yml ). The main domain gets its
+#      certificate at startup. Any other host gets one on demand, the first time it is
+#      visited — but only once the app says it is an active workspace ( /internal/tls-ask:
+#      shared tenancy's <slug>.DOMAIN and custom domains ), so nobody can point DNS here and
+#      make Caddy fetch certificates for names that aren't ours.
+
+{
+	on_demand_tls {
+		ask http://app:3000/internal/tls-ask
+	}
+}
+
+(app) {
+	# Probes for other software's weak spots: answered with a closed connection, not a page.
+	@scanners path *.php /wp-* /.env* /.git* /xmlrpc* /cgi-bin/* /phpmyadmin*
+	abort @scanners
+	# The ask endpoint is for Caddy only.
+	abort /internal/*
+
+	encode zstd gzip
+
+	reverse_proxy app:3000 {
+		# The visitor's address, overwritten — a client-sent X-Forwarded-For is never
+		# trusted ( the app reads this header for the sign-in throttle ).
+		header_up X-Forwarded-For {client_ip}
+		# Bun recycles idle keep-alive connections, and Caddy reusing one answered with 502s
+		# ( seen in billing-app ): a fresh connection per request.
+		transport http {
+			keepalive off
+		}
+	}
+}
+
+{$DOMAIN} {
+	import app
+}
+
+https:// {
+	tls {
+		on_demand
+	}
+	import app
+}

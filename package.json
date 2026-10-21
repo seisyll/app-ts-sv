@@ -20,6 +20,7 @@
 		"db:migrate": "prisma migrate deploy",
 		"db:provision": "bun scripts/db-provision.ts",
 		"db:seed": "bun prisma/seed.ts",
+		"db:deploy": "prisma migrate deploy && bun scripts/db-provision.ts && bun prisma/seed.ts",
 		"db:setup": "bun run db:up && bun run db:migrate && bun run db:provision && bun run db:seed",
 		"db:reset": "docker compose -f docker-compose.dev.yml down -v && bun run db:setup",
 		"tenant:modules": "bun scripts/tenant-modules.ts",
@@ -61,7 +62,6 @@
 		"maska": "^3.2.0",
 		"mode-watcher": "^1.1.0",
 		"playwright": "1.61.1",
-		"prisma": "^7.9.1",
 		"shadcn-svelte": "^1.7.0",
 		"svelte": "^5.56.8",
 		"svelte-check": "^4.7.5",
@@ -93,6 +93,7 @@
 		"ioredis": "^6.0.0",
 		"nodemailer": "^10.1.7",
 		"pg": "^8.22.0",
+		"prisma": "^7.9.1",
 		"sharp": "^0.35.3",
 		"svelte-tiptap": "^3.0.1",
 		"write-excel-file": "^4.1.1"

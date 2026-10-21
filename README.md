@@ -690,6 +690,24 @@ the caller's permission again. Your own row has no actions, and the endpoints re
   `{ where, orderBy, skip, take }`. The `spec` allow-lists the search, facet and sort fields.
   Date ranges are calendar days in `APP.timeZone`.
 
+## Deploy
+
+`deploy/` is a production stack for one server — the app behind Caddy (automatic HTTPS,
+on demand for workspace hosts), Postgres, Redis, migrations before every start, and daily
+backups — fed by the image `.github/workflows/image.yml` pushes to GHCR. Its README is the
+guide: `DOMAIN=… IMAGE=… ADMIN_EMAIL=… deploy/first-run.sh` on a fresh server.
+
+- **Image** (`Dockerfile`): built for one client config (`--build-arg CLIENT=…`), runs as
+  `bun`, no secrets at build time; it also carries what `bun run db:deploy` needs
+  (migrations, `app_rls`'s password, the seed) — which is why `prisma` is a dependency.
+- **`/health`**: 200 while the database answers, 503 when it doesn't (the image's
+  `HEALTHCHECK`); Redis is reported, never fatal.
+- **`/internal/tls-ask`**: Caddy's question before an on-demand certificate — yes only for
+  an active workspace's subdomain or custom domain, in shared tenancy. The Caddyfile keeps
+  `/internal/*` from the public side.
+- **Behind the proxy:** adapter-node reads the visitor's address from `X-Forwarded-For`
+  (which Caddy overwrites) and the URL from `X-Forwarded-Proto` / `-Host`.
+
 ## Testing
 
 ```bash

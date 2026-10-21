@@ -39,3 +39,7 @@ __screenshots__
 
 # Impeccable engine: the launcher downloads ( and checksums ) the right one per platform
 /.claude/skills/impeccable/scripts/bin/
+
+# Deploy ( deploy/README.md )
+deploy/app.env
+deploy/backups
