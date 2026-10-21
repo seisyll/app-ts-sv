@@ -59,6 +59,15 @@ certificate. A new workspace and its admin, from the server:
 docker compose run --rm -e TENANT_SLUG=acme -e TENANT_NAME="Acme" -e ADMIN_EMAIL=owner@acme.test -e ADMIN_PASSWORD=… migrate
 ```
 
+## Per-workspace settings
+
+The operator's scripts run through `migrate`, the container with the owner's password:
+
+```bash
+docker compose run --rm migrate bun run tenant:quota acme 20G      # or unlimited, default
+docker compose run --rm migrate bun run tenant:modules acme -mail
+```
+
 ## Upgrading
 
 ```bash

@@ -10,6 +10,9 @@ model Tenant {
   // Modules this workspace has switched off, of those the build ships ( config/modules.ts ).
   // Empty: everything the build ships. Set with: bun run tenant:modules
   modulesOff String[]    @default([]) @map("modules_off")
+  // Bytes this workspace may store in its media library. Null: the deployment's STORAGE_QUOTA;
+  // 0: no limit. Set with: bun run tenant:quota
+  storageQuota BigInt?   @map("storage_quota")
   createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz
 
   users         User[]

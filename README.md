@@ -248,8 +248,13 @@ fundraiser app's storage, grid and lightbox, with billing-app's rules for what g
 - **Components** (`src/lib/components/media`): `MediaField` (value = media id; `name` posts it
   with a form), `MediaPicker`, `MediaGrid`, `MediaLightbox` (zoom, pan, pinch, swipe, details,
   delete), `MediaDropzone`, `uploadMedia()`, `MediaFeed`.
-- **Not built:** per-workspace quotas (the fundraiser app's `StorageUsage` is the model),
-  more image sizes, streaming uploads.
+- **Storage quota** (`src/lib/server/storage.ts`): each workspace may store up to its own
+  limit — `bun run tenant:quota <slug> 20G` (or `unlimited`, `default`) — else the
+  deployment's `STORAGE_QUOTA` (e.g. `5G`), else no limit. Usage is what the library's files
+  became on disk (thumbnails aside), summed per workspace; an upload that wouldn't fit is
+  refused (413) by name, and the media page shows how much is used.
+- **Not built:** more image sizes, streaming uploads, a strict quota under racing uploads (each
+  is checked before it's written, not locked).
 - **Detach:** turn the `media` module off. To delete it for good: delete `src/lib/components/media`, `src/lib/server/media.ts`, `src/lib/media.ts`,
   `/app/media`, `/api/media`, `/media`, the migration and `sharp`.
 

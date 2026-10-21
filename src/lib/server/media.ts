@@ -9,6 +9,7 @@ import { IMAGE_EDGE, MAX_BYTES, mediaUrl, THUMB_EDGE, type MediaKind, type Media
 import { m } from '$lib/paraglide/messages'
 import { currentTenant, db, tenantTransaction } from '$lib/server/db'
 import { listArgs, type ListSpec } from '$lib/server/list'
+import { ensureRoom } from '$lib/server/storage'
 
 /* ―― » Uploads on disk ( from the fundraiser app's /api/upload, with billing-app's ADR 0011
         rules ). Files live at UPLOAD_ROOT/<tenant>/<yyyy>/<mm>/<id>[-thumb].<ext>:
@@ -113,6 +114,9 @@ export async function saveMedia( file : File, uploaderId : string ) : Promise<Me
 	const stored = image?.full ?? bytes
 	const mime = image ? 'image/webp' : sniffed.mime
 	const { id: tenantId } = await currentTenant()
+
+	// Measured as stored: a photo that shrank to WebP counts as what it became.
+	await ensureRoom( file.name, stored.byteLength )
 
 	const media = await tenantTransaction( async( tx ) => {
 		const row = await tx.media.create( {

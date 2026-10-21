@@ -1,3 +1,4 @@
+import { parseBytes } from '$lib/bytes'
 import { log } from '$lib/server/log'
 
 /* ―― » The environment, checked once when the server starts ( hooks.server.ts `init`, from
@@ -19,6 +20,7 @@ export function envProblems( env : Record<string, string | undefined>, productio
 	need( !!env.DATABASE_URL, 'DATABASE_URL: required — the app_rls connection ( .env.example )' )
 	need( ( env.BETTER_AUTH_SECRET ?? '' ).length >= 32, 'BETTER_AUTH_SECRET: at least 32 characters ( openssl rand -base64 32 )' )
 	need( !env.REDIS_URL || /^rediss?:\/\//.test( env.REDIS_URL ), 'REDIS_URL: a redis:// or rediss:// URL, or unset' )
+	need( !env.STORAGE_QUOTA || parseBytes( env.STORAGE_QUOTA ) !== null, `STORAGE_QUOTA: a size such as 500M or 5G, not "${ env.STORAGE_QUOTA }"` )
 
 	for ( const [ id, secret ] of [ [ 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET' ], [ 'APPLE_CLIENT_ID', 'APPLE_CLIENT_SECRET' ] ] )
 		need( !env[ id ] === !env[ secret ], `${ id } / ${ secret }: set both, or neither — one alone leaves the provider off` )

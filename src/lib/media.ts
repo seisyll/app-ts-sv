@@ -45,13 +45,8 @@ export type MediaRow = {
 
 export const mediaUrl = ( id : string, variant ?: 'thumb' ) => `/media/${ id }${ variant ? `/${ variant }` : '' }`
 
-// "1.4 MB". Binary units, one decimal past bytes.
-export function formatBytes( bytes : number ) : string {
-	const units = [ 'B', 'KB', 'MB', 'GB' ]
-	const step = bytes > 0 ? Math.min( units.length - 1, Math.floor( Math.log( bytes ) / Math.log( 1024 ) ) ) : 0
-
-	return `${ ( bytes / 1024 ** step ).toFixed( step ? 1 : 0 ) } ${ units[ step ] }`
-}
+// "1.4 MB" ( $lib/bytes, where scripts can reach it ).
+export { formatBytes } from './bytes'
 
 /* ―― » In the browser, before an upload: shrink what is too big to send, and re-encode
         JPEGs so a phone photo's EXIF ( GPS, camera serial ) never leaves the device. The

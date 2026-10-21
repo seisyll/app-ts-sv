@@ -39,7 +39,11 @@ COPY --from=build /app/build ./build
 COPY --from=build /app/src/lib/server/db/generated ./src/lib/server/db/generated
 COPY package.json prisma.config.ts ./
 COPY prisma ./prisma
-COPY scripts/db-provision.ts ./scripts/
+# The operator's scripts, run through the migrate service ( it has the owner's password ):
+# docker compose run --rm migrate bun run tenant:quota acme 20G
+COPY scripts/db-provision.ts scripts/tenant-modules.ts scripts/tenant-quota.ts ./scripts/
+COPY config/modules.ts ./config/
+COPY src/lib/bytes.ts ./src/lib/
 # Owned by the runtime user, so a named volume mounted here starts out writable.
 RUN mkdir -p uploads && chown bun:bun uploads
 USER bun

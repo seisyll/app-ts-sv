@@ -1,6 +1,7 @@
 import { hasPermission } from '$lib/permissions'
 import { requirePermission } from '$lib/server/guards'
 import { listMedia } from '$lib/server/media'
+import { storageUsage } from '$lib/server/storage'
 import type { PageServerLoad } from './$types'
 
 // The library. The first page of images comes with the server render; documents load when
@@ -10,6 +11,7 @@ export const load : PageServerLoad = async( event ) => {
 
 	return {
 		images    : await listMedia( { skip: 0, take: 30, search: '', searchBy: 'all', filters: { kind: [ 'image' ] } } ),
+		storage   : await storageUsage(),
 		canUpload : hasPermission( user.role, { media: [ 'create' ] } ),
 		canDelete : hasPermission( user.role, { media: [ 'delete' ] } ),
 		canPublish: hasPermission( user.role, { media: [ 'publish' ] } )

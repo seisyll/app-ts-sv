@@ -1017,5 +1017,9 @@
 	"jobs_never": "Belum pernah",
 	"jobs_running": "Berjalan",
 	"jobs_ok": "{count} dihapus",
-	"jobs_failed": "Gagal"
+	"jobs_failed": "Gagal",
+	"media_storage": "Penyimpanan terpakai",
+	"media_storage_used": "{used} tersimpan",
+	"media_storage_of": "{used} dari {quota} terpakai",
+	"media_quota_full": "Tidak ada ruang untuk {name}: ruang kerja ini sudah memakai {used} dari {quota}. Hapus berkas untuk memberi ruang."
 }

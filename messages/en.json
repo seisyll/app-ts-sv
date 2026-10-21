@@ -1017,5 +1017,9 @@
 	"jobs_never": "Not run yet",
 	"jobs_running": "Running",
 	"jobs_ok": "{count} removed",
-	"jobs_failed": "Failed"
+	"jobs_failed": "Failed",
+	"media_storage": "Storage used",
+	"media_storage_used": "{used} stored",
+	"media_storage_of": "{used} of {quota} used",
+	"media_quota_full": "No room for {name}: this workspace has used {used} of its {quota}. Delete files to make room."
 }

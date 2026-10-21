@@ -7,11 +7,12 @@
 	import { MediaDropzone, MediaFeed, MediaGrid, MediaLightbox, uploadMedia, type MediaView } from '$lib/components/media'
 	import { Button } from '$lib/components/ui/button'
 	import * as InputGroup from '$lib/components/ui/input-group'
+	import { Progress } from '$lib/components/ui/progress'
 	import { Spinner } from '$lib/components/ui/spinner'
 	import * as ToggleGroup from '$lib/components/ui/toggle-group'
 	import { debounce } from '$lib/debounce'
 	import { errorMessage, http } from '$lib/http'
-	import { ACCEPT, type MediaKind, type MediaRow } from '$lib/media'
+	import { ACCEPT, formatBytes, type MediaKind, type MediaRow } from '$lib/media'
 	import { m } from '$lib/paraglide/messages'
 
 	let { data } = $props()
@@ -24,6 +25,11 @@
 	let viewing = $state( false )
 	let index = $state( 0 )
 	let uploading = $state( false )
+	// What the workspace stores, kept current as files come and go ( the server checks the
+	// limit itself on every upload ).
+	// svelte-ignore state_referenced_locally
+	let used = $state( data.storage.used )
+	const full = $derived( data.storage.quota !== null && used >= data.storage.quota )
 
 	const feed = $derived( feeds[ kind ] )
 
@@ -85,12 +91,14 @@
 		uploading = false
 		feeds.image.add( rows )
 		feeds.document.add( rows )
+		used += rows.reduce( ( sum, row ) => sum + row.size, 0 )
 	}
 
 	async function remove( item : MediaRow ) : Promise<boolean> {
 		try {
 			await http.delete( `/api/media/${ item.id }` )
 			feeds[ item.kind ].remove( item.id )
+			used = Math.max( 0, used - item.size )
 			toast.success( m.media_deleted() )
 
 			return true
@@ -121,9 +129,19 @@
 </svelte:head>
 
 <div class="flex flex-col gap-6">
-	<div class="flex flex-col gap-1">
-		<h1 class="text-xl font-semibold tracking-tight">{m.media_title()}</h1>
-		<p class="text-sm text-muted-foreground">{m.media_desc()}</p>
+	<div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+		<div class="flex flex-col gap-1">
+			<h1 class="text-xl font-semibold tracking-tight">{m.media_title()}</h1>
+			<p class="text-sm text-muted-foreground">{m.media_desc()}</p>
+		</div>
+		<div class="flex w-full flex-col gap-1.5 sm:w-56">
+			<span class={[ 'text-xs tabular-nums', full ? 'text-destructive' : 'text-muted-foreground' ]}>
+				{data.storage.quota === null ? m.media_storage_used( { used: formatBytes( used ) } ) : m.media_storage_of( { used: formatBytes( used ), quota: formatBytes( data.storage.quota ) } )}
+			</span>
+			{#if data.storage.quota !== null}
+				<Progress value={Math.min( used, data.storage.quota )} max={data.storage.quota} aria-label={m.media_storage()} />
+			{/if}
+		</div>
 	</div>
 
 	{#if data.canUpload}
