@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { NetworkIcon } from '$lib/components/social'
 	import { Separator } from '$lib/components/ui/separator'
 	import type { Site } from '../contract'
 
@@ -14,6 +15,20 @@
 					{site.name}
 				</a>
 				<p class="text-sm text-muted-foreground">{site.tagline}</p>
+				{#each site.contact as link ( link.href )}
+					<a href={link.href} class="text-sm text-muted-foreground transition-colors hover:text-foreground">{link.label}</a>
+				{/each}
+				{#if site.social.length}
+					<ul class="mt-2 flex flex-wrap gap-1">
+						{#each site.social as link ( link.network )}
+							<li>
+								<a href={link.href} target="_blank" rel="noopener" aria-label={link.label} title={link.label} class="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+									<NetworkIcon network={link.network} />
+								</a>
+							</li>
+						{/each}
+					</ul>
+				{/if}
 			</div>
 			<div class="flex gap-16">
 				{#each site.columns as column ( column.title )}

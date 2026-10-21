@@ -56,7 +56,7 @@ it.
 | `/hello/editor` | `RichEditor` with images and template variables; the server's validation and its HTML and email renders |
 | `/hello/notifications` | `NotificationBell`, `NotificationList` and the all-clear moment against a mock inbox |
 | `/hello/mail` | The dev outbox: every email the app sent, as HTML and text, plus a sample of each email |
-| `/hello/site` | Every public-site theme, switchable, with sign-up and a logo on or off |
+| `/hello/site` | Every public-site theme, switchable, with sign-up, a logo and a workspace's footer details on or off |
 
 The palette button in the playground's header tries every palette, style and radius on every
 page here (it only paints; reload to go back).
@@ -152,10 +152,24 @@ nothing else. A build without the `site` module has no public site at all.
   `src/lib/themes/themes.svelte.test.ts` (contract tests) and `/hello/site`.
   `bun run check` fails if it breaks the contract.
 - **No database:** the public site works before `db:setup`, and on a shared deployment's
-  bare domain. With one, it shows the workspace's logo (see Logo and favicon).
+  bare domain. With one, it shows the workspace's logo (see Logo and favicon) and what the
+  workspace set in **Settings → Public site** (below).
+- **The workspace's own words** (`/app/settings/site`, permission `site: manage`):
+  - **Pages** — Privacy policy, Terms of service and About, written with the rich-text
+    editor and served at `/privacy`, `/terms`, `/about`. One copy per language; a visitor
+    whose language has none reads another. Saving an empty page takes it down. A page's
+    images go public when it is saved. Published pages join the footer, and Terms and
+    Privacy appear under the sign-up button. Add one with a key in `SITE_PAGES`
+    (`src/lib/site.ts`) and its title message. Pages need the `editor` module.
+  - **Footer** — a tagline (blank keeps `site_tagline`), contact email and phone, and
+    links to X, Facebook, Instagram, LinkedIn, YouTube, WhatsApp and GitHub (`https://`
+    only; blank ones are hidden). A theme's Footer gets them as `site.contact` and
+    `site.social`, with `NetworkIcon` for the marks.
 - **Detach:** turn the `site` module off in the client config. To delete it for good,
-  remove `src/routes/(site)`, `src/lib/themes`, `/hello/site`, `$theme` in
-  `svelte.config.js` and the `site_*` messages. The `@fontsource-variable` packages
+  remove `src/routes/(site)`, `src/routes/app/settings/site`, `src/lib/themes`,
+  `src/lib/site.ts`, `src/lib/server/site.ts`, `src/params/site_page.ts`, `/hello/site`,
+  `$theme` in `svelte.config.js`, the `site_*` messages, and the `site_settings` and
+  `site_pages` tables ( `prisma/schema/Site.prisma` ). The `@fontsource-variable` packages
   other than Inter are aurora's.
 
 ## Appearance
@@ -265,7 +279,7 @@ const mail = renderEmailHTML( body, { baseUrl, values: { customer_name: 'Ada' } 
   A recipient has no session, so an image in an email must be a **public** file (see Media).
 - **Not built:** Markdown output, collaborative editing, tables, alt-text editing, keyboard
   resizing of images.
-- **Detach:** turn the `editor` module off (mail needs it). To delete it for good: delete `src/lib/editor`, `src/lib/components/editor`, `/hello/editor` and the
+- **Detach:** turn the `editor` module off (mail needs it; the public site's pages go with it). To delete it for good: delete `src/lib/editor`, `src/lib/components/editor`, `/hello/editor` and the
   `@tiptap/*` and `svelte-tiptap` packages.
 
 ## Notifications

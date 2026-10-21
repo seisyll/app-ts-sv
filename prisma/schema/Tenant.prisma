@@ -29,6 +29,8 @@ model Tenant {
   mailTemplates MailTemplate[]
   auditLogs     AuditLog[]
   signIns       SignInEvent[]
+  siteSetting   SiteSetting?
+  sitePages     SitePage[]
 
   @@map("tenants")
 }

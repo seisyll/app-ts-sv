@@ -1,0 +1,34 @@
+// What a workspace says on its public site ( src/lib/server/site.ts ). One row per tenant;
+// no row means the built-in tagline and no contact details or social links.
+model SiteSetting {
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId  String   @unique @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  // Blank fields are stored as null.
+  tagline   String?
+  email     String?
+  phone     String?
+  // { x: 'https://…', github: 'https://…' }, only the networks that are set ( SOCIAL_NETWORKS ).
+  links     Json     @default("{}") @db.JsonB
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("site_settings")
+}
+
+// One public page ( SITE_PAGES: privacy, terms, about ) in one language. No row: not
+// published in that language; a visitor gets another language's, or a "not yet" note.
+model SitePage {
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId  String   @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  key       String
+  locale    String
+  // Rich text ( richTextSchema ).
+  body      Json     @db.JsonB
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key, locale])
+  @@map("site_pages")
+}

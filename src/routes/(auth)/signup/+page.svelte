@@ -88,6 +88,12 @@
 						{/if}
 						{m.auth_signup_submit()}
 					</Button>
+					{#if data.legal.length}
+						<p class="text-center text-xs text-balance text-muted-foreground">
+							{m.auth_agree()}
+							{#each data.legal as page, index ( page.href )}{#if index}{' '}{m.auth_and()}{' '}{/if}<a href={page.href} target="_blank" class="text-foreground underline underline-offset-4">{page.label}</a>{/each}.
+						</p>
+					{/if}
 				</Field.Group>
 			</form>
 			<SocialButtons providers={data.social} />

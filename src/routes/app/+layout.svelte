@@ -4,6 +4,7 @@
 	import ImagesIcon from '@lucide/svelte/icons/images'
 	import MailIcon from '@lucide/svelte/icons/mail'
 	import PaletteIcon from '@lucide/svelte/icons/palette'
+	import GlobeIcon from '@lucide/svelte/icons/globe'
 	import SettingsIcon from '@lucide/svelte/icons/settings'
 	import ShieldIcon from '@lucide/svelte/icons/shield'
 	import ShieldCheckIcon from '@lucide/svelte/icons/shield-check'
@@ -44,6 +45,7 @@
 				{ title: m.mail_title(), href: '/app/settings/mail', icon: MailIcon, module: 'mail', permission: { settings: [ 'update' ] }, keywords: [ 'email', 'smtp', 'templates' ] },
 				{ title: m.audit_title(), href: '/app/settings/audit', icon: ScrollTextIcon, module: 'audit', permission: { audit: [ 'list' ] }, keywords: [ 'log', 'history', 'activity' ] },
 				{ title: m.signins_title(), href: '/app/settings/sign-ins', icon: LogInIcon, module: 'signins', permission: { signin: [ 'list' ] }, keywords: [ 'login', 'log', 'failed', 'attempts' ] },
+				{ title: m.site_settings_title(), href: '/app/settings/site', icon: GlobeIcon, module: 'site', permission: { site: [ 'manage' ] }, keywords: [ 'website', 'privacy', 'terms', 'about', 'footer', 'social' ] },
 				{ title: m.captcha_nav(), href: '/app/settings/security', icon: ShieldCheckIcon, module: 'captcha', permission: { settings: [ 'update' ] }, keywords: [ 'captcha', 'turnstile', 'recaptcha', 'hcaptcha', 'sign-in' ] },
 				{ title: m.app_nav_settings(), href: '/app/settings', icon: SettingsIcon, permission: { settings: [ 'update' ] } }
 			]

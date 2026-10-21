@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { NetworkIcon } from '$lib/components/social'
 	import type { Site } from '../contract'
 	import Mark from './Mark.svelte'
 
@@ -14,6 +15,24 @@
 					<span class="font-serif text-[23px] font-medium tracking-[0.02em] text-foreground">{site.name}</span>
 				</a>
 				<p class="mt-4 max-w-65 text-[13.5px] leading-[1.66] text-muted-foreground">{site.tagline}</p>
+				{#if site.contact.length}
+					<ul class="mt-4 flex flex-col gap-1.5">
+						{#each site.contact as link ( link.href )}
+							<li><a href={link.href} class="font-mono text-[12px] tracking-[0.02em] text-muted-foreground transition-colors duration-200 hover:text-foreground">{link.label}</a></li>
+						{/each}
+					</ul>
+				{/if}
+				{#if site.social.length}
+					<ul class="mt-5 flex flex-wrap gap-2">
+						{#each site.social as link ( link.network )}
+							<li>
+								<a href={link.href} target="_blank" rel="noopener" aria-label={link.label} title={link.label} class="flex size-8.5 items-center justify-center rounded-full border border-white/7 text-muted-foreground transition-colors duration-200 hover:border-white/15 hover:text-foreground">
+									<NetworkIcon network={link.network} class="size-3.75" />
+								</a>
+							</li>
+						{/each}
+					</ul>
+				{/if}
 			</div>
 
 			{#each site.columns as column ( column.title )}

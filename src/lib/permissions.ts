@@ -14,7 +14,9 @@ export const statements = {
 	// The audit trail: read only — nobody edits it, not even an admin.
 	audit   : [ 'list' ],
 	// The sign-in log: everyone's attempts ( each person sees their own regardless ).
-	signin  : [ 'list' ]
+	signin  : [ 'list' ],
+	// The public site's pages, footer details and social links.
+	site    : [ 'manage' ]
 } as const
 
 export const ac = createAccessControl( statements )
@@ -29,7 +31,8 @@ export const admin = ac.newRole( {
 	settings: [ 'read', 'update' ],
 	media   : [ 'list', 'create', 'delete', 'publish' ],
 	audit   : [ 'list' ],
-	signin  : [ 'list' ]
+	signin  : [ 'list' ],
+	site    : [ 'manage' ]
 } )
 
 export const roles = { admin, member } as const

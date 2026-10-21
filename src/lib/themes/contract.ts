@@ -1,4 +1,5 @@
 import type { Component } from 'svelte'
+import type { SocialLink } from '$lib/site'
 
 /* ―― » The public-site theme contract ( from the fundraiser app's themes/contract.ts ).
         A theme is a folder here whose index.ts exports `id`, `Header`, `Footer` and `Home`
@@ -23,6 +24,9 @@ export type Site = {
 	columns : { title : string, links : SiteLink[] }[]
 	tagline : string
 	legal   : string
+	// The workspace's own details ( Settings → Public site ); empty when none are set.
+	social  : SocialLink[]
+	contact : SiteLink[]
 }
 
 // Titles may hold "\n" for a line break; `accent` is the emphasised end of a title.

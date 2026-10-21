@@ -24,6 +24,9 @@ export const AUDIT_ACTIONS = {
 	'mail.template'         : m.audit_mail_template,
 	'mail.template-reset'   : m.audit_mail_template_reset,
 	'captcha.settings'      : m.audit_captcha_settings,
+	'site.settings'         : m.audit_site_settings,
+	'site.page'             : m.audit_site_page,
+	'site.page-remove'      : m.audit_site_page_remove,
 	'account.profile'       : m.audit_account_profile,
 	'account.password'      : m.audit_account_password,
 	'account.password-reset': m.audit_account_password_reset,
@@ -58,6 +61,7 @@ export const auditResourceLabel = ( resource : string ) : string => ( {
 	appearance: m.audit_resource_appearance(),
 	mail      : m.audit_resource_mail(),
 	captcha   : m.audit_resource_captcha(),
+	site      : m.audit_resource_site(),
 	account   : m.audit_resource_account()
 } as Record<string, string> )[ resource ] ?? resource
 
@@ -84,7 +88,10 @@ export const auditFieldLabel = ( field : string ) : string => ( {
 	secret           : m.captcha_secret(),
 	mode             : m.captcha_mode(),
 	triggerAfter     : m.captcha_trigger(),
-	public           : m.media_field_visibility()
+	public           : m.media_field_visibility(),
+	tagline          : m.site_tagline_label(),
+	email            : m.auth_email(),
+	phone            : m.site_phone()
 } as Record<string, string> )[ field ] ?? field
 
 const shown = ( value : unknown ) => ( value === null || value === undefined || value === '' ? '—' : typeof value === 'boolean' ? ( value ? m.app_on() : m.app_off() ) : String( value ) )

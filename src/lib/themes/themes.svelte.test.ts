@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { page } from 'vitest/browser'
 import { render } from 'vitest-browser-svelte'
 import * as aurora from './aurora'
+import type { PublicSite } from '$lib/site'
 import { homeContent, siteChrome } from './content'
 import type { ThemeModule } from './contract'
 import * as plain from './plain'
@@ -66,5 +67,19 @@ describe.each( themes.map( ( theme ) => [ theme.id, theme ] as const ) )( 'theme
 		await expect.element( page.getByText( /Everything a web app needs/ ) ).toBeInTheDocument()
 		await expect.element( page.getByRole( 'link', { name: 'Get started' } ) ).toHaveAttribute( 'href', '/signup' )
 		await expect.element( page.getByText( `© ${ new Date().getFullYear() } App. All rights reserved.` ) ).toBeInTheDocument()
+	} )
+
+	it( 'footer: the workspace tagline, contact, social links and pages', async() => {
+		const site : PublicSite = { tagline: 'Tools for makers', email: 'hi@acme.test', phone: '+62 812 3456', social: [ { network: 'github', label: 'GitHub', href: 'https://github.com/acme' } ], pages: [ 'privacy', 'about' ] }
+
+		await render( theme.Footer, { site: siteChrome( { signUp: false, site } ) } )
+
+		await expect.element( page.getByText( 'Tools for makers' ) ).toBeInTheDocument()
+		await expect.element( page.getByRole( 'link', { name: 'hi@acme.test' } ) ).toHaveAttribute( 'href', 'mailto:hi@acme.test' )
+		await expect.element( page.getByRole( 'link', { name: '+62 812 3456' } ) ).toHaveAttribute( 'href', 'tel:+628123456' )
+		await expect.element( page.getByRole( 'link', { name: 'GitHub' } ) ).toHaveAttribute( 'href', 'https://github.com/acme' )
+		await expect.element( page.getByRole( 'link', { name: 'Privacy policy' } ) ).toHaveAttribute( 'href', '/privacy' )
+		await expect.element( page.getByRole( 'link', { name: 'About' } ) ).toHaveAttribute( 'href', '/about' )
+		expect( page.getByRole( 'link', { name: 'Terms of service' } ).elements() ).toHaveLength( 0 )
 	} )
 } )

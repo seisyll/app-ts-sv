@@ -8,6 +8,7 @@
 	import type { ThemeModule } from '$lib/themes/contract'
 	import * as plain from '$lib/themes/plain'
 	import { m } from '$lib/paraglide/messages'
+	import { SOCIAL_NETWORKS, type PublicSite } from '$lib/site'
 	import { DEMO_LOGO } from '../../demo-data'
 
 	// Every theme side by side, without switching the client's theme and restarting. The list is also a
@@ -17,9 +18,19 @@
 	let current = $state( themes[ 0 ].id )
 	let signUp = $state( false )
 	let logo = $state( false )
+	let details = $state( false )
+
+	// What a workspace sets in Settings → Public site: its own tagline, contact, links and pages.
+	const DEMO_SITE : PublicSite = {
+		tagline: 'Hand-built tools for small teams.',
+		email  : 'hello@example.com',
+		phone  : '+1 555 010 0100',
+		social : ( [ 'x', 'instagram', 'linkedin', 'github' ] as const ).map( ( network ) => ( { network, label: SOCIAL_NETWORKS[ network ], href: `https://example.com/${ network }` } ) ),
+		pages  : [ 'about', 'privacy', 'terms' ]
+	}
 
 	const theme = $derived( themes.find( ( item ) => item.id === current ) ?? themes[ 0 ] )
-	const site = $derived( siteChrome( { signUp, logo: logo ? DEMO_LOGO : null } ) )
+	const site = $derived( siteChrome( { signUp, logo: logo ? DEMO_LOGO : null, site: details ? DEMO_SITE : null } ) )
 	const content = $derived( homeContent( { signUp } ) )
 </script>
 
@@ -50,5 +61,9 @@
 	<label class="flex items-center gap-2 text-sm">
 		<Switch bind:checked={logo} />
 		{m.brand_logo()}
+	</label>
+	<label class="flex items-center gap-2 text-sm">
+		<Switch bind:checked={details} />
+		{m.demo_site_details()}
 	</label>
 </div>

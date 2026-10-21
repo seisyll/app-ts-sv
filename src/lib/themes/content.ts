@@ -7,18 +7,22 @@ import ZapIcon from '@lucide/svelte/icons/zap'
 import { APP } from '$lib/config'
 import { money } from '$lib/format'
 import { m } from '$lib/paraglide/messages'
+import { SITE_PAGES, type PublicSite } from '$lib/site'
 import type { HomeContent, Site } from './contract'
 
 /* ―― » The public site's words — this app's marketing copy, shared by every theme. Edit
         the messages ( site_* in messages/*.json ) to make it yours; themes only decide how
         it looks. Functions, not constants: they run in the request's locale. */
 
-type Options = { signUp : boolean, logo ?: string | null }
+// `site`: what the workspace set in Settings → Public site ( null: none, or no workspace ).
+type Options = { signUp : boolean, logo ?: string | null, site ?: PublicSite | null }
 
 const start = ( { signUp } : Options ) => ( signUp ? { label: m.site_start(), href: '/signup' } : { label: m.site_sign_in(), href: '/login' } )
 const price = ( value : number ) => money( value, APP.currency, { minimumFractionDigits: 0, maximumFractionDigits: 0 } )
 
 export function siteChrome( options : Options ) : Site {
+	const { site } = options
+	const pages = ( site?.pages ?? [] ).map( ( key ) => ( { label: SITE_PAGES[ key ](), href: `/${ key }` } ) )
 	const nav = [
 		{ label: m.site_nav_features(), href: '#features' },
 		{ label: m.site_nav_how(), href: '#how' },
@@ -34,10 +38,16 @@ export function siteChrome( options : Options ) : Site {
 		start  : start( options ),
 		columns: [
 			{ title: m.site_footer_product(), links: [ nav[ 0 ], nav[ 2 ], nav[ 3 ] ] },
-			{ title: m.site_footer_account(), links: [ { label: m.site_sign_in(), href: '/login' }, ...( options.signUp ? [ start( options ) ] : [] ) ] }
+			{ title: m.site_footer_account(), links: [ { label: m.site_sign_in(), href: '/login' }, ...( options.signUp ? [ start( options ) ] : [] ) ] },
+			...( pages.length ? [ { title: m.site_footer_company(), links: pages } ] : [] )
 		],
-		tagline: m.site_tagline(),
-		legal  : m.site_legal( { year: new Date().getFullYear(), name: APP.name } )
+		tagline: site?.tagline ?? m.site_tagline(),
+		legal  : m.site_legal( { year: new Date().getFullYear(), name: APP.name } ),
+		social : site?.social ?? [],
+		contact: [
+			...( site?.email ? [ { label: site.email, href: `mailto:${ site.email }` } ] : [] ),
+			...( site?.phone ? [ { label: site.phone, href: `tel:${ site.phone.replace( /[^\d+]/g, '' ) }` } ] : [] )
+		]
 	}
 }
 

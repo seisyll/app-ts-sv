@@ -10,7 +10,9 @@ import { validateForm } from '$lib/server/forms'
 import { mailReady } from '$lib/server/mail/gate'
 import { notify } from '$lib/server/notifications/gate'
 import { authHeaders, captchaWidget } from '$lib/server/sign-in-guard'
+import { publishedSitePages } from '$lib/server/site'
 import { enabledSocialProviders } from '$lib/server/social'
+import { SITE_PAGES } from '$lib/site'
 import type { Actions, PageServerLoad } from './$types'
 
 // Off unless AUTH_SIGNUP=true. With the mail module a new account verifies its email, so the
@@ -27,7 +29,17 @@ export const load : PageServerLoad = async( event ) => {
 		redirect( 303, '/app' )
 
 	// ?sent: signed up, now check your inbox.
-	return { form: await superValidate( valibot( signupSchema ) ), sent: event.url.searchParams.has( 'sent' ), captcha: await captchaWidget(), social: enabledSocialProviders() }
+	return { form: await superValidate( valibot( signupSchema ) ), sent: event.url.searchParams.has( 'sent' ), captcha: await captchaWidget(), social: enabledSocialProviders(), legal: await legalPages() }
+}
+
+// The terms and privacy policy, once the workspace has written them, under the button.
+async function legalPages() : Promise<{ href : string, label : string }[]> {
+	if ( !MODULES.site || !MODULES.editor )
+		return []
+
+	const pages = await publishedSitePages().catch( () => null ) ?? []
+
+	return ( [ 'terms', 'privacy' ] as const ).filter( ( key ) => pages.includes( key ) ).map( ( key ) => ( { href: `/${ key }`, label: SITE_PAGES[ key ]() } ) )
 }
 
 export const actions : Actions = {
