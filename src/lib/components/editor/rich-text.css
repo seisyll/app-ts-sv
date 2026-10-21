@@ -1,0 +1,115 @@
+/* ―― » Rich text, in the editor and where it is shown ( <RichText /> ). Tokens only, so it
+        follows the appearance palette and dark mode. Scoped to .rich-text. */
+
+.rich-text {
+	line-height: 1.7;
+	overflow-wrap: anywhere;
+}
+
+.rich-text > * + * {
+	margin-top: 0.85em;
+}
+
+.rich-text :is(h1, h2, h3) {
+	font-weight: 600;
+	line-height: 1.25;
+	letter-spacing: -0.01em;
+	margin-top: 1.4em;
+}
+
+.rich-text h1 { font-size: 1.75em; }
+.rich-text h2 { font-size: 1.4em; }
+.rich-text h3 { font-size: 1.15em; }
+
+.rich-text :is(h1, h2, h3):first-child {
+	margin-top: 0;
+}
+
+.rich-text a {
+	color: var(--primary);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.rich-text :is(ul, ol) {
+	padding-left: 1.5em;
+}
+
+.rich-text ul { list-style: disc; }
+.rich-text ol { list-style: decimal; }
+
+.rich-text li + li,
+.rich-text li > * + * {
+	margin-top: 0.25em;
+}
+
+.rich-text blockquote {
+	border-left: 3px solid var(--border);
+	padding-left: 1em;
+	color: var(--muted-foreground);
+}
+
+.rich-text code {
+	background: var(--muted);
+	border-radius: calc(var(--radius) * 0.5);
+	padding: 0.1em 0.35em;
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 0.9em;
+}
+
+.rich-text pre {
+	background: var(--muted);
+	border-radius: var(--radius);
+	padding: 0.85em 1em;
+	overflow-x: auto;
+}
+
+.rich-text pre code {
+	background: none;
+	padding: 0;
+}
+
+.rich-text hr {
+	border: 0;
+	border-top: 1px solid var(--border);
+	margin: 1.5em 0;
+}
+
+/* Stored images carry width and data-align; the editor shows its own node view instead. */
+.rich-text img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	border-radius: calc(var(--radius) * 0.6);
+	margin-inline: auto;
+}
+
+.rich-text img[data-align='left'] { margin-inline: 0 auto; }
+.rich-text img[data-align='right'] { margin-inline: auto 0; }
+
+.rich-text__variable {
+	display: inline-flex;
+	align-items: center;
+	padding: 0 0.4em;
+	border: 1px solid var(--border);
+	border-radius: calc(var(--radius) * 0.6);
+	background: var(--muted);
+	font-size: 0.85em;
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+/* The editor itself. */
+.rich-editor__content {
+	min-height: 10rem;
+	padding: 0.75rem 1rem;
+	outline: none;
+}
+
+.rich-editor__content p.is-editor-empty:first-child::before {
+	content: attr(data-placeholder);
+	float: left;
+	height: 0;
+	color: var(--muted-foreground);
+	pointer-events: none;
+}

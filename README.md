@@ -32,6 +32,7 @@ database). Everything under it returns 404 outside `vite dev`.
 | `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
 | `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox`, `MediaDropzone` against a mock library |
+| `/hello/editor` | `RichEditor` with images and template variables; the server's validation and its HTML and email renders |
 | `/hello/site` | Every public-site theme, switchable, with sign-up on or off |
 
 The palette button in the playground's header tries every palette, style and radius on every
@@ -117,6 +118,37 @@ fundraiser app's storage, grid and lightbox, with billing-app's rules for what g
   public media, more image sizes, streaming uploads.
 - **Detach:** delete `src/lib/components/media`, `src/lib/server/media.ts`, `src/lib/media.ts`,
   `/app/media`, `/api/media`, `/media`, the migration and `sharp`.
+
+## Rich text
+
+A TipTap editor (from the fundraiser app) that stores **JSON** and renders on the **server**.
+
+```svelte
+<RichEditor label="Body" bind:value={body} variables={[ { name: 'customer_name', label: 'Customer name' } ]} />
+<!-- or name="body" to post it with a form -->
+```
+
+```ts
+const schema = v.object( { body: richTextSchema } )            // validate on save ( $lib/editor/document )
+const html = renderRichText( body )                             // in a load → <RichText {html} />
+const mail = renderEmailHTML( body, { baseUrl, values: { customer_name: 'Ada' } } )
+```
+
+- **One schema** (`src/lib/editor/schema.ts`) for the editor, the validator and both renderers,
+  so a document can only hold what all of them understand: headings, marks, lists, quote,
+  code, divider, links, alignment, images, `{{variables}}`.
+- **Safe by construction:** `richTextSchema` rejects anything the schema can't build, links
+  that aren't http(s)/mailto/relative, images that aren't https or this app, malformed
+  variable names, and documents over 256 KB. The renderer escapes text and attributes, so
+  `<RichText>` needs no sanitizer — but only ever give it `renderRichText()` output.
+- **Images** come from the media library (the picker), resizable and alignable in place.
+- **Email HTML** is inline-styled, with absolute URLs and variables filled in (escaped).
+  Images in `/media` need a session, so a recipient can't load them yet: email images need
+  public media or attachments, decided with the mailer.
+- **Not built:** Markdown output, collaborative editing, tables, alt-text editing, keyboard
+  resizing of images.
+- **Detach:** delete `src/lib/editor`, `src/lib/components/editor`, `/hello/editor` and the
+  `@tiptap/*` and `svelte-tiptap` packages.
 
 ## DataTable
 
