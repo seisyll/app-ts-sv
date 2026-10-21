@@ -7,7 +7,10 @@ declare global {
 			message  : string
 			errors ? : Record<string, string[]>
 		}
-		// interface Locals {}
+		interface Locals {
+			// This request's tenant, looked up on first call ( see hooks.server.ts ).
+			tenant : () => Promise<import( '$lib/server/db' ).TenantRef>
+		}
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}

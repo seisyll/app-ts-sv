@@ -1,0 +1,22 @@
+# Local Postgres for development: bun run db:setup ( starts this, migrates, provisions, seeds ).
+# Bound to 127.0.0.1:5433 so it neither clashes with a local Postgres nor faces the network.
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - 127.0.0.1:5433:5432
+    volumes:
+      # Postgres 18 images keep data under a versioned subfolder of this path.
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: [ CMD-SHELL, pg_isready -U postgres -d app ]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  db-data:

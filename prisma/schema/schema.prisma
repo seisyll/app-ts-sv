@@ -1,0 +1,15 @@
+// One file per model in this folder; Prisma concatenates them.
+//
+// Tenant isolation is NOT expressible here: row-level security, the app_rls role and
+// its grants live in the migrations ( see the init migration and README "Database" ).
+// A new tenant-scoped model needs, in its migration:  SELECT app_enable_tenant_rls( '<table>' );
+// and the tripwire test ( src/lib/server/db/rls.test.ts ) fails until it has it.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../../src/lib/server/db/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}

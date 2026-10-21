@@ -1,0 +1,15 @@
+// better-auth verification tokens ( email verification, password reset ). Tenant-scoped.
+model Verification {
+  id         String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId   String   @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, identifier])
+  @@map("verifications")
+}

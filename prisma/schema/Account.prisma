@@ -1,0 +1,24 @@
+// better-auth account: one per sign-in method ( `credential` holds the password hash ).
+model Account {
+  id                    String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId              String    @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  userId                String    @map("user_id") @db.Uuid
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at") @db.Timestamptz
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at") @db.Timestamptz
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}

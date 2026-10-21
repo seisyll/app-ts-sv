@@ -1,0 +1,20 @@
+// better-auth session ( + admin plugin's impersonatedBy ). Tenant-scoped.
+model Session {
+  id             String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId       String   @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  token          String   @unique
+  expiresAt      DateTime @map("expires_at") @db.Timestamptz
+  ipAddress      String?  @map("ip_address")
+  userAgent      String?  @map("user_agent")
+  impersonatedBy String?  @map("impersonated_by")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@map("sessions")
+}

@@ -1,0 +1,14 @@
+// better-auth rate-limit counters ( rateLimit.storage = 'database' ). Tenant-scoped, so one
+// tenant's traffic never spends another's budget.
+model RateLimit {
+  id          String @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId    String @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  key         String
+  count       Int
+  lastRequest BigInt @map("last_request")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key])
+  @@map("rate_limits")
+}

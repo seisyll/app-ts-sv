@@ -70,6 +70,34 @@ database). Everything under it returns 404 outside `vite dev`.
 `apiForm` pairs with SaveBar: `<SaveBar show={form.isTainted( $tainted )} saving={$submitting} saveType="submit" ondiscard={() => form.reset()} />`
 inside the `<form use:enhance novalidate>`. See `/hello/forms`.
 
+## Database
+
+Postgres 18 + Prisma 7, tenant-isolated by row-level security.
+
+```bash
+cp .env.example .env   # once
+bun run db:setup       # docker Postgres on 127.0.0.1:5433 → migrate → provision app_rls → seed
+bun run db:reset       # wipe and set up again
+```
+
+- **Two roles.** Migrations and seeds run as the owner (`DATABASE_OWNER_URL`). The app
+  connects as `app_rls` (`DATABASE_URL`): not the owner, not superuser, so every policy
+  applies. The app refuses to start resolving tenants under an unsafe role.
+- **Tenancy switch** (`TENANCY`): `single` — one tenant (`TENANT_SLUG`); also the
+  one-deploy-per-client setup. `shared` — tenant from the host: a custom `domain`, else
+  `<slug>.APP_DOMAIN`. Same data model either way.
+- **Queries** (`src/lib/server/db`): `db.<model>` is scoped to the request's tenant
+  (`hooks.server.ts` puts it in scope; looked up only when first needed).
+  `tenantTransaction( tx => … )` for several statements; `runWithTenant( tenant, … )` in
+  scripts and jobs; `prisma` (unscoped) only for the `tenants` table.
+- **A new tenant-scoped table:** add the model with
+  `tenantId String @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid`,
+  create the migration with `bunx prisma migrate dev --create-only --name <name>`, and
+  append `SELECT app_enable_tenant_rls( '<table>' );` to it. `src/lib/server/db/rls.test.ts`
+  fails until every table with a `tenant_id` is isolated.
+- **Tests** run on PGlite (Postgres in-process, `src/lib/test/database.ts`): the real
+  migrations, no Docker.
+
 ## Testing
 
 ```bash

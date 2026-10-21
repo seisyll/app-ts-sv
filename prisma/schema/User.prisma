@@ -1,0 +1,25 @@
+// better-auth user ( + admin plugin fields ). Tenant-scoped: an account belongs to one
+// tenant, and the same email may exist separately in another.
+model User {
+  id            String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  // Stamped from the transaction's tenant when the app omits it ( it always does ).
+  tenantId      String    @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  name          String
+  email         String
+  emailVerified Boolean   @default(false) @map("email_verified")
+  image         String?
+  role          String?
+  banned        Boolean?  @default(false)
+  banReason     String?   @map("ban_reason")
+  banExpires    DateTime? @map("ban_expires") @db.Timestamptz
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sessions Session[]
+  accounts Account[]
+
+  // better-auth lowercases emails, so plain uniqueness is case-insensitive in practice.
+  @@unique([tenantId, email])
+  @@map("users")
+}

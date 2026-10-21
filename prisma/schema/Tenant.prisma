@@ -1,0 +1,26 @@
+// Control plane: the tenants themselves. Not tenant-scoped ( no RLS ); the app role can
+// only read it — tenants are created by the owner ( seed / provisioning ).
+model Tenant {
+  id        String       @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  slug      String       @unique
+  name      String
+  // Shared tenancy: a custom domain; otherwise <slug>.APP_DOMAIN.
+  domain    String?      @unique
+  status    TenantStatus @default(active)
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz
+
+  users         User[]
+  sessions      Session[]
+  accounts      Account[]
+  verifications Verification[]
+  rateLimits    RateLimit[]
+
+  @@map("tenants")
+}
+
+enum TenantStatus {
+  active
+  suspended
+
+  @@map("tenant_status")
+}
