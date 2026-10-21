@@ -17,6 +17,7 @@
 		{ href: '/hello/editor', label: m.demo_editor_title() },
 		{ href: '/hello/notifications', label: m.notif_title() },
 		{ href: '/hello/shell', label: m.demo_shell_title() },
+		{ href: '/hello/brand', label: m.demo_brand_title() },
 		{ href: '/hello/site', label: m.demo_site_title() }
 	]
 </script>

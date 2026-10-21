@@ -21,6 +21,9 @@ model Media {
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   uploader User?  @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
 
+  logoOf    AppearanceSetting[] @relation("logo")
+  faviconOf AppearanceSetting[] @relation("favicon")
+
   @@index([tenantId, kind, createdAt])
   @@map("media")
 }

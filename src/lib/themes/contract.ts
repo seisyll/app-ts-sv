@@ -14,6 +14,8 @@ export type SiteLink = { label : string, href : string }
 // What Header and Footer receive.
 export type Site = {
 	name    : string
+	// The workspace's logo URL, when it has one; otherwise a theme shows its own mark ( or none ).
+	logo ?  : string | null
 	nav     : SiteLink[]
 	signIn  : SiteLink
 	// The main call to action: sign-up when it's on, else sign-in.

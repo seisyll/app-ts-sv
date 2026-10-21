@@ -81,3 +81,6 @@ export const mockNotifications = {
 		return count
 	}
 }
+
+// A stand-in workspace logo: a square mark, transparent around it, as an uploaded one would be.
+export const DEMO_LOGO = `data:image/svg+xml,${ encodeURIComponent( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="4" y="4" width="56" height="56" rx="14" fill="#4f46e5"/><path d="M20 44 32 18l12 26M25 35h14" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' ) }`

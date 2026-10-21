@@ -6,8 +6,14 @@
 	import { NavProgress } from '$lib/components/nav-progress'
 	import { Toaster } from '$lib/components/ui/sonner'
 
-	let { children } = $props()
+	let { data, children } = $props()
 </script>
+
+<svelte:head>
+	{#if data.brand?.favicon}
+		<link rel="icon" href={data.brand.favicon} type="image/webp" />
+	{/if}
+</svelte:head>
 
 <ModeWatcher />
 <Toaster />

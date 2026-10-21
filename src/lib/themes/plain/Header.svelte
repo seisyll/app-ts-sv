@@ -9,7 +9,10 @@
 
 <header class="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
 	<div class="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4 sm:px-6">
-		<a href="/" class="font-semibold tracking-tight">{site.name}</a>
+		<a href="/" class="flex items-center gap-2 font-semibold tracking-tight">
+			{#if site.logo}<img src={site.logo} alt="" class="h-7 w-auto max-w-40 object-contain" />{/if}
+			{site.name}
+		</a>
 		<nav class="hidden items-center gap-5 text-sm text-muted-foreground md:flex">
 			{#each site.nav as link ( link.href )}
 				<a href={link.href} class="transition-colors hover:text-foreground">{link.label}</a>

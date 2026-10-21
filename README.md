@@ -40,10 +40,11 @@ database). Everything under it returns 404 outside `vite dev`.
 | `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory, and server-paged against a mock endpoint with its query in the URL |
 | `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
+| `/hello/brand` | `BrandMark` with and without a logo, `FaviconPreview`, the sign-in header |
 | `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox` (with the public switch), `MediaDropzone` against a mock library |
 | `/hello/editor` | `RichEditor` with images and template variables; the server's validation and its HTML and email renders |
 | `/hello/notifications` | `NotificationBell`, `NotificationList` and the all-clear moment against a mock inbox |
-| `/hello/site` | Every public-site theme, switchable, with sign-up on or off |
+| `/hello/site` | Every public-site theme, switchable, with sign-up and a logo on or off |
 
 The palette button in the playground's header tries every palette, style and radius on every
 page here (it only paints; reload to go back).
@@ -74,7 +75,7 @@ THEME=plain bun run dev     # or THEME=… in .env; restart after changing it
   `src/lib/themes/themes.svelte.test.ts` (contract tests) and `/hello/site`.
   `bun run check` fails if it breaks the contract.
 - **No database:** the public site works before `db:setup`, and on a shared deployment's
-  bare domain.
+  bare domain. With one, it shows the workspace's logo (see Logo and favicon).
 - **Detach:** delete `src/routes/(site)`, `src/lib/themes` and `/hello/site`, remove `$theme`
   from `svelte.config.js` and the `site_*` messages. The `@fontsource-variable` packages
   other than Inter are aurora's.
@@ -101,6 +102,25 @@ people may override it; each person overrides any knob from the palette button i
 - **Detach:** keep one style (`STYLES = [ 'vega' ]` and its import), delete the picker, the
   settings page, `/api/appearance` and the migration's table/columns; leave `style-vega` on
   `<html>`, since the components are unstyled without a style class.
+
+### Logo and favicon
+
+On the same settings page, above the colours: a **logo** (the sidebar's square, the public
+site's header and footer, above the sign-in forms) and a **favicon** (the browser tab), each
+with a preview, saved with the rest under the SaveBar.
+
+- **Storage:** `logo_media_id` / `favicon_media_id` on `appearance_settings`, pointing at
+  media; deleting the file clears them. Saving checks each is an image of this workspace and
+  makes it **public** (see Media) — visitors who aren't signed in load them too.
+- **Reading:** the root layout's load (`loadBrand`, `src/lib/server/brand.ts`) gives every
+  page `data.brand` = `{ name, logo, favicon }` (thumbnail URLs), or `null` with no database
+  or no tenant — then each surface shows its own mark: initials in the sidebar and above
+  sign-in, the theme's mark on the public site, no favicon.
+- **Themes** get `site.logo` and show it instead of their mark.
+- **Not built:** an Apple touch icon or `/favicon.ico` (the favicon is the WebP thumbnail),
+  wide-logo layouts in the sidebar (it's a square there).
+- **Detach:** delete `src/lib/brand.ts`, `src/lib/server/brand.ts`, `src/routes/+layout.server.ts`,
+  `BrandMark` / `FaviconPreview` uses, the two cards and the migration's columns.
 
 ## Media
 
@@ -274,6 +294,9 @@ from one tenant doesn't exist in another; the same email can sign up separately 
   the signed-in area `/app` (profile, password, admin-only settings). All are form actions:
   they work without JavaScript.
 - **First admin:** `bun run db:seed` creates `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `TENANT_SLUG`.
+- **Demo admin:** the seed also creates `DEMO_EMAIL` / `DEMO_PASSWORD` (`.env.example` ships
+  a known pair) for local work and coding agents' browser checks — never when
+  `NODE_ENV=production`. Empty either one to skip it.
 - **Roles:** `src/lib/permissions.ts` (`admin`, `member`). Add a resource there and grant it.
 - **Guards** (`src/lib/server/guards.ts`):
 
@@ -294,9 +317,6 @@ from one tenant doesn't exist in another; the same email can sign up separately 
 
 Admins list, add, re-role, ban, sign out and delete the tenant's users. Reads go through
 the tenant-scoped `db` (`listUsers` in `src/lib/server/users.ts`); changes go through
-- **Demo admin:** the seed also creates `DEMO_EMAIL` / `DEMO_PASSWORD` (`.env.example` ships
-  a known pair) for local work and coding agents' browser checks — never when
-  `NODE_ENV=production`. Empty either one to skip it.
 better-auth's admin API, which hashes the password, ends a banned user's sessions and checks
 the caller's permission again. Your own row has no actions, and the endpoints refuse them
 (`400`), so a tenant can't lock out its last admin.

@@ -10,7 +10,7 @@
 		<div class="flex flex-wrap justify-between gap-x-14 gap-y-10">
 			<div class="max-w-80 flex-1 basis-65">
 				<a href="/" class="flex items-center gap-2.75">
-					<Mark />
+					{#if site.logo}<img src={site.logo} alt="" class="h-7 w-auto max-w-40 object-contain" />{:else}<Mark />{/if}
 					<span class="font-serif text-[23px] font-medium tracking-[0.02em] text-foreground">{site.name}</span>
 				</a>
 				<p class="mt-4 max-w-65 text-[13.5px] leading-[1.66] text-muted-foreground">{site.tagline}</p>

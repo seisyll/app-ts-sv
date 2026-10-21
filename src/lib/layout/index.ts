@@ -1,5 +1,7 @@
 export { default as AppearancePicker } from './AppearancePicker.svelte'
 export { default as AppShell } from './AppShell.svelte'
+export { default as BrandMark } from './BrandMark.svelte'
+export { default as FaviconPreview } from './FaviconPreview.svelte'
 export { default as LocaleSwitcher } from './LocaleSwitcher.svelte'
 export { default as ThemeToggle } from './ThemeToggle.svelte'
 export type { NavUserInfo, NavUserItem } from './NavUser.svelte'
