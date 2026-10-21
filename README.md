@@ -29,6 +29,7 @@ database). Everything under it returns 404 outside `vite dev`.
 | `/hello` | i18n, formatting, the mock API |
 | `/hello/save-bar` | `SaveBar` + `Draft` (`src/lib/components/save-bar`) |
 | `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory and server-paged against a mock endpoint |
+| `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
 
 ## DataTable
@@ -46,6 +47,28 @@ database). Everything under it returns 404 outside `vite dev`.
 - A column with a string `header` gets a sort button; `enableSorting: false` opts out.
 - Helpers: `selectColumn()`, `rowNumberColumn()`, `facetedFilter`, `dateRangeFilter`,
   `textCell()` (escapes HTML), `runBulk()` for bulk actions.
+
+## HTTP and forms
+
+- **`http`** (`src/lib/http.ts`): `http.get/post/put/patch/delete`. JSON in and out,
+  15 s timeout, every failure an `HttpError` (`.status`, `.messageOr( fallback )`,
+  `.fieldErrors`, `.unreachable`). In a load or action pass `event.fetch`.
+  `errorMessage( error )` gives the text to show a user.
+- **`mutate( path, { body, success } )`** (`src/lib/mutate.ts`): a write from the browser,
+  toast on success or failure, then `invalidateAll()`.
+- **Validation messages** (`src/lib/validation.ts`): valibot's defaults go through
+  paraglide, so schemas stay plain (`v.pipe( v.string(), v.nonEmpty(), v.email() )`) and
+  messages follow the user's language in the browser and the request's on the server.
+- **One schema, validated twice.** The browser validates for convenience; the server
+  validates because it must:
+
+| Form | Browser | Server |
+|---|---|---|
+| Saves to a JSON endpoint | `apiForm( schema, { submit } )` (`src/lib/forms.ts`) | `await readJson( request, schema )` — 400 with field errors, shown under the fields |
+| `<form>` action (works without JS) | `superForm( data.form, { validators: valibot( schema ) } )` | `validateForm( event, schema, save )` (`src/lib/server/forms.ts`) |
+
+`apiForm` pairs with SaveBar: `<SaveBar show={form.isTainted( $tainted )} saving={$submitting} saveType="submit" ondiscard={() => form.reset()} />`
+inside the `<form use:enhance novalidate>`. See `/hello/forms`.
 
 ## Testing
 

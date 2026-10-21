@@ -2,7 +2,11 @@
 // for information about these interfaces
 declare global {
 	namespace App {
-		// interface Error {}
+		// `errors`: per-field messages from a validation failure ( readJson ).
+		interface Error {
+			message  : string
+			errors ? : Record<string, string[]>
+		}
 		// interface Locals {}
 		// interface PageData {}
 		// interface PageState {}

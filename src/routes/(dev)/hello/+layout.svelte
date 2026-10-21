@@ -11,6 +11,7 @@
 		{ href: '/hello', label: m.nav_overview() },
 		{ href: '/hello/save-bar', label: 'SaveBar' },
 		{ href: '/hello/data-table', label: 'DataTable' },
+		{ href: '/hello/forms', label: m.demo_forms_title() },
 		{ href: '/hello/shell', label: m.demo_shell_title() }
 	]
 </script>

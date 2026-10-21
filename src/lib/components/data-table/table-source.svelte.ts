@@ -1,4 +1,5 @@
 import { debounce } from '$lib/debounce'
+import { errorMessage, http } from '$lib/http'
 import { m } from '$lib/paraglide/messages'
 import { PAGE_SIZE_DEFAULT, toPageQuery, toSearchParams, type Paged, type TableQuery } from './query'
 
@@ -11,7 +12,7 @@ export type TableSourceOptions<T, S> = {
 	// Params that define the screen, not the user's query ( e.g. status=unpaid ).
 	fixed ?         : Record<string, string>
 	pageSize ?      : number
-	// Error text when the endpoint gives none ( it may answer { message } ).
+	// Error text when the endpoint answers without a { message }.
 	errorMessage ?  : string
 	fetch ?         : typeof fetch
 }
@@ -115,27 +116,18 @@ export class TableSource<T, S = undefined> {
 		this.loading = true
 
 		try {
-			const response = await this.#fetch( this.#url( query, true ), { headers: { accept: 'application/json' } } )
-			const body = await response.json().catch( () => null )
+			const page = await http.get<Paged<T, S>>( this.#url( query, true ), { fetch: this.#fetch } )
 
 			if ( !current() )
 				return
-
-			if ( !response.ok ) {
-				this.error = typeof body?.message === 'string' ? body.message : this.#errorMessage
-
-				return
-			}
-
-			const page = body as Paged<T, S>
 
 			this.error = ''
 			this.rows = page.rows
 			this.total = page.total
 			this.stats = page.stats
-		} catch {
+		} catch ( error ) {
 			if ( current() )
-				this.error = this.#errorMessage
+				this.error = errorMessage( error, this.#errorMessage )
 		} finally {
 			if ( current() )
 				this.loading = false

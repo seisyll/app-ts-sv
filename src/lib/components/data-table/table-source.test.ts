@@ -98,15 +98,18 @@ describe( 'TableSource', () => {
 		expect( source.loading ).toBe( false )
 	} )
 
-	it( 'falls back to its own message when the network fails', async() => {
-		const fetch = fetchMock( () => {
+	it( 'uses its own message when the endpoint gives none, and says so when offline', async() => {
+		const silent = new TableSource<Row>( { path: '/api/x', initial: { rows: [], total: 0 }, errorMessage: 'Could not load', fetch: fetchMock( () => new Response( '', { status: 500 } ) ) } )
+
+		await silent.refresh()
+		expect( silent.error ).toBe( 'Could not load' )
+
+		const offline = new TableSource<Row>( { path: '/api/x', initial: { rows: [], total: 0 }, fetch: fetchMock( () => {
 			throw new TypeError( 'Failed to fetch' )
-		} )
-		const source = new TableSource<Row>( { path: '/api/x', initial: { rows: [], total: 0 }, fetch, errorMessage: 'Offline' } )
+		} ) } )
 
-		await source.refresh()
-
-		expect( source.error ).toBe( 'Offline' )
+		await offline.refresh()
+		expect( offline.error ).toMatch( /reach the server/i )
 	} )
 
 	it( 'refresh re-runs the current query', async() => {

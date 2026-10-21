@@ -72,7 +72,8 @@ export default defineConfig( {
 					name       : 'server',
 					environment: 'node',
 					include    : [ 'src/**/*.test.ts' ],
-					exclude    : [ 'src/**/*.svelte.test.ts' ]
+					exclude    : [ 'src/**/*.svelte.test.ts' ],
+					setupFiles : [ './src/lib/test/setup.ts' ]
 				}
 			},
 			{
@@ -88,7 +89,7 @@ export default defineConfig( {
 						provider : playwright(),
 						instances: [ { browser: 'chromium' } ]
 					},
-					setupFiles: [ './vitest-setup-client.ts' ]
+					setupFiles: [ './vitest-setup-client.ts', './src/lib/test/setup.ts' ]
 				}
 			}
 		],
