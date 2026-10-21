@@ -89,3 +89,13 @@ export async function signInStats( now = new Date() ) {
 
 	return { ok, refused, addresses: addresses.length, daily }
 }
+
+// How long attempts are kept. The scheduler's signins.purge removes older ones, workspace by
+// workspace ( src/lib/server/jobs ).
+export const SIGN_IN_RETENTION_DAYS = 90
+
+export async function purgeSignIns( now = new Date() ) : Promise<number> {
+	const before = new Date( now.getTime() - SIGN_IN_RETENTION_DAYS * 86_400_000 )
+
+	return ( await db.signInEvent.deleteMany( { where: { at: { lt: before } } } ) ).count
+}

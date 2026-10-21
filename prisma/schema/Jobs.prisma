@@ -1,0 +1,14 @@
+// The last run of each scheduled job ( src/lib/server/jobs ). The deployment's, not a
+// workspace's: a job goes through every workspace in turn.
+model JobRun {
+  name       String    @id
+  startedAt  DateTime  @map("started_at") @db.Timestamptz
+  // Null while it runs.
+  finishedAt DateTime? @map("finished_at") @db.Timestamptz
+  ok         Boolean?
+  // Rows the job dealt with ( removed, sent … ).
+  count      Int?
+  error      String?
+
+  @@map("job_runs")
+}

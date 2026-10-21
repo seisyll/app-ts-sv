@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge'
 	import * as Card from '$lib/components/ui/card'
+	import { APP } from '$lib/config'
+	import { date } from '$lib/format'
 	import { moduleLabel } from '$lib/modules'
 	import { m } from '$lib/paraglide/messages'
 
@@ -52,3 +54,40 @@
 		</dl>
 	</Card.Content>
 </Card.Root>
+
+{#if data.jobs}
+	<Card.Root class="max-w-xl">
+		<Card.Header>
+			<Card.Title>{m.jobs_title()}</Card.Title>
+			<Card.Description>{m.jobs_desc( { zone: APP.timeZone } )}</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<ul class="flex flex-col divide-y text-sm">
+				{#each data.jobs as job ( job.name )}
+					<li class="flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0">
+						<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+							<span class="font-medium">{job.label}</span>
+							<code class="text-xs text-muted-foreground">{job.schedule}</code>
+						</div>
+						<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+							{#if job.next}<span>{m.jobs_next()}: {date( job.next )}</span>{/if}
+							<span class="flex items-center gap-1.5">
+								{m.jobs_last()}:
+								{#if !job.last}
+									{m.jobs_never()}
+								{:else if job.last.ok === null}
+									<Badge variant="secondary">{m.jobs_running()}</Badge>
+								{:else if job.last.ok}
+									{date( job.last.finishedAt ?? job.last.startedAt )} · {m.jobs_ok( { count: job.last.count ?? 0 } )}
+								{:else}
+									<Badge variant="destructive" title={job.last.error ?? undefined}>{m.jobs_failed()}</Badge>
+									{date( job.last.finishedAt ?? job.last.startedAt )}
+								{/if}
+							</span>
+						</div>
+					</li>
+				{/each}
+			</ul>
+		</Card.Content>
+	</Card.Root>
+{/if}

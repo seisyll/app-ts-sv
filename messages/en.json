@@ -1007,5 +1007,15 @@
 	"demo_seo_preview": "Link preview",
 	"demo_seo_preview_desc": "Roughly how a chat app or social network shows a link to this page: the theme's share image, the host, the title and the description.",
 	"demo_seo_tags": "In the head",
-	"demo_seo_tags_desc": "What <Seo> wrote for this page, in the server-rendered HTML crawlers read."
+	"demo_seo_tags_desc": "What <Seo> wrote for this page, in the server-rendered HTML crawlers read.",
+	"job_auth_expired": "Remove expired sessions and links",
+	"job_signins_purge": "Remove sign-in attempts older than 90 days",
+	"jobs_title": "Scheduled jobs",
+	"jobs_desc": "What this deployment does on its own, for every workspace. Times are in {zone}.",
+	"jobs_next": "Next",
+	"jobs_last": "Last run",
+	"jobs_never": "Not run yet",
+	"jobs_running": "Running",
+	"jobs_ok": "{count} removed",
+	"jobs_failed": "Failed"
 }

@@ -670,7 +670,8 @@ itself before better-auth runs — and better-auth's session hook writes provide
   14 days, and the table (filters, URL state, export).
 - **Everyone** sees their own latest attempts on the Password page — failed ones on their
   email included — to spot a sign-in that wasn't them.
-- **Kept 90 days:** the scheduler's purge removes older entries (until it lands, nothing does).
+- **Kept 90 days:** the `signins.purge` job removes older entries nightly (`SIGN_IN_RETENTION_DAYS`,
+  see Scheduled jobs).
 - **Detach:** turn the module off, or delete `src/lib/sign-ins.ts`, `src/lib/server/sign-ins.ts`,
   `src/lib/components/sign-ins`, `/app/settings/sign-ins`, `/api/sign-ins`, `/hello/sign-ins`,
   the `recordSignIn` calls and the migration.
@@ -690,6 +691,28 @@ the caller's permission again. Your own row has no actions, and the endpoints re
   `src/lib/server/list.ts` turns the DataTable's query into Prisma
   `{ where, orderBy, skip, take }`. The `spec` allow-lists the search, facet and sort fields.
   Date ranges are calendar days in `APP.timeZone`.
+
+## Scheduled jobs
+
+Cron jobs inside the app process (`src/lib/server/jobs`, on croner), in `APP.timeZone`:
+
+| Job | When | Does |
+|---|---|---|
+| `auth.expired` | hourly at :43 | Removes sessions and one-time links (resets, invites) past their expiry |
+| `signins.purge` | 03:17 daily | Removes sign-in attempts older than 90 days (module `signins`) |
+
+- **One runner:** with several app instances, a job takes a Redis lock first (`withLock`,
+  `src/lib/server/redis.ts`), so only one runs it. Without Redis it simply runs — so a job
+  must be harmless to run twice.
+- **Per workspace:** a job goes through the workspaces with `eachTenant( fn )`
+  (`$lib/server/db`), each under its own row-level security, never across them.
+- **Watched:** every run is logged (with `job` on its lines) and its outcome kept in
+  `job_runs`; Settings shows each job's schedule, next run and last result — in single
+  tenancy, where the admin is the operator.
+- **Adding one:** an entry in `src/lib/server/jobs/catalog.ts` (under its module's `MODULES`
+  guard) and its `job_*` message.
+- **Not built:** retries, one-off queued jobs (a Postgres queue such as pg-boss when you need
+  them), running a job from the UI.
 
 ## Logs
 

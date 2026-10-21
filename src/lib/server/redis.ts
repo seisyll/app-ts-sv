@@ -95,3 +95,35 @@ export async function rateLimit( key : string, limit : number, windowMs : number
 
 	return !window || window.count <= limit ? { allowed: true, retryAfterMs: 0 } : { allowed: false, retryAfterMs: window.ttlMs }
 }
+
+// Deletes the lock only if it is still ours: one that expired and was taken by another
+// instance is left alone.
+const RELEASE = `if redis.call( 'GET', KEYS[1] ) == ARGV[1] then return redis.call( 'DEL', KEYS[1] ) end return 0`
+
+/* ―― » One holder at a time across instances ( a scheduled job ): `fn` runs only if this
+        instance takes `key`, which expires after `ttlMs` should the holder die with it. Fails
+        open like everything here — without Redis it just runs, which suits one instance, or
+        work that is harmless twice. Answers whether it ran. */
+export async function withLock( key : string, ttlMs : number, fn : () => Promise<void> ) : Promise<boolean> {
+	const instance = online()
+
+	if ( !instance ) {
+		await fn()
+
+		return true
+	}
+
+	const token = crypto.randomUUID()
+	const taken = await instance.set( key, token, 'PX', ttlMs, 'NX' ).catch( () => 'OK' as const )
+
+	if ( taken !== 'OK' )
+		return false
+
+	try {
+		await fn()
+	} finally {
+		await instance.eval( RELEASE, 1, key, token ).catch( () => {} )
+	}
+
+	return true
+}

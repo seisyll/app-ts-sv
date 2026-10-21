@@ -5,6 +5,9 @@ import type { TenantRef } from './client'
 // Tables the app may READ without a tenant_id ( and never write ). Anything else without a
 // tenant_id must be invisible to the app. Adding to this list is a security decision.
 const CONTROL_PLANE = [ 'tenants' ]
+// Deployment-wide bookkeeping the app writes, which holds no workspace's data: the scheduled
+// jobs' last runs ( src/lib/server/jobs ). Also a security decision.
+const BOOKKEEPING = [ 'job_runs' ]
 
 describe( 'row-level security', () => {
 	let t : TestDatabase
@@ -48,6 +51,8 @@ describe( 'row-level security', () => {
 				expect( table, `${ table.name }: run SELECT app_enable_tenant_rls( '${ table.name }' ) in its migration` ).toMatchObject( { rls: true, forced: true, policy: true } )
 			else if ( CONTROL_PLANE.includes( table.name ) )
 				expect( table, `${ table.name } must be read-only for the app` ).toMatchObject( { readable: true, writable: false } )
+			else if ( BOOKKEEPING.includes( table.name ) )
+				expect( table, `${ table.name } is the app's own bookkeeping` ).toMatchObject( { readable: true, writable: true } )
 			else
 				expect( table, `${ table.name } has no tenant_id: the app must not be able to read it` ).toMatchObject( { readable: false } )
 		}

@@ -1007,5 +1007,15 @@
 	"demo_seo_preview": "Pratinjau tautan",
 	"demo_seo_preview_desc": "Kira-kira cara aplikasi obrolan atau media sosial menampilkan tautan ke halaman ini: gambar bagikan tema, host, judul, dan deskripsi.",
 	"demo_seo_tags": "Di head",
-	"demo_seo_tags_desc": "Yang ditulis <Seo> untuk halaman ini, dalam HTML hasil render server yang dibaca crawler."
+	"demo_seo_tags_desc": "Yang ditulis <Seo> untuk halaman ini, dalam HTML hasil render server yang dibaca crawler.",
+	"job_auth_expired": "Hapus sesi dan tautan kedaluwarsa",
+	"job_signins_purge": "Hapus percobaan masuk yang lebih dari 90 hari",
+	"jobs_title": "Tugas terjadwal",
+	"jobs_desc": "Yang dikerjakan deployment ini sendiri, untuk setiap ruang kerja. Waktu dalam {zone}.",
+	"jobs_next": "Berikutnya",
+	"jobs_last": "Terakhir",
+	"jobs_never": "Belum pernah",
+	"jobs_running": "Berjalan",
+	"jobs_ok": "{count} dihapus",
+	"jobs_failed": "Gagal"
 }

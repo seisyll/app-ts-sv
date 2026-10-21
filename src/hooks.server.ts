@@ -6,6 +6,7 @@ import { paraglideMiddleware } from '$lib/paraglide/server'
 import { appearanceClassOf } from '$lib/server/appearance'
 import { auth, type Session } from '$lib/server/auth'
 import { checkEnv } from '$lib/server/env'
+import { startJobs } from '$lib/server/jobs'
 import { log, withLog } from '$lib/server/log'
 import { requireUser } from '$lib/server/guards'
 import { runWithTenant, type TenantRef } from '$lib/server/db'
@@ -32,10 +33,14 @@ const handleAppearance : Handle = ( { event, resolve } ) => resolve( event, {
 	transformPageChunk: ( { html } ) => html.replace( '%app.appearance%', appearanceClassOf( event.cookies ) )
 } )
 
-// A broken deployment says so before anyone visits ( src/lib/server/env.ts ).
+// A broken deployment says so before anyone visits ( src/lib/server/env.ts ); then the
+// scheduled jobs start ( src/lib/server/jobs ).
 export const init : ServerInit = () => {
-	if ( !building )
-		checkEnv()
+	if ( building )
+		return
+
+	checkEnv()
+	startJobs()
 }
 
 /* ―― » Only real server faults reach the log ( the fundraiser app's handleError ): a 5xx, with

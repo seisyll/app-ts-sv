@@ -40,6 +40,18 @@ export function runWithTenant<T>( tenant : TenantRef | ( () => Promise<TenantRef
 	return scope.run( resolve, async() : Promise<Awaited<T>> => await fn() )
 }
 
+// `fn` once per active workspace, each in its own tenant scope ( `db` sees that workspace
+// only ) — for jobs and scripts that go through them all. The counts added up.
+export async function eachTenant( fn : () => Promise<number> ) : Promise<number> {
+	const tenants = await prisma.tenant.findMany( { where: { status: 'active' }, select: { id: true, slug: true, name: true, modulesOff: true } } )
+	let total = 0
+
+	for ( const tenant of tenants )
+		total += await runWithTenant( tenant, fn )
+
+	return total
+}
+
 export async function currentTenant() : Promise<TenantRef> {
 	const resolve = scope.getStore()
 
