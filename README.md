@@ -164,7 +164,7 @@ nothing else. A build without the `site` module has no public site at all.
   - **Footer** — a tagline (blank keeps `site_tagline`), contact email and phone, and
     links to X, Facebook, Instagram, LinkedIn, YouTube, WhatsApp and GitHub (`https://`
     only; blank ones are hidden). A theme's Footer gets them as `site.contact` and
-    `site.social`, with `NetworkIcon` for the marks.
+    `site.social`, with `NetworkIcon` ( `$lib/components/site` ) for the marks.
 - **Detach:** turn the `site` module off in the client config. To delete it for good,
   remove `src/routes/(site)`, `src/routes/app/settings/site`, `src/lib/themes`,
   `src/lib/site.ts`, `src/lib/server/site.ts`, `src/params/site_page.ts`, `/hello/site`,
@@ -630,8 +630,8 @@ own limiter) as well as `/api/auth/*`:
 
 ### Social sign-in
 
-**Google** and **Apple**, each on when its credentials are in the environment
-(`src/lib/server/social.ts`, see `.env.example`): "Continue with …" under the sign-in and
+**Google** and **Apple** (module `social`), each on when its credentials are in the
+environment (`src/lib/server/social.ts`, see `.env.example`): "Continue with …" under the sign-in and
 sign-up forms, and **Connected accounts** on the profile page.
 
 - **Anyone** may sign in with a provider: a new person gets an account (a member) even with
@@ -648,10 +648,11 @@ sign-up forms, and **Connected accounts** on the profile page.
 - **Apple:** the client secret is a JWT signed with your key that lasts at most six months —
   `bun run apple:secret -- --team … --key-id … --client-id … --key AuthKey.p8` makes one; set a
   reminder to make the next. Apple posts its answer from `appleid.apple.com`, so
-  `svelte.config.js` trusts that origin for form posts.
+  `svelte.config.js` trusts that origin for form posts (only in a build with the module).
 - **Not built:** more providers (better-auth has ~35: a provider here is one entry in
   `socialProviders()`, a label and an icon), per-workspace OAuth apps.
-- **Detach:** delete `src/lib/social.ts`, `src/lib/server/social.ts`,
+- **Detach:** turn the `social` module off (no providers, whatever the environment says), or
+  delete `src/lib/social.ts`, `src/lib/server/social.ts`,
   `src/lib/components/social`, `/login/social`, `/hello/social`, `scripts/apple-client-secret.ts`,
   and the social lines in `src/lib/server/auth.ts`, the auth pages and `/app/account`.
 

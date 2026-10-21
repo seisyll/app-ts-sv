@@ -58,4 +58,6 @@
 	<SaveBar show={form.isTainted( $tainted )} saving={$submitting} saveType="submit" ondiscard={() => form.reset()} />
 </form>
 
-<ConnectedAccounts accounts={data.accounts} canDisconnect={data.canDisconnect} message={action?.social ?? ( data.linkError ? m.social_link_failed() : null )} />
+{#if MODULES.social}
+	<ConnectedAccounts accounts={data.accounts} canDisconnect={data.canDisconnect} message={action?.social ?? ( data.linkError ? m.social_link_failed() : null )} />
+{/if}

@@ -5,7 +5,7 @@
 	import { superForm } from 'sveltekit-superforms'
 	import { valibot } from 'sveltekit-superforms/adapters'
 	import { SaveBar } from '$lib/components/save-bar'
-	import { NetworkIcon } from '$lib/components/social'
+	import { NetworkIcon } from '$lib/components/site'
 	import { Badge } from '$lib/components/ui/badge'
 	import { Button } from '$lib/components/ui/button'
 	import * as Card from '$lib/components/ui/card'

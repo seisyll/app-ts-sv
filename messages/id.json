@@ -1001,5 +1001,6 @@
 	"audit_resource_site": "Situs publik",
 	"auth_agree": "Dengan mendaftar, Anda menyetujui",
 	"auth_and": "dan",
-	"demo_site_details": "Rincian ruang kerja"
+	"demo_site_details": "Rincian ruang kerja",
+	"module_social": "Masuk dengan akun sosial"
 }

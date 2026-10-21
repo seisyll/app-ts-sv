@@ -96,7 +96,7 @@
 					{/if}
 				</Field.Group>
 			</form>
-			<SocialButtons providers={data.social} />
+			{#if MODULES.social}<SocialButtons providers={data.social} />{/if}
 		</Card.Content>
 		<Card.Footer class="text-muted-foreground justify-center text-sm">
 			{m.auth_have_account()}&nbsp;<a href="/login" class="text-foreground underline underline-offset-4">{m.auth_login_link()}</a>

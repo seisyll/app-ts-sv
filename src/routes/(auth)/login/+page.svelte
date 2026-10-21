@@ -88,7 +88,7 @@
 				</Button>
 			</Field.Group>
 		</form>
-		<SocialButtons providers={data.social} redirectTo={page.url.searchParams.get( 'redirectTo' )} />
+		{#if MODULES.social}<SocialButtons providers={data.social} redirectTo={page.url.searchParams.get( 'redirectTo' )} />{/if}
 	</Card.Content>
 	{#if data.signUp}
 		<Card.Footer class="text-muted-foreground justify-center text-sm">

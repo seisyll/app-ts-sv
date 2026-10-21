@@ -60,6 +60,11 @@ export const MODULES_REGISTRY = {
 		description: 'A captcha on sign-in ( after failed attempts, or always ), sign-up and forgot-password, set per workspace',
 		routes     : [ '/app/settings/security', '/(dev)/hello/captcha' ]
 	},
+	social: {
+		description: 'Sign-in with Google and Apple, each when its credentials are in the environment, and connected accounts',
+		routes     : [ '/(auth)/login/social', '/(dev)/hello/social' ],
+		whenOff    : '/login'
+	},
 	mail: {
 		description: 'The workspace\'s SMTP: password reset, email verification, invites, notification emails',
 		routes     : [ '/app/settings/mail', '/(auth)/forgot-password', '/(auth)/reset-password', '/(dev)/hello/mail', '/(dev)/api/hello/mail' ],

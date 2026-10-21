@@ -1001,5 +1001,6 @@
 	"audit_resource_site": "Public site",
 	"auth_agree": "By signing up you agree to our",
 	"auth_and": "and",
-	"demo_site_details": "Workspace details"
+	"demo_site_details": "Workspace details",
+	"module_social": "Social sign-in"
 }

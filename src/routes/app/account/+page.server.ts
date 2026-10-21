@@ -27,7 +27,8 @@ export const load : PageServerLoad = async( event ) => {
 	}
 }
 
-// The provider a sign-in form names, if this deployment offers it.
+// The provider a sign-in form names, if this deployment offers it: none without the social
+// module ( enabledSocialProviders is empty ), so link and unlink answer 404 there.
 async function providerOf( request : Request ) {
 	const provider = ( await request.formData() ).get( 'provider' )
 

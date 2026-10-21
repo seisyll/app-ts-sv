@@ -85,8 +85,10 @@ export default defineConfig( async( { mode } ) => {
 	// Which client this build is for ( CLIENT → config/clients ): its modules and its theme.
 	const client = await loadClient()
 
-	// svelte.config.js points $theme at it; it's read when sveltekit() loads that file.
+	// svelte.config.js points $theme at it, and trusts Apple's origin only with social
+	// sign-in; it's read when sveltekit() loads that file.
 	process.env.APP_THEME = client.theme
+	process.env.APP_SOCIAL = String( !!client.modules.social )
 
 	return {
 		...config,

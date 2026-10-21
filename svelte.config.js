@@ -21,8 +21,9 @@ const config = {
 			// The module registry and client configs, shared with vite.config.ts.
 			$config: 'config'
 		},
-		// Sign in with Apple posts its answer from Apple's origin ( src/lib/server/social.ts ).
-		csrf: { trustedOrigins: [ 'https://appleid.apple.com' ] }
+		// Sign in with Apple posts its answer from Apple's origin ( src/lib/server/social.ts ),
+		// with the social module only. Tools that read just this file get it on.
+		csrf: { trustedOrigins: process.env.APP_SOCIAL === 'false' ? [] : [ 'https://appleid.apple.com' ] }
 	}
 }
 
