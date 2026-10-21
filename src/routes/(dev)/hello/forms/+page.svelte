@@ -11,12 +11,20 @@
 	import { Switch } from '$lib/components/ui/switch'
 	import { Textarea } from '$lib/components/ui/textarea'
 	import { SaveBar } from '$lib/components/save-bar'
+	import { MaskedInput, MoneyInput } from '$lib/components/inputs'
+	import { FormSection, SettingsSection } from '$lib/components/sections'
+	import * as Dialog from '$lib/components/ui/dialog'
 	import { apiForm } from '$lib/forms'
 	import { http, isHttpError } from '$lib/http'
 	import { m } from '$lib/paraglide/messages'
 	import { newsletterSchema, PLANS, profileSchema, type Profile } from './schema'
 
 	let { data } = $props()
+
+	// ── Inputs and sections: plain values out of shaped fields.
+	let amount = $state<number | null>( 1250.5 )
+	let rupiah = $state<number | null>( null )
+	let phone = $state( '' )
 
 	// Field.Error takes [ { message } ]; superforms holds string[].
 	const shown = ( messages ?: string[] ) => messages?.map( ( message ) => ( { message } ) )
@@ -169,4 +177,77 @@
 			<p role="status" class="text-muted-foreground mt-3 text-sm">{$nlMessage}</p>
 		{/if}
 	</Card.Content>
+</Card.Root>
+
+<Card.Root>
+	<Card.Header>
+		<Card.Title>{m.demo_inputs_title()}</Card.Title>
+		<Card.Description>{m.demo_inputs_desc()}</Card.Description>
+	</Card.Header>
+	<Card.Content class="flex flex-col gap-6">
+		<FormSection title={m.demo_inputs_money()} hint={m.demo_inputs_money_hint()}>
+			<div class="grid gap-6 sm:grid-cols-2">
+				<Field.Field>
+					<Field.Label for="demo-amount">{m.demo_inputs_amount()}</Field.Label>
+					<MoneyInput id="demo-amount" bind:value={amount} min={0} name="amount" />
+					<Field.Description>value: <code>{JSON.stringify( amount )}</code></Field.Description>
+				</Field.Field>
+				<Field.Field>
+					<Field.Label for="demo-rupiah">{m.demo_inputs_rupiah()}</Field.Label>
+					<MoneyInput id="demo-rupiah" bind:value={rupiah} currency="IDR" placeholder="0" />
+					<Field.Description>value: <code>{JSON.stringify( rupiah )}</code></Field.Description>
+				</Field.Field>
+			</div>
+		</FormSection>
+		<FormSection title={m.demo_inputs_masked()}>
+			<Field.Field class="sm:max-w-80">
+				<Field.Label for="demo-phone">{m.demo_inputs_phone()}</Field.Label>
+				<MaskedInput id="demo-phone" mask="+## ###-####-####" placeholder="+62 812-3456-7890" bind:unmasked={phone} name="phone" inputmode="tel" />
+				<Field.Description>unmasked: <code>{phone || '—'}</code></Field.Description>
+			</Field.Field>
+		</FormSection>
+	</Card.Content>
+</Card.Root>
+
+<Card.Root>
+	<Card.Header>
+		<Card.Title>SettingsSection</Card.Title>
+		<Card.Description>{m.demo_inputs_settings_desc()}</Card.Description>
+	</Card.Header>
+	<Card.Content>
+		<SettingsSection title={m.demo_inputs_settings_one()} description={m.demo_inputs_settings_one_desc()}>
+			<Field.Field orientation="horizontal">
+				<Field.Label for="demo-digest">{m.demo_forms_newsletter()}</Field.Label>
+				<Switch id="demo-digest" />
+			</Field.Field>
+		</SettingsSection>
+		<SettingsSection title={m.demo_inputs_settings_two()} description={m.demo_inputs_settings_two_desc()}>
+			<MoneyInput bind:value={amount} min={0} class="sm:max-w-60" />
+		</SettingsSection>
+	</Card.Content>
+	<Card.Footer>
+		<!-- A dialog taller than the window: it scrolls inside the screen, its scrollbar shows,
+		     and the footer stays reachable over a fade ( src/lib/layout/scroll-fade.css ). -->
+		<Dialog.Root>
+			<Dialog.Trigger>{#snippet child( { props } )}<Button {...props} variant="outline" size="sm">{m.demo_inputs_tall()}</Button>{/snippet}</Dialog.Trigger>
+			<Dialog.Content>
+				<Dialog.Header>
+					<Dialog.Title>{m.demo_inputs_tall()}</Dialog.Title>
+					<Dialog.Description>{m.demo_inputs_tall_desc()}</Dialog.Description>
+				</Dialog.Header>
+				<div class="flex flex-col gap-4">
+					{#each Array.from( { length: 14 }, ( _, index ) => index + 1 ) as n ( n )}
+						<Field.Field>
+							<Field.Label for="demo-tall-{n}">{m.demo_inputs_field( { n } )}</Field.Label>
+							<Input id="demo-tall-{n}" />
+						</Field.Field>
+					{/each}
+				</div>
+				<Dialog.Footer>
+					<Dialog.Close>{#snippet child( { props } )}<Button {...props} variant="outline">{m.table_cancel()}</Button>{/snippet}</Dialog.Close>
+					<Dialog.Close>{#snippet child( { props } )}<Button {...props}>{m.demo_inputs_save()}</Button>{/snippet}</Dialog.Close>
+				</Dialog.Footer>
+			</Dialog.Content>
+		</Dialog.Root>
+	</Card.Footer>
 </Card.Root>

@@ -1,0 +1,163 @@
+/* ―― » SCROLL AFFORDANCES ( billing-app's scroll-fade.css ) — "there is more this way", said
+ *  by the edge itself.
+ *
+ *  A scroll region that ends in a hard cut reads as a finished list. The sidebar cuts
+ *  a nav row in half at both ends, and the command palette does the same at the top
+ *  once you scroll into it.
+ *
+ *  App-owned and UNLAYERED (Tailwind orders `theme, base, components, utilities`, and
+ *  unlayered beats every layer), so it corrects the vendored sheets without a specificity
+ *  fight — the same slot `sidebar-motion.css` occupies. Structural, not a brand decision:
+ *  every style gets it.
+ *
+ *  CSS-ONLY, via scroll-driven animations, and the mechanism buys the hard part for
+ *  free. A fade must never claim content that is not there — the palette's own bottom
+ *  overlay carries a comment saying exactly that — and here:
+ *    · at rest the animations hold their `from` values, so the top edge is not faded
+ *      until you have actually scrolled away from it;
+ *    · when a region does not overflow at all its scroll timeline is INACTIVE, the
+ *      animations never apply, and both edges stay hard. No JS, no listener, no state
+ *      to keep in sync, and nothing to get wrong when content changes length.
+ *
+ *  Lengths need @property or they cannot interpolate — an unregistered custom property
+ *  jumps at the midpoint instead of fading. */
+
+@property --fade-top {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 0px;
+}
+
+@property --fade-bottom {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 0px;
+}
+
+@supports (animation-timeline: scroll()) {
+	/* ―― » The sidebar: both edges, each independent. The top fades IN as you leave the
+	        top; the bottom fades OUT as you reach the end, so arriving at the last item
+	        shows it whole rather than under a permanent haze. */
+	[data-slot='sidebar-content'] {
+		mask-image: linear-gradient(
+			to bottom,
+			transparent 0,
+			#000 var(--fade-top),
+			#000 calc(100% - var(--fade-bottom)),
+			transparent 100%
+		);
+		-webkit-mask-image: linear-gradient(
+			to bottom,
+			transparent 0,
+			#000 var(--fade-top),
+			#000 calc(100% - var(--fade-bottom)),
+			transparent 100%
+		);
+		animation: fade-edge-in linear both, fade-edge-out linear both;
+		animation-timeline: scroll(self block), scroll(self block);
+		animation-range: 0 2rem, calc(100% - 2rem) 100%;
+	}
+
+	/* ―― » The command palette: TOP ONLY. Its bottom already has a gradient overlay in
+	        CommandPalette.svelte, driven by that component's own `more` state — working,
+	        honest, and not this sheet's business to duplicate. The scroller is the scroll
+	        area's viewport, not the list: the list does not overflow. */
+	[data-slot='command-list'] [data-slot='scroll-area-viewport'] {
+		mask-image: linear-gradient( to bottom, transparent 0, #000 var(--fade-top), #000 100% );
+		-webkit-mask-image: linear-gradient( to bottom, transparent 0, #000 var(--fade-top), #000 100% );
+		animation: fade-edge-in linear both;
+		animation-timeline: scroll(self block);
+		animation-range: 0 2rem;
+	}
+}
+
+@keyframes fade-edge-in {
+	from { --fade-top: 0px; }
+	to { --fade-top: 2rem; }
+}
+
+@keyframes fade-edge-out {
+	from { --fade-bottom: 2rem; }
+	to { --fade-bottom: 0px; }
+}
+
+/* ―― » NOT gated on prefers-reduced-motion, deliberately. Nothing here moves: the
+        "animation" is a scroll-position readout, so its output changes only while the
+        person is already scrolling, and the fade is a static edge at every resting
+        position. Disabling it would remove information, not motion. */
+
+/* ―― » DIALOGS: a form taller than the screen must SAY it scrolls .
+ *
+ *  A dialog taller than a laptop's window scrolled, but with overlay scrollbars nothing
+ *  showed it, and its Save sat half under the bottom edge. The primitive caps every dialog
+ *  at the window and scrolls it ( the dialog PATCHES in scripts/sync-ui.ts ); this makes that
+ *  scroll visible and keeps the decision in reach:
+ *    · a thin scrollbar in the ink token, always drawn where the platform allows;
+ *    · the footer — Cancel / Save — sticks to the bottom edge while the fields scroll
+ *      under it, over a short fade, which is itself the cue that there is more above.
+ *  At the end of the scroll the footer is back in its own place, and a dialog that fits
+ *  never scrolls, so none of this shows. */
+[data-slot='dialog-content'],
+[data-slot='dialog-content'] *,
+[data-slot='alert-dialog-content'] {
+	scrollbar-width: thin;
+	scrollbar-color: color-mix(in oklch, var(--foreground) 32%, transparent) transparent;
+}
+
+[data-slot='dialog-content'] {
+	--dialog-pad: 1.5rem;
+}
+
+html:is(.style-lyra, .style-mira) [data-slot='dialog-content'] {
+	--dialog-pad: 1rem;
+}
+
+/* Dialogs that lay out their own scrolling body ( class p-0 ) keep their footer where they
+   put it; nova's footer already runs edge to edge with its own tint. */
+html:not(.style-nova) [data-slot='dialog-content']:not(.p-0) [data-slot='dialog-footer'] {
+	/* Chrome measures a sticky edge from the scroller's CONTENT box, so `bottom: 0` floated a
+	   padding's height above the dialog's edge with fields showing beneath. The negative
+	   offset and margin, paid back in padding, put it on the edge with the same spacing. */
+	position: sticky;
+	bottom: calc(-1 * var(--dialog-pad));
+	z-index: 1;
+	margin-block: -0.75rem calc(-1 * var(--dialog-pad));
+	padding-block: 0.75rem var(--dialog-pad);
+	background: var(--popover);
+}
+
+/* The fade over the fields: shown only while there is more below. Driven by the dialog's
+   own scroll, it fades out over the last stretch; a dialog that fits has no active
+   timeline, so the animation never applies and the fade stays at its resting 0. */
+html:not(.style-nova) [data-slot='dialog-content']:not(.p-0) [data-slot='dialog-footer']::before {
+	content: '';
+	position: absolute;
+	inset: -1.5rem 0 100% 0;
+	background: linear-gradient(to bottom, transparent, var(--popover));
+	pointer-events: none;
+	opacity: 0;
+}
+
+@supports (animation-timeline: scroll()) {
+	html:not(.style-nova) [data-slot='dialog-content']:not(.p-0) [data-slot='dialog-footer']::before {
+		animation: dialog-more-below linear both;
+		animation-timeline: scroll(nearest block);
+		animation-range: calc(100% - 1.5rem) 100%;
+	}
+}
+
+@keyframes dialog-more-below {
+	from {
+		opacity: 1;
+	}
+
+	to {
+		opacity: 0;
+	}
+}
+
+html.style-nova [data-slot='dialog-content'] [data-slot='dialog-footer'] {
+	position: sticky;
+	bottom: -1rem;
+	z-index: 1;
+}

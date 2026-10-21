@@ -58,6 +58,7 @@
 		"d3-shape": "^3.2.0",
 		"embla-carousel-svelte": "^8.6.0",
 		"layerchart": "^2.0.0",
+		"maska": "^3.2.0",
 		"mode-watcher": "^1.1.0",
 		"playwright": "1.61.1",
 		"prisma": "^7.9.1",

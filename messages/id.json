@@ -949,5 +949,22 @@
 	"demo_picker_nobody": "Tidak ada",
 	"demo_picker_multiple": "Beberapa",
 	"demo_picker_multiple_desc": "multiple: nilai dan chip, dipersempit ke pelanggan Pro dan Team lewat parameter tetap.",
-	"demo_picker_team": "Anggota tim"
+	"demo_picker_team": "Anggota tim",
+	"demo_inputs_title": "Masukan dan bagian",
+	"demo_inputs_desc": "MoneyInput dan MaskedInput membentuk yang diketik dan mengembalikan nilai polos; FormSection mengelompokkan formulir panjang di bawah keterangan yang dipisah garis tipis.",
+	"demo_inputs_money": "Uang",
+	"demo_inputs_money_hint": "Dikelompokkan saat diketik; desimal mengikuti mata uangnya.",
+	"demo_inputs_amount": "Jumlah ( APP.currency )",
+	"demo_inputs_rupiah": "Jumlah dalam rupiah ( tanpa desimal )",
+	"demo_inputs_masked": "Bertopeng",
+	"demo_inputs_phone": "Telepon",
+	"demo_inputs_settings_desc": "Kelompok halaman pengaturan: apa itu di kiri, kontrolnya di kanan. Tombolnya membuka dialog yang lebih tinggi dari jendela.",
+	"demo_inputs_settings_one": "Ringkasan mingguan",
+	"demo_inputs_settings_one_desc": "Ringkasan ruang kerja setiap Senin pagi.",
+	"demo_inputs_settings_two": "Anggaran bulanan",
+	"demo_inputs_settings_two_desc": "Peringatkan admin saat pengeluaran melewati jumlah ini.",
+	"demo_inputs_tall": "Dialog yang tinggi",
+	"demo_inputs_tall_desc": "Lebih banyak isian daripada yang muat: ia bergulir di dalam jendela, dan Simpan tetap terjangkau.",
+	"demo_inputs_field": "Isian {n}",
+	"demo_inputs_save": "Simpan"
 }

@@ -41,7 +41,7 @@ it.
 | `/hello/save-bar` | `SaveBar` + `Draft` (`src/lib/components/save-bar`) |
 | `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory, and server-paged against a mock endpoint with its query in the URL |
 | `/hello/pickers` | `RemotePicker` (`src/lib/components/pickers`): one choice and several, over the mock customers endpoint |
-| `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
+| `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, a form action that works without JS, `MoneyInput` / `MaskedInput`, `FormSection` / `SettingsSection`, and a dialog taller than the window |
 | `/hello/components` | The `ui/` components the app doesn't use yet: chart, tabs, accordion, calendar, carousel, empty, item, input-otp, native-select, slider, progress, radio-group, button-group, pagination, menubar, navigation-menu, context-menu, drawer, hover-card |
 | `/hello/dashboard` | `Figure`, `StatCards`, `LifecycleRail`, `TrendChart` ( bar / area ), `UnitGrid`, `StatBreakdown`, `MonthPicker` on made-up numbers, with a reroll and a failed read |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
@@ -472,6 +472,23 @@ over a first page that silently leaves the rest out — and says how many more t
 
 `apiForm` pairs with SaveBar: `<SaveBar show={form.isTainted( $tainted )} saving={$submitting} saveType="submit" ondiscard={() => form.reset()} />`
 inside the `<form use:enhance novalidate>`. See `/hello/forms`.
+
+**Shaped inputs** (`src/lib/components/inputs`, on maska): the person sees the shape while
+typing, the form posts the plain value.
+
+- `MoneyInput` — `bind:value` is a number or null; digits group in the reader's locale, the
+  currency's symbol sits beside them and decimals follow the currency (none for IDR or JPY).
+  `min={0}` drops the minus sign. `<MoneyInput bind:value currency="IDR" name="price" />`
+- `MaskedInput` — any maska mask (`'+## ###-####-####'`, `'#### ####'`); `bind:unmasked`
+  and `name` carry the plain value, the shaped one never posts.
+
+**Long forms and settings pages** (`src/lib/components/sections`): `FormSection` groups a
+form's fields under a caption, a hairline between groups; `SettingsSection` puts what a
+setting is on the left and its control on the right. Neither boxes its group in a card.
+
+**Scroll affordances** (`src/lib/layout/scroll-fade.css`, global, CSS only): the sidebar and
+the command palette fade an edge only when there is more beyond it; a dialog taller than the
+window scrolls inside it with its scrollbar showing, and its footer stays pinned over a fade.
 
 ## Database
 

@@ -949,5 +949,22 @@
 	"demo_picker_nobody": "Nobody",
 	"demo_picker_multiple": "Several",
 	"demo_picker_multiple_desc": "multiple: values and chips, narrowed to Pro and Team customers by fixed params.",
-	"demo_picker_team": "Team members"
+	"demo_picker_team": "Team members",
+	"demo_inputs_title": "Inputs and sections",
+	"demo_inputs_desc": "MoneyInput and MaskedInput shape what is typed and hand back a plain value; FormSection groups a long form under captions divided by hairlines.",
+	"demo_inputs_money": "Money",
+	"demo_inputs_money_hint": "Grouped as you type; decimals follow the currency.",
+	"demo_inputs_amount": "Amount ( APP.currency )",
+	"demo_inputs_rupiah": "Amount in rupiah ( no decimals )",
+	"demo_inputs_masked": "Masked",
+	"demo_inputs_phone": "Phone",
+	"demo_inputs_settings_desc": "A settings page's groups: what it is on the left, the control on the right. The button opens a dialog taller than the window.",
+	"demo_inputs_settings_one": "Weekly digest",
+	"demo_inputs_settings_one_desc": "A summary of the workspace every Monday morning.",
+	"demo_inputs_settings_two": "Monthly budget",
+	"demo_inputs_settings_two_desc": "Warn admins when spending passes this amount.",
+	"demo_inputs_tall": "A tall dialog",
+	"demo_inputs_tall_desc": "More fields than fit: it scrolls inside the window, and Save stays in reach.",
+	"demo_inputs_field": "Field {n}",
+	"demo_inputs_save": "Save"
 }
