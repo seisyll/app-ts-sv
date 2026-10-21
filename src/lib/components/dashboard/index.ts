@@ -1,0 +1,8 @@
+export { default as Figure, type FigureUnit } from './Figure.svelte'
+export { default as LifecycleRail, type RailStop } from './LifecycleRail.svelte'
+export { default as MonthPicker } from './MonthPicker.svelte'
+export { default as StatBreakdown, type BreakdownSegment } from './StatBreakdown.svelte'
+export { default as StatCards, type StatCard } from './StatCards.svelte'
+export { default as TrendChart, type TrendSeries } from './TrendChart.svelte'
+export { default as UnitGrid, type UnitPart } from './UnitGrid.svelte'
+export { shares } from './shares'

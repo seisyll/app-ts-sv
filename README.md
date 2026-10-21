@@ -42,6 +42,7 @@ it.
 | `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory, and server-paged against a mock endpoint with its query in the URL |
 | `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
 | `/hello/components` | The `ui/` components the app doesn't use yet: chart, tabs, accordion, calendar, carousel, empty, item, input-otp, native-select, slider, progress, radio-group, button-group, pagination, menubar, navigation-menu, context-menu, drawer, hover-card |
+| `/hello/dashboard` | `Figure`, `StatCards`, `LifecycleRail`, `TrendChart` ( bar / area ), `UnitGrid`, `StatBreakdown`, `MonthPicker` on made-up numbers, with a reroll and a failed read |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
 | `/hello/brand` | `BrandMark` with and without a logo, `FaviconPreview`, the sign-in header |
 | `/hello/captcha` | `CaptchaWidget` with Turnstile's and hCaptcha's test keys |
@@ -347,6 +348,36 @@ await sendMail( { to: { email, name }, template: 'user.invite', values: { invite
   - remove the `sendMail` calls in `src/lib/server/auth.ts` (reset and verification),
     `src/lib/server/users.ts` (invites) and `src/lib/server/notifications`
   - set `requireEmailVerification` back to `false`
+
+## Dashboard
+
+`/app` opens on the workspace's figures (`src/lib/server/dashboard.ts`), built from billing-app's
+dashboard pieces in `src/lib/components/dashboard`:
+
+| Piece | Shows |
+|---|---|
+| `Figure` | A big number that rolls to its new value (NumberFlow; reduced motion honoured; plain text kept for screen readers): `count`, `money` (`APP.currency`), `percent` |
+| `StatCards` | The 2-4 across figure row |
+| `StatBreakdown` | One total and its parts: two figures, a stacked bar, a legend with counts and shares |
+| `UnitGrid` | A whole as 100 cells (a waffle); legend rows can filter |
+| `LifecycleRail` | A population as a journey: stops on a rail, exits branching off; stops can filter |
+| `TrendChart` | A figure per period, grouped bars or an area (layerchart) |
+| `MonthPicker` | Previous / this month / next, never past the current month |
+
+- **A failed read is a dash, never a zero.** Each figure is its own query; one that throws is
+  `null` (logged) and its card says `—` (`unavailable`), the rest still show. A figure whose
+  module is off is left out.
+- **Shares add up to 100** (`shares()`, largest remainder), so a bar and its legend agree.
+- **Colours are tokens:** `var( --chart-1…5 )`, and `var( --destructive )` for the one thing
+  that must stand out.
+- **Months** (`src/lib/months.ts`) are calendar months in UTC; `lastMonths( 6 )` keeps a quiet
+  month as a zero bar. The home page reads `?month=YYYY-MM`.
+- **The home page:** people (for those who may list users: invited → active, banned —
+  each stop opens the users table filtered to it), sign-ups in the month and the six before,
+  roles, files by kind and storage, unread notifications.
+- **Detach:** delete `src/lib/components/dashboard`, `src/lib/server/dashboard.ts`,
+  `src/routes/app/+page.server.ts`, `/hello/dashboard` and `@number-flow/svelte`, and put a
+  welcome back on `/app`.
 
 ## DataTable
 
