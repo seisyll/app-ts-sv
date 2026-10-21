@@ -37,7 +37,7 @@ database). Everything under it returns 404 outside `vite dev`.
 |---|---|
 | `/hello` | i18n, formatting, the mock API |
 | `/hello/save-bar` | `SaveBar` + `Draft` (`src/lib/components/save-bar`) |
-| `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory and server-paged against a mock endpoint |
+| `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory, and server-paged against a mock endpoint with its query in the URL |
 | `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
 | `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox`, `MediaDropzone` against a mock library |
@@ -201,6 +201,12 @@ await notify( { type: 'user.joined', params: { name, email }, to: { roles: [ 'ad
   `parsePageQuery( url.searchParams )` and answers `Paged<T>` —
   see `src/routes/(dev)/api/hello/customers/+server.ts`. `parsePageQuery` only shapes the
   input: allow-list `sort`, `searchBy` and filter columns in the endpoint.
+- **URL state** (`syncUrl`, one table per page): page, size, sort, search and filters live in
+  the address bar — `?page=2&size=20&sort=name&dir=desc&q=ada&in=email&from=…&to=…&role=admin`
+  (defaults left out; any other key is a facet, so don't name a filter column like those
+  keys). Written with `replaceState`: reload and share keep the view, Back leaves the list.
+  The load must read the same query so the server render matches:
+  `listUsers( toPageQuery( fromUrlParams( url.searchParams ) ) )` (see `/app/users`).
 - A column with a string `header` gets a sort button; `enableSorting: false` opts out.
 - Helpers: `selectColumn()`, `rowNumberColumn()`, `facetedFilter`, `dateRangeFilter`,
   `textCell()` (escapes HTML), `runBulk()` for bulk actions.

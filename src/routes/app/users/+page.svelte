@@ -54,6 +54,7 @@
 		dateRange={{ columnId: 'createdAt' }}
 		enableSelection
 		{bulkActions}
+		syncUrl
 	>
 		{#snippet toolbarActions()}
 			<AddUserDialog onadded={refresh} />

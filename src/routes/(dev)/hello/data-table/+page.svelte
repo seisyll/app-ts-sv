@@ -143,6 +143,7 @@
 			exportTitle={m.demo_table_server_title()}
 			exportFormats={[ 'csv' ]}
 			visibilityKey="demo-server"
+			syncUrl
 		/>
 	</Card.Content>
 </Card.Root>

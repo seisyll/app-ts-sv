@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parsePageQuery, toPageQuery, toSearchParams, type TableQuery } from './query'
+import { fromUrlParams, parsePageQuery, toPageQuery, toSearchParams, toUrlParams, type TableQuery } from './query'
 
 const base : TableQuery = {
 	pageIndex: 2,
@@ -65,5 +65,31 @@ describe( 'toSearchParams / parsePageQuery', () => {
 			startDate: undefined,
 			endDate  : undefined
 		} )
+	} )
+} )
+
+describe( 'toUrlParams / fromUrlParams', () => {
+	it( 'round-trips a full query in human words', () => {
+		const params = toUrlParams( base )
+
+		expect( String( params ) ).toBe( 'page=3&size=20&sort=createdAt&dir=desc&q=ada+lovelace&in=name&from=2026-01-01&to=2026-01-31&status=active&status=trial&plan=pro' )
+		expect( fromUrlParams( params ) ).toEqual( base )
+	} )
+
+	it( 'leaves defaults out, against the table page size', () => {
+		const query = { ...base, pageIndex: 0, search: '', searchBy: 'name', sort: undefined, startDate: undefined, endDate: undefined, filters: {} }
+
+		expect( String( toUrlParams( query, { pageSize: 20 } ) ) ).toBe( '' )
+		expect( fromUrlParams( new URLSearchParams(), { pageSize: 20 } ) ).toMatchObject( { pageIndex: 0, pageSize: 20, searchBy: 'all', filters: {} } )
+	} )
+
+	it( 'clamps and shape-checks hostile input', () => {
+		const parsed = fromUrlParams( new URLSearchParams( 'page=-3&size=5000&dir=up&sort=name&from=2026-02-31&to=soon&q=%20x%20&role=' ) )
+
+		expect( parsed ).toMatchObject( { pageIndex: 0, pageSize: 100, sort: 'name', dir: 'asc', search: 'x', startDate: undefined, endDate: undefined, filters: { role: [] } } )
+	} )
+
+	it( 'feeds a load through toPageQuery', () => {
+		expect( toPageQuery( fromUrlParams( new URLSearchParams( 'page=2&role=admin' ) ) ) ).toMatchObject( { skip: 10, take: 10, filters: { role: [ 'admin' ] } } )
 	} )
 } )

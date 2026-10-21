@@ -6,8 +6,11 @@ import { dateRangeFilter, facetedFilter, rowNumberColumn, selectColumn } from '.
 import DataTable from './DataTable.svelte'
 import type { TableQuery } from './query'
 import { TableSource } from './table-source.svelte'
+import { replaceState, resetNavigation } from '$lib/test/app-navigation'
+import { setPath } from '$lib/test/app-state.svelte'
 
 vi.mock( '$app/state', () => import( '$lib/test/app-state.svelte' ) )
+vi.mock( '$app/navigation', () => import( '$lib/test/app-navigation' ) )
 
 type Person = { id : string, name : string, email : string, status : 'active' | 'trial' }
 
@@ -222,5 +225,48 @@ describe( 'DataTable — server mode', () => {
 
 		await alert.getByRole( 'button', { name: 'Retry' } ).click()
 		expect( fetch ).toHaveBeenCalledTimes( 2 )
+	} )
+} )
+
+describe( 'DataTable — URL state', () => {
+	const STATUS = [ { columnId: 'status', title: 'Status', options: [ { value: 'trial', label: 'Trial' }, { value: 'active', label: 'Active' } ] } ]
+	const written = () => new URL( String( replaceState.mock.lastCall?.[ 0 ] ), 'http://localhost' ).searchParams
+
+	it( 'starts from the address: page, size, sort and a facet', async() => {
+		setPath( '/people?page=2&size=5&sort=name&status=trial&utm=x' )
+		await render( DataTable<Person>, { data: PEOPLE, columns: COLUMNS, filters: STATUS, visibilityKey: null, syncUrl: true } )
+
+		// 9 trial people, 5 a page, by name: page 2 holds the last 4.
+		await expect.element( page.getByText( 'Page 2 of 2' ) ).toBeVisible()
+		await expect.element( page.getByRole( 'columnheader', { name: 'Name' } ) ).toHaveAttribute( 'aria-sort', 'ascending' )
+		expect( bodyRows() ).toHaveLength( 4 )
+		setPath( '/' )
+	} )
+
+	it( 'writes changes back with replaceState, keeping params it does not own', async() => {
+		resetNavigation()
+		setPath( '/' )
+		await render( DataTable<Person>, { data: PEOPLE, columns: COLUMNS, visibilityKey: null, syncUrl: true } )
+
+		await page.getByRole( 'button', { name: 'Next page' } ).click()
+		expect( written().get( 'page' ) ).toBe( '2' )
+
+		await header( 'Email' ).click()
+		// A new sort starts again from page 1, which is the default and so left out.
+		expect( written().get( 'page' ) ).toBeNull()
+		expect( written().get( 'sort' ) ).toBe( 'email' )
+	} )
+
+	it( 'tells a TableSource the query its first page was loaded with', async() => {
+		setPath( '/people?q=ada&page=3' )
+		const fetch = vi.fn()
+		const source = new TableSource<Person>( { path: '/api/people', initial: { rows: PEOPLE.slice( 20 ), total: 25 }, fetch } )
+
+		await render( DataTable<Person>, { source, columns: COLUMNS, search: {}, visibilityKey: null, syncUrl: true } )
+
+		await expect.element( page.getByRole( 'searchbox', { name: 'Search' } ) ).toHaveValue( 'ada' )
+		expect( source.query ).toMatchObject( { search: 'ada', pageIndex: 2 } )
+		expect( fetch ).not.toHaveBeenCalled()
+		setPath( '/' )
 	} )
 } )

@@ -121,7 +121,7 @@
 	"demo_table_memory_title": "In memory",
 	"demo_table_memory_desc": "137 customers held in the page. Segments, bulk actions (Activate, Delete with confirm) and row actions.",
 	"demo_table_server_title": "Server mode",
-	"demo_table_server_desc": "One page at a time from /api/hello/customers. The first page came with the server render. Toggle slow or failing requests to see the loading and error states.",
+	"demo_table_server_desc": "One page at a time from /api/hello/customers. The first page came with the server render. Its page, sort, search and filters live in the address bar: reload or share the URL to keep them. Toggle slow or failing requests to see the loading and error states.",
 	"demo_table_slow": "Slow responses",
 	"demo_table_failing": "Make requests fail",
 	"demo_table_mrr_total": "MRR of matching rows:",

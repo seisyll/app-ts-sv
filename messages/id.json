@@ -121,7 +121,7 @@
 	"demo_table_memory_title": "Di memori",
 	"demo_table_memory_desc": "137 pelanggan disimpan di halaman. Segmen, tindakan massal (Aktifkan, Hapus dengan konfirmasi) dan aksi per baris.",
 	"demo_table_server_title": "Mode server",
-	"demo_table_server_desc": "Satu halaman setiap kali dari /api/hello/customers. Halaman pertama ikut render server. Nyalakan respons lambat atau gagal untuk melihat status memuat dan galat.",
+	"demo_table_server_desc": "Satu halaman setiap kali dari /api/hello/customers. Halaman pertama ikut render server. Halaman, urutan, pencarian, dan filternya tersimpan di bilah alamat: muat ulang atau bagikan URL-nya untuk mempertahankannya. Nyalakan respons lambat atau gagal untuk melihat status memuat dan galat.",
 	"demo_table_slow": "Respons lambat",
 	"demo_table_failing": "Buat permintaan gagal",
 	"demo_table_mrr_total": "MRR baris yang cocok:",

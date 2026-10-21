@@ -90,6 +90,12 @@ export class TableSource<T, S = undefined> {
 
 	refresh = () : Promise<void> => this.#load( this.#query )
 
+	// The query the first page was loaded with, when it isn't the default ( <DataTable syncUrl>
+	// reads it from the address bar, as the page's load did ). No request.
+	seed = ( query : TableQuery ) : void => {
+		this.#query = query
+	}
+
 	// Stop everything: a pending keystroke, an in-flight answer, the loading flag.
 	destroy = () : void => {
 		this.#debounced.cancel()

@@ -1,5 +1,6 @@
 <script lang="ts" generics="TData">
 	import { untrack } from 'svelte'
+	import { parseDate } from '@internationalized/date'
 	import type { Table } from '@tanstack/table-core'
 	import type { DateRange } from 'bits-ui'
 	import CalendarPlusIcon from '@lucide/svelte/icons/calendar-plus'
@@ -21,20 +22,26 @@
 
 	// Looked up without getColumn(), which logs an error for a missing column.
 	const column = $derived( table.getAllFlatColumns().find( ( candidate ) => candidate.id === columnId ) )
-	const active = $derived( ( column?.getFilterValue() as string[] | undefined )?.length === 2 )
+	const value = $derived( column?.getFilterValue() as string[] | undefined )
+	const active = $derived( value?.length === 2 )
 
 	// What the calendar shows, including a half-picked range ( start chosen, end not yet ).
 	let draft = $state<DateRange>( { start: undefined, end: undefined } )
 
-	// The table owns the filter: when it's cleared elsewhere ( the toolbar's Reset ), drop a
-	// completed draft so the calendar doesn't keep showing the old range. Reads `active`,
-	// writes `draft` untracked — it can't retrigger itself.
+	// The table owns the filter: when it's set elsewhere ( from the URL ), show that range;
+	// when it's cleared elsewhere ( the toolbar's Reset ), drop a completed draft so the
+	// calendar doesn't keep showing the old one. Reads `value`, writes `draft` untracked —
+	// it can't retrigger itself.
 	$effect( () => {
-		if ( !active )
-			untrack( () => {
-				if ( draft.start && draft.end )
-					draft = { start: undefined, end: undefined }
-			} )
+		const range = value
+
+		untrack( () => {
+			if ( range?.length === 2 ) {
+				if ( draft.start?.toString() !== range[ 0 ] || draft.end?.toString() !== range[ 1 ] )
+					draft = { start: parseDate( range[ 0 ] ), end: parseDate( range[ 1 ] ) }
+			} else if ( draft.start && draft.end )
+				draft = { start: undefined, end: undefined }
+		} )
 	} )
 
 	const short = { day: 'numeric', month: 'short' } as const
