@@ -1,5 +1,6 @@
 import { parsePageQuery } from '$lib/components/data-table'
 import { requirePermission } from '$lib/server/guards'
+import { mailReady } from '$lib/server/mail'
 import { listUsers } from '$lib/server/users'
 import type { PageServerLoad } from './$types'
 
@@ -7,5 +8,5 @@ import type { PageServerLoad } from './$types'
 export const load : PageServerLoad = async( event ) => {
 	const { user } = await requirePermission( event, { user: [ 'list' ] } )
 
-	return { users: await listUsers( parsePageQuery( new URLSearchParams() ) ), me: user.id }
+	return { users: await listUsers( parsePageQuery( new URLSearchParams() ) ), me: user.id, canInvite: await mailReady() }
 }

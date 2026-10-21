@@ -1,9 +1,11 @@
+import { randomBytes } from 'node:crypto'
 import { error } from '@sveltejs/kit'
 import type { Paged, PageQuery } from '$lib/components/data-table'
 import { m } from '$lib/paraglide/messages'
 import type { createAuth } from '$lib/server/auth'
 import { db } from '$lib/server/db'
 import { listArgs, type ListSpec } from '$lib/server/list'
+import { appUrl, sendMail } from '$lib/server/mail'
 import type { NewUser, UserChange, UserRow } from '$lib/users'
 
 // The current tenant's users ( RLS scopes `db` ), for the Users table.
@@ -11,7 +13,12 @@ const USERS : ListSpec = {
 	search: [ 'name', 'email' ],
 	facets: {
 		role  : ( values ) => ( { role: { in: values } } ),
-		status: ( values ) => ( { OR: values.map( ( value ) => ( value === 'banned' ? { banned: true } : { OR: [ { banned: false }, { banned: null } ] } ) ) } )
+		// Invited: no way to sign in yet ( no password, no other account ).
+		status: ( values ) => ( { OR: values.map( ( value ) => ( value === 'banned'
+			? { banned: true }
+			: value === 'invited'
+				? { accounts: { none: {} } }
+				: { OR: [ { banned: false }, { banned: null } ], accounts: { some: {} } } ) ) } )
 	},
 	sort       : [ 'name', 'email', 'role', 'createdAt' ],
 	defaultSort: { createdAt: 'desc' },
@@ -21,12 +28,12 @@ const USERS : ListSpec = {
 export async function listUsers( query : PageQuery ) : Promise<Paged<UserRow>> {
 	const args = listArgs( query, USERS )
 	const [ rows, total ] = await Promise.all( [
-		db.user.findMany( { ...args, select: { id: true, name: true, email: true, image: true, role: true, banned: true, createdAt: true } } ),
+		db.user.findMany( { ...args, select: { id: true, name: true, email: true, image: true, role: true, banned: true, createdAt: true, _count: { select: { accounts: true } } } } ),
 		db.user.count( { where: args.where } )
 	] )
 
 	return {
-		rows: rows.map( ( row ) => ( { ...row, role: row.role ?? 'member', banned: row.banned ?? false, createdAt: row.createdAt.toISOString() } ) ),
+		rows: rows.map( ( { _count, ...row } ) => ( { ...row, role: row.role ?? 'member', banned: row.banned ?? false, invited: !_count.accounts, createdAt: row.createdAt.toISOString() } ) ),
 		total
 	}
 }
@@ -62,6 +69,28 @@ export async function deleteUser( auth : Auth, headers : Headers, actorId : stri
 	await auth.api.removeUser( { body: { userId }, headers } )
 }
 
-export async function createUser( auth : Auth, headers : Headers, input : NewUser ) : Promise<void> {
-	await auth.api.createUser( { body: input, headers } )
+const INVITE_DAYS = 7
+
+/* ―― » Add a person. With a password the admin vouches for them, so their email counts as
+        verified. Without one they're INVITED: an email with a link to choose a password.
+        The link is a better-auth reset token that lives a week instead of an hour, so
+        accepting is the reset page and "forgot password" sends a fresh one. An invite that
+        can't be sent takes the account back out, so the admin can simply try again. */
+export async function createUser( auth : Auth, headers : Headers, input : NewUser, inviter : string ) : Promise<void> {
+	const { password, ...rest } = input
+	const { user } = await auth.api.createUser( { body: { ...rest, ...( password ? { password, data: { emailVerified: true } } : {} ) }, headers } )
+
+	if ( password )
+		return
+
+	try {
+		const token = randomBytes( 24 ).toString( 'base64url' )
+
+		await db.verification.create( { data: { identifier: `reset-password:${ token }`, value: user.id, expiresAt: new Date( Date.now() + INVITE_DAYS * 86_400_000 ) } } )
+		await sendMail( { to: user, template: 'user.invite', values: { inviter, link: appUrl( `/reset-password?token=${ token }` ) } } )
+	} catch ( caught ) {
+		await auth.api.removeUser( { body: { userId: user.id }, headers } )
+
+		throw caught
+	}
 }

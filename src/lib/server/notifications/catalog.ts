@@ -8,7 +8,8 @@ import { roleLabel } from '$lib/users'
         no migration, and old rows read the new words at once.
 
         Adding a type: one entry here ( a params schema, labels for the preferences page,
-        a render ), then notify( { type, params, to } ) where it happens. Give it an icon
+        a render, whether email is on until a reader says otherwise ), then
+        notify( { type, params, to } ) where it happens. Give it an icon
         in src/lib/components/notifications/icons.ts if the bell should show one. */
 
 export type Rendered = { title : string, body : string | null, href : string | null }
@@ -18,6 +19,8 @@ type Definition<S extends v.GenericSchema> = {
 	description : () => string
 	schema      : S
 	render      : ( params : v.InferOutput<S> ) => Rendered
+	// Emailed too, for readers who haven't chosen ( and only once mail is set up ).
+	email       : boolean
 }
 
 // Keeps each entry's exact schema type for `notify()`'s params.
@@ -28,13 +31,15 @@ export const NOTIFICATIONS = {
 		label      : () => m.notif_user_joined_label(),
 		description: () => m.notif_user_joined_desc(),
 		schema     : v.object( { name: v.string(), email: v.string() } ),
-		render     : ( p ) => ( { title: m.notif_user_joined_title( { name: p.name } ), body: p.email, href: '/app/users' } )
+		render     : ( p ) => ( { title: m.notif_user_joined_title( { name: p.name } ), body: p.email, href: '/app/users' } ),
+		email      : false
 	} ),
 	'role.changed': define( {
 		label      : () => m.notif_role_changed_label(),
 		description: () => m.notif_role_changed_desc(),
 		schema     : v.object( { role: v.string(), by: v.string() } ),
-		render     : ( p ) => ( { title: m.notif_role_changed_title( { role: roleLabel( p.role ) } ), body: m.notif_role_changed_body( { name: p.by } ), href: null } )
+		render     : ( p ) => ( { title: m.notif_role_changed_title( { role: roleLabel( p.role ) } ), body: m.notif_role_changed_body( { name: p.by } ), href: null } ),
+		email      : true
 	} )
 } as const
 

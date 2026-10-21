@@ -9,13 +9,20 @@
 
 	let { data } = $props()
 
-	const stored = () => Object.fromEntries( data.preferences.map( ( preference ) => [ preference.type, preference.enabled ] ) )
+	const stored = ( key : 'enabled' | 'email' ) => Object.fromEntries( data.preferences.map( ( preference ) => [ preference.type, preference[ key ] ] ) )
 
 	// svelte-ignore state_referenced_locally
-	let enabled = $state<Record<string, boolean>>( stored() )
+	let enabled = $state<Record<string, boolean>>( stored( 'enabled' ) )
+	// svelte-ignore state_referenced_locally
+	let email = $state<Record<string, boolean>>( stored( 'email' ) )
 	let saving = $state( false )
 
-	const dirty = $derived( data.preferences.some( ( preference ) => enabled[ preference.type ] !== preference.enabled ) )
+	const dirty = $derived( data.preferences.some( ( preference ) => enabled[ preference.type ] !== preference.enabled || ( data.email && email[ preference.type ] !== preference.email ) ) )
+
+	function discard() {
+		enabled = stored( 'enabled' )
+		email = stored( 'email' )
+	}
 </script>
 
 <svelte:head>
@@ -46,18 +53,35 @@
 	<Card.Root class="max-w-xl">
 		<Card.Content>
 			<Field.Group>
+				<!-- Column heads for the switches; each switch also names itself for screen readers. -->
+				<div class="flex justify-end gap-2 text-xs font-medium whitespace-nowrap text-muted-foreground" aria-hidden="true">
+					<span class="w-14 text-center">{m.notif_channel_app()}</span>
+					{#if data.email}<span class="w-14 text-center">{m.notif_channel_email()}</span>{/if}
+				</div>
 				{#each data.preferences as preference ( preference.type )}
 					<Field.Field orientation="horizontal">
 						<Field.Content>
 							<Field.Label for="pref-{preference.type}">{preference.label}</Field.Label>
 							<Field.Description>{preference.description}</Field.Description>
 						</Field.Content>
-						<Switch id="pref-{preference.type}" name={preference.type} bind:checked={enabled[ preference.type ]} />
+						<div class="flex gap-2">
+							<span class="flex w-14 justify-center">
+								<Switch id="pref-{preference.type}" name={preference.type} bind:checked={enabled[ preference.type ]} aria-label="{preference.label}: {m.notif_channel_app()}" />
+							</span>
+							{#if data.email}
+								<span class="flex w-14 justify-center">
+									<Switch name="{preference.type}:email" bind:checked={email[ preference.type ]} aria-label="{preference.label}: {m.notif_channel_email()}" />
+								</span>
+							{/if}
+						</div>
 					</Field.Field>
 				{/each}
 			</Field.Group>
+			{#if !data.email}
+				<p class="mt-4 text-sm text-muted-foreground">{m.notif_email_unavailable()}</p>
+			{/if}
 		</Card.Content>
 	</Card.Root>
 
-	<SaveBar show={dirty} {saving} saveType="submit" ondiscard={() => ( enabled = stored() )} />
+	<SaveBar show={dirty} {saving} saveType="submit" ondiscard={discard} />
 </form>

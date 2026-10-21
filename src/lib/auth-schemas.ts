@@ -14,6 +14,21 @@ export const loginSchema = v.object( {
 
 export const signupSchema = v.object( { name, email, password: newPassword } )
 
+export const forgotSchema = v.object( { email } )
+
+// Choosing a password from an emailed link: a reset, or accepting an invite.
+export const resetSchema = v.pipe(
+	v.object( {
+		token          : v.pipe( v.string(), v.nonEmpty() ),
+		newPassword,
+		confirmPassword: v.string()
+	} ),
+	v.forward(
+		v.partialCheck( [ [ 'newPassword' ], [ 'confirmPassword' ] ], ( input ) => input.newPassword === input.confirmPassword, () => m.auth_password_mismatch() ),
+		[ 'confirmPassword' ]
+	)
+)
+
 export const profileSchema = v.object( { name } )
 
 export const passwordSchema = v.pipe(

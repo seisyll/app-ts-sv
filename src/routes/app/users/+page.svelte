@@ -56,7 +56,7 @@
 		{bulkActions}
 	>
 		{#snippet toolbarActions()}
-			<AddUserDialog onadded={refresh} />
+			<AddUserDialog canInvite={data.canInvite} onadded={refresh} />
 		{/snippet}
 	</DataTable>
 </div>

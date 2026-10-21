@@ -21,6 +21,9 @@ model Tenant {
   notificationRecipients  NotificationRecipient[]
   notificationPreferences NotificationPreference[]
 
+  mailSetting   MailSetting?
+  mailTemplates MailTemplate[]
+
   @@map("tenants")
 }
 

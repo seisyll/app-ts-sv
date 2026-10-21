@@ -36,12 +36,14 @@ model NotificationRecipient {
   @@map("notification_recipients")
 }
 
-// A type a reader turned off. No row means on.
+// How a reader wants one type. No row means in-app on and email as the catalog says.
 model NotificationPreference {
-  tenantId String  @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
-  userId   String  @map("user_id") @db.Uuid
+  tenantId String   @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  userId   String   @map("user_id") @db.Uuid
   type     String
-  enabled  Boolean @default(true)
+  enabled  Boolean  @default(true)
+  // Email too ( needs the workspace's mail set up ). Null follows the catalog's default.
+  email    Boolean?
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

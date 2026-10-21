@@ -43,6 +43,7 @@ database). Everything under it returns 404 outside `vite dev`.
 | `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox`, `MediaDropzone` against a mock library |
 | `/hello/editor` | `RichEditor` with images and template variables; the server's validation and its HTML and email renders |
 | `/hello/notifications` | `NotificationBell`, `NotificationList` and the all-clear moment against a mock inbox |
+| `/hello/mail` | The dev outbox: every email the app sent, as HTML and text, plus a sample of each email |
 | `/hello/site` | Every public-site theme, switchable, with sign-up on or off |
 
 The palette button in the playground's header tries every palette, style and radius on every
@@ -183,11 +184,67 @@ await notify( { type: 'user.joined', params: { name, email }, to: { roles: [ 'ad
 - **The queue** shows what's unread; opening an item or its check marks it read. Emptying it
   plays the all-clear. The badge comes with the server render, then polls every 30 s and on
   returning to the tab.
-- **Not built:** email/push delivery (with the mailer), live push (SSE), a read-history view,
-  cleanup of old rows.
+- **Email:** readers choose per type; until they do, the catalog's `email` default applies
+  (`role.changed` on, `user.joined` off). Copies go out after the response, through the
+  workspace's mail (see Mail).
+- **Not built:** push delivery, live push (SSE), a read-history view, cleanup of old rows.
 - **Detach:** delete `src/lib/server/notifications`, `src/lib/components/notifications`,
   `src/lib/notifications.ts`, `/app/notifications`, `/app/account/notifications`,
   `/api/notifications`, the `notify()` calls and the migration.
+
+## Mail
+
+Each workspace sends through **its own SMTP server**, set in Settings → Mail
+(`/app/settings/mail`). There is no deployment-wide fallback. The password is encrypted with
+`BETTER_AUTH_SECRET`; if you rotate the secret, enter the SMTP password again.
+
+```ts
+await sendMail( { to: { email, name }, template: 'user.invite', values: { inviter, link } } )
+```
+
+- **What sends mail:**
+  - password reset: "Forgot password?" on `/login` → `/forgot-password` → `/reset-password`, which signs you in
+  - email verification: with `AUTH_SIGNUP=true`, a new account must verify before it can sign in
+  - invites: add a user without a password
+  - notification emails: an Email switch per type at `/app/account/notifications`
+  - a test email from the settings page
+- **Not set up:** without a mail server, features that need email hide or ask for something
+  else: no "Forgot password?" link, no sign-up page, and an admin must choose a new user's
+  password. **In dev**, every email also lands in the outbox at `/hello/mail`, which is the
+  only place it goes until a server is set up.
+- **The catalog** (`src/lib/server/mail/templates.ts`) lists every email: its variables,
+  default subject and body (written as messages, in both languages), and the button it ends
+  with.
+  - A workspace can reword the subject and body per language in the TipTap editor, with
+    `{{variables}}`. The rendering uses the email HTML renderer from Rich text, in a
+    table-and-inline-style layout with a plain-text copy.
+  - The button and its link can't be edited, so a reworded email can't lose its link.
+  - To add an email: add a catalog entry and its messages, then call `sendMail` where it
+    happens.
+- **Invites** reuse better-auth's reset token with a 7-day expiry, so accepting an invite is
+  the reset page. If the link expires, "Forgot password?" sends a new one. If the invite
+  email can't be sent, the new account is removed again. Users who haven't accepted show as
+  *Invited* in the Users table.
+- **Abuse limits:**
+  - At most one reset email per account per minute.
+  - The forgot-password form gives the same answer whether or not the address has an
+    account.
+  - In shared tenancy, the SMTP host must resolve to a public address, so a workspace admin
+    can't use "send test email" to probe the internal network. The app connects to the
+    address it checked.
+- **Not built:**
+  - a send queue with retries: each email is sent within the request that triggers it, and
+    notification emails go out after the response
+  - each user's own language: notification emails use the language of the request that
+    triggered them
+  - images in email bodies, until media can be public
+  - removing a workspace's mail settings from the UI
+- **Detach:**
+  - delete `src/lib/server/mail`, `src/lib/mail.ts`, `/app/settings/mail`, `/hello/mail`,
+    `/api/hello/mail`, `/forgot-password` and `/reset-password`, and the migration
+  - remove the `sendMail` calls in `src/lib/server/auth.ts` (reset and verification),
+    `src/lib/server/users.ts` (invites) and `src/lib/server/notifications`
+  - set `requireEmailVerification` back to `false`
 
 ## DataTable
 
@@ -260,9 +317,16 @@ bun run db:reset       # wipe and set up again
 better-auth on the tenant-scoped database: an account belongs to one tenant; a session
 from one tenant doesn't exist in another; the same email can sign up separately in each.
 
-- **Pages:** `/login`, `/signup` (404 unless `AUTH_SIGNUP=true`), `/logout` (a POST), and
-  the signed-in area `/app` (profile, password, admin-only settings). All are form actions:
-  they work without JavaScript.
+- **Pages:**
+  - `/login`
+  - `/signup`: 404 unless `AUTH_SIGNUP=true` and the workspace can send mail; new accounts
+    verify their email
+  - `/forgot-password` and `/reset-password`, which also accepts invites (see Mail)
+  - `/logout` (a POST)
+  - the signed-in area `/app`: profile, password, admin-only settings
+
+  All are form actions, so they work without JavaScript. A password reset ends every
+  session of that account.
 - **First admin:** `bun run db:seed` creates `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `TENANT_SLUG`.
 - **Roles:** `src/lib/permissions.ts` (`admin`, `member`). Add a resource there and grant it.
 - **Guards** (`src/lib/server/guards.ts`):
@@ -282,7 +346,8 @@ from one tenant doesn't exist in another; the same email can sign up separately 
 
 ### Users (`/app/users`)
 
-Admins list, add, re-role, ban, sign out and delete the tenant's users. Reads go through
+Admins list, add (with a password, or by invite when mail is set up), re-role, ban, sign out
+and delete the tenant's users. Reads go through
 the tenant-scoped `db` (`listUsers` in `src/lib/server/users.ts`); changes go through
 better-auth's admin API, which hashes the password, ends a banned user's sessions and checks
 the caller's permission again. Your own row has no actions, and the endpoints refuse them
