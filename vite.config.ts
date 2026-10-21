@@ -54,8 +54,10 @@ const config : UserConfig = {
 	],
 	// Not source: agent skills ( Windows can't rename a folder the watcher holds open, which
 	// breaks `skilld install` ) and uploaded media ( every upload would wake the watcher ).
+	// Anchored to this checkout: a git worktree under .claude/worktrees/ is source to its own
+	// dev server.
 	server: {
-		watch: { ignored: [ '**/.skills/**', '**/.claude/**', '**/uploads/**' ] }
+		watch: { ignored: [ '.skills', '.claude', 'uploads' ].map( ( dir ) => `${ process.cwd().replaceAll( '\\', '/' ) }/${ dir }/**` ) }
 	},
 	optimizeDeps: {
 		// Plain-JS deps declared up front, so the first visit to a page that uses them
