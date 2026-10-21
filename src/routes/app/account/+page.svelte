@@ -2,12 +2,15 @@
 	import { toast } from 'svelte-sonner'
 	import { superForm } from 'sveltekit-superforms'
 	import { valibot } from 'sveltekit-superforms/adapters'
+	import { invalidateAll } from '$app/navigation'
+	import { AvatarField } from '$lib/components/avatar'
 	import * as Card from '$lib/components/ui/card'
 	import * as Field from '$lib/components/ui/field'
 	import { Input } from '$lib/components/ui/input'
 	import { SaveBar } from '$lib/components/save-bar'
 	import { ConnectedAccounts } from '$lib/components/social'
 	import { profileSchema } from '$lib/auth-schemas'
+	import { http } from '$lib/http'
 	import { m } from '$lib/paraglide/messages'
 
 	let { data, form: action } = $props()
@@ -25,6 +28,20 @@
 	} )
 	const { form: values, errors, tainted, submitting, enhance } = form
 	const shown = ( messages ?: string[] ) => messages?.map( ( text ) => ( { message: text } ) )
+
+	// The sidebar shows the picture too: reload after a change.
+	async function uploadAvatar( picture : Blob ) {
+		const body = new FormData()
+
+		body.set( 'file', picture, 'avatar.webp' )
+		await http.post( '/api/account/avatar', body )
+		await invalidateAll()
+	}
+
+	async function removeAvatar() {
+		await http.delete( '/api/account/avatar' )
+		await invalidateAll()
+	}
 </script>
 
 <svelte:head>
@@ -32,6 +49,18 @@
 </svelte:head>
 
 <h1 class="text-2xl font-semibold tracking-tight">{m.app_nav_profile()}</h1>
+
+{#if MODULES.media}
+	<Card.Root class="max-w-xl">
+		<Card.Header>
+			<Card.Title>{m.avatar_title()}</Card.Title>
+			<Card.Description>{m.avatar_desc()}</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<AvatarField name={data.user.name} image={data.user.image ?? null} uploaded={data.avatarUploaded} upload={uploadAvatar} remove={removeAvatar} />
+		</Card.Content>
+	</Card.Root>
+{/if}
 
 <form method="POST" action="?/profile" use:enhance novalidate>
 	<Card.Root class="max-w-xl">

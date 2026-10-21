@@ -114,6 +114,9 @@ export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 		secret  : secret(),
 		baseURL : shared ? { allowedHosts: [ '*' ], protocol: 'auto' } : process.env.BETTER_AUTH_URL,
 		database: prismaAdapter( authDb, { provider: 'postgresql' } ),
+		// The uploaded avatar ( src/lib/server/avatars.ts ) rides on the session's user, so
+		// pages show it without a query of their own. Never set through better-auth.
+		user    : { additionalFields: { avatarId: { type: 'string', required: false, input: false } } },
 		emailAndPassword: {
 			enabled                      : true,
 			disableSignUp                : !signUpEnabled(),

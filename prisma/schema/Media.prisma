@@ -19,8 +19,9 @@ model Media {
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  uploader User?  @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+  uploader User?  @relation("uploads", fields: [uploaderId], references: [id], onDelete: SetNull)
 
+  avatarOf  User[]              @relation("avatar")
   logoOf    AppearanceSetting[] @relation("logo")
   faviconOf AppearanceSetting[] @relation("favicon")
 

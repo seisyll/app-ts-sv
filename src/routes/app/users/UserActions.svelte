@@ -1,6 +1,7 @@
 <script lang="ts">
 	import BanIcon from '@lucide/svelte/icons/ban'
 	import EllipsisIcon from '@lucide/svelte/icons/ellipsis'
+	import ImageOffIcon from '@lucide/svelte/icons/image-off'
 	import LogOutIcon from '@lucide/svelte/icons/log-out'
 	import ShieldIcon from '@lucide/svelte/icons/shield'
 	import TrashIcon from '@lucide/svelte/icons/trash-2'
@@ -68,6 +69,12 @@
 				<LogOutIcon />
 				{m.users_revoke()}
 			</DropdownMenu.Item>
+			{#if MODULES.media && user.avatar}
+				<DropdownMenu.Item onclick={() => change( { action: 'remove-avatar' }, m.users_avatar_removed( { name } ) )}>
+					<ImageOffIcon />
+					{m.users_remove_avatar()}
+				</DropdownMenu.Item>
+			{/if}
 			{#if user.banned}
 				<DropdownMenu.Item onclick={() => change( { action: 'unban' }, m.users_unbanned( { name } ) )}>
 					<UndoIcon />

@@ -17,10 +17,11 @@ const NEEDS : Record<UserChange[ 'action' ], Permission> = {
 	'set-role'       : { user: [ 'set-role' ] },
 	'ban'            : { user: [ 'ban' ] },
 	'unban'          : { user: [ 'ban' ] },
-	'revoke-sessions': { session: [ 'revoke' ] }
+	'revoke-sessions': { session: [ 'revoke' ] },
+	'remove-avatar'  : { user: [ 'update' ] }
 }
 
-const ACTION : Record<UserChange[ 'action' ], AuditAction> = { 'set-role': 'user.role', 'ban': 'user.ban', 'unban': 'user.unban', 'revoke-sessions': 'user.sessions' }
+const ACTION : Record<UserChange[ 'action' ], AuditAction> = { 'set-role': 'user.role', 'ban': 'user.ban', 'unban': 'user.unban', 'revoke-sessions': 'user.sessions', 'remove-avatar': 'user.avatar-remove' }
 
 // Who it was, for the trail: read before the change ( or the removal ) happens.
 const subject = ( id : string ) => db.user.findUnique( { where: { id }, select: { id: true, name: true, email: true, role: true } } )

@@ -22,6 +22,8 @@ export const load : PageServerLoad = async( event ) => {
 		form         : await superValidate( { name: user.name }, valibot( profileSchema ) ),
 		accounts     : providers.map( ( provider ) => ( { provider, connected: methods.includes( provider ) } ) ),
 		canDisconnect: methods.length > 1,
+		// The picture showing is an upload ( the media module's ), which can be removed.
+		avatarUploaded: MODULES.media && !!user.avatarId,
 		// Back from a provider that refused, or whose account is someone else's here.
 		linkError    : event.url.searchParams.has( 'link-error' )
 	}

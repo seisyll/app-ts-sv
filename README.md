@@ -47,6 +47,7 @@ it.
 | `/hello/components` | The `ui/` components the app doesn't use yet: chart, tabs, accordion, calendar, carousel, empty, item, input-otp, native-select, slider, progress, radio-group, button-group, pagination, menubar, navigation-menu, context-menu, drawer, hover-card |
 | `/hello/dashboard` | `Figure`, `StatCards`, `LifecycleRail`, `TrendChart` ( bar / area ), `UnitGrid`, `StatBreakdown`, `MonthPicker` on made-up numbers, with a reroll and a failed read |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
+| `/hello/avatar` | `AvatarField` and its crop dialog, cropping without uploading |
 | `/hello/brand` | `BrandMark` with and without a logo, `FaviconPreview`, the sign-in header |
 | `/hello/audit` | `AuditEntry`: trail entries worded from their stored action, names and changes |
 | `/hello/sign-ins` | `SignInList` and `OutcomeBadge` on made-up attempts |
@@ -248,6 +249,13 @@ fundraiser app's storage, grid and lightbox, with billing-app's rules for what g
 - **Components** (`src/lib/components/media`): `MediaField` (value = media id; `name` posts it
   with a form), `MediaPicker`, `MediaGrid`, `MediaLightbox` (zoom, pan, pinch, swipe, details,
   delete), `MediaDropzone`, `uploadMedia()`, `MediaFeed`.
+- **Avatars** (`src/lib/server/avatars.ts`, `$lib/components/avatar`): on the Profile page a
+  person chooses a picture, crops it square in a dialog (`AvatarCropper`: drag, zoom, or the
+  arrow and +/− keys) and saves a 512 px WebP — stored as one of the workspace's media files
+  (listed in the library, counted in its quota) and made public, since it's shown wherever
+  the person appears. `users.avatar_id` points at it; a new one replaces the old, and
+  deleting the file from the library falls back to the sign-in provider's picture, then to
+  initials. Admins can remove anyone's from Users (`user: [ 'update' ]`). `/hello/avatar`.
 - **Storage quota** (`src/lib/server/storage.ts`): each workspace may store up to its own
   limit — `bun run tenant:quota <slug> 20G` (or `unlimited`, `default`) — else the
   deployment's `STORAGE_QUOTA` (e.g. `5G`), else no limit. Usage is what the library's files

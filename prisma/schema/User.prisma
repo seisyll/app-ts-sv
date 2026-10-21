@@ -7,7 +7,11 @@ model User {
   name          String
   email         String
   emailVerified Boolean   @default(false) @map("email_verified")
+  // A picture from a sign-in provider ( Google's ), as better-auth stores it.
   image         String?
+  // An uploaded avatar ( src/lib/server/avatars.ts ), a media file; shown instead of `image`.
+  // Deleting the file from the library falls back to `image`, then to initials.
+  avatarId      String?   @map("avatar_id") @db.Uuid
   role          String?
   banned        Boolean?  @default(false)
   banReason     String?   @map("ban_reason")
@@ -22,7 +26,8 @@ model User {
   tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   sessions Session[]
   accounts Account[]
-  uploads  Media[]
+  uploads  Media[]   @relation("uploads")
+  avatar   Media?    @relation("avatar", fields: [avatarId], references: [id], onDelete: SetNull)
 
   notifications           NotificationRecipient[]
   notificationPreferences NotificationPreference[]

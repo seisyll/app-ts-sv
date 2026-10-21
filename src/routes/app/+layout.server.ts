@@ -1,6 +1,7 @@
 import { SIDEBAR_COOKIE_NAME } from '$lib/components/ui/sidebar/constants'
 import { DEFAULT_ROLE } from '$lib/permissions'
 import { loadAppearance, rememberAppearance } from '$lib/server/appearance'
+import { avatarUrl } from '$lib/server/avatars'
 import { requireUser } from '$lib/server/guards'
 import { activeModules } from '$lib/server/modules'
 import { firstPage } from '$lib/server/notifications/gate'
@@ -25,7 +26,7 @@ export const load : LayoutServerLoad = async( event ) => {
 		appearance,
 		// The bell's first page, so the badge is right on the first paint. Null: no bell.
 		notifications,
-		user       : { name: user.name, email: user.email, image: user.image ?? undefined, role: user.role ?? DEFAULT_ROLE },
+		user       : { name: user.name, email: user.email, image: avatarUrl( user ) ?? undefined, role: user.role ?? DEFAULT_ROLE },
 		tenant     : { name: tenant.name },
 		sidebarOpen: event.cookies.get( SIDEBAR_COOKIE_NAME ) !== 'false'
 	}

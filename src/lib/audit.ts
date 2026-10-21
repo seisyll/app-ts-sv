@@ -15,6 +15,7 @@ export const AUDIT_ACTIONS = {
 	'user.unban'            : m.audit_user_unban,
 	'user.sessions'         : m.audit_user_sessions,
 	'user.delete'           : m.audit_user_delete,
+	'user.avatar-remove'    : m.audit_user_avatar_remove,
 	'media.upload'          : m.audit_media_upload,
 	'media.delete'          : m.audit_media_delete,
 	'media.publish'         : m.audit_media_publish,
@@ -31,7 +32,9 @@ export const AUDIT_ACTIONS = {
 	'account.password'      : m.audit_account_password,
 	'account.password-reset': m.audit_account_password_reset,
 	'account.link'          : m.audit_account_link,
-	'account.unlink'        : m.audit_account_unlink
+	'account.unlink'        : m.audit_account_unlink,
+	'account.avatar'        : m.audit_account_avatar,
+	'account.avatar-remove' : m.audit_account_avatar_remove
 } as const satisfies Record<string, Words>
 
 export type AuditAction = keyof typeof AUDIT_ACTIONS

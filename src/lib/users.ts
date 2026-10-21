@@ -13,7 +13,10 @@ export type UserRow = {
 	id        : string
 	name      : string
 	email     : string
+	// The picture to show: an uploaded avatar, else the sign-in provider's.
 	image     : string | null
+	// An uploaded one, which an admin may remove.
+	avatar    : boolean
 	role      : string
 	banned    : boolean
 	// Added without a password and hasn't accepted the invite yet.
@@ -30,7 +33,9 @@ export const userChangeSchema = v.variant( 'action', [
 	v.object( { action: v.literal( 'set-role' ), role: v.picklist( ROLE_NAMES ) } ),
 	v.object( { action: v.literal( 'ban' ), reason: v.optional( v.pipe( v.string(), v.trim(), v.maxLength( 200 ) ) ) } ),
 	v.object( { action: v.literal( 'unban' ) } ),
-	v.object( { action: v.literal( 'revoke-sessions' ) } )
+	v.object( { action: v.literal( 'revoke-sessions' ) } ),
+	// An uploaded avatar that shouldn't be there ( the media module's ).
+	v.object( { action: v.literal( 'remove-avatar' ) } )
 ] )
 
 export type UserChange = v.InferOutput<typeof userChangeSchema>

@@ -3,6 +3,7 @@ import { error } from '@sveltejs/kit'
 import type { Paged, PageQuery } from '$lib/components/data-table'
 import { m } from '$lib/paraglide/messages'
 import type { createAuth } from '$lib/server/auth'
+import { avatarUrl, removeAvatar } from '$lib/server/avatars'
 import { db } from '$lib/server/db'
 import { listArgs, type ListSpec } from '$lib/server/list'
 import { sendMail } from '$lib/server/mail/gate'
@@ -29,12 +30,12 @@ const USERS : ListSpec = {
 export async function listUsers( query : PageQuery ) : Promise<Paged<UserRow>> {
 	const args = listArgs( query, USERS )
 	const [ rows, total ] = await Promise.all( [
-		db.user.findMany( { ...args, select: { id: true, name: true, email: true, image: true, role: true, banned: true, createdAt: true, _count: { select: { accounts: true } } } } ),
+		db.user.findMany( { ...args, select: { id: true, name: true, email: true, image: true, avatarId: true, role: true, banned: true, createdAt: true, _count: { select: { accounts: true } } } } ),
 		db.user.count( { where: args.where } )
 	] )
 
 	return {
-		rows: rows.map( ( { _count, ...row } ) => ( { ...row, role: row.role ?? 'member', banned: row.banned ?? false, invited: !_count.accounts, createdAt: row.createdAt.toISOString() } ) ),
+		rows: rows.map( ( { _count, avatarId, ...row } ) => ( { ...row, image: avatarUrl( { avatarId, image: row.image } ), avatar: !!avatarId, role: row.role ?? 'member', banned: row.banned ?? false, invited: !_count.accounts, createdAt: row.createdAt.toISOString() } ) ),
 		total
 	}
 }
@@ -55,7 +56,14 @@ function notYourself( actorId : string, userId : string ) : void {
 export async function changeUser( auth : Auth, headers : Headers, actorId : string, userId : string, change : UserChange ) : Promise<void> {
 	notYourself( actorId, userId )
 
-	if ( change.action === 'set-role' )
+	if ( change.action === 'remove-avatar' ) {
+		// Uploaded avatars are the media module's.
+		if ( !MODULES.media )
+			error( 404, 'Not found' )
+
+		await removeAvatar( userId )
+	}
+	else if ( change.action === 'set-role' )
 		await auth.api.setRole( { body: { userId, role: change.role }, headers } )
 	else if ( change.action === 'ban' )
 		await auth.api.banUser( { body: { userId, banReason: change.reason || undefined }, headers } )

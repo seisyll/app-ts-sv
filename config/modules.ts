@@ -37,8 +37,8 @@ export const MODULES_REGISTRY = {
 		routes     : [ '/app/settings/appearance', '/api/appearance', '/(dev)/hello/brand' ]
 	},
 	media: {
-		description: 'Uploads, the media library, the image field and the editor\'s image picker',
-		routes     : [ '/app/media', '/api/media', '/media', '/(dev)/hello/media', '/(dev)/api/hello/media' ]
+		description: 'Uploads, the media library, the image field, the editor\'s image picker and uploaded avatars',
+		routes     : [ '/app/media', '/api/media', '/media', '/api/account/avatar', '/(dev)/hello/media', '/(dev)/api/hello/media', '/(dev)/hello/avatar' ]
 	},
 	editor: {
 		description: 'Rich text: the TipTap editor, its validation and its HTML / email renders',
