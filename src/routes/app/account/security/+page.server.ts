@@ -2,6 +2,7 @@ import { message, setError, superValidate } from 'sveltekit-superforms'
 import { valibot } from 'sveltekit-superforms/adapters'
 import { passwordSchema } from '$lib/auth-schemas'
 import { m } from '$lib/paraglide/messages'
+import { audit } from '$lib/server/audit'
 import { auth } from '$lib/server/auth'
 import { authErrorMessage, isAuthError } from '$lib/server/auth-errors'
 import { validateForm } from '$lib/server/forms'
@@ -24,6 +25,8 @@ export const actions : Actions = {
 
 			return message( form, authErrorMessage( caught ), { status: 400 } )
 		}
+
+		await audit( event, { action: 'account.password' } )
 
 		return message( form, m.app_password_changed() )
 	} )

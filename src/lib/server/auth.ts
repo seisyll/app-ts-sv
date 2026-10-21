@@ -5,6 +5,8 @@ import { sveltekitCookies } from 'better-auth/svelte-kit'
 import { getRequestEvent } from '$app/server'
 import { APP } from '$lib/config'
 import { ac, DEFAULT_ROLE, roles } from '$lib/permissions'
+import { SOCIAL_LABELS, type SocialProvider } from '$lib/social'
+import { audit, type AuditEntry } from '$lib/server/audit'
 import { currentTenant, db, tenantTransaction } from '$lib/server/db'
 import type { PrismaClient } from '$lib/server/db/generated/client'
 import { sendMail } from '$lib/server/mail/gate'
@@ -77,6 +79,20 @@ function secret() : string {
 	return value
 }
 
+// The trail for what happens at a provider's callback, where no handler of ours runs. Outside
+// a request ( tests, scripts ) there is nothing to record.
+async function auditCallback( entry : AuditEntry ) : Promise<void> {
+	let event
+
+	try {
+		event = getRequestEvent()
+	} catch {
+		return
+	}
+
+	await audit( event, entry )
+}
+
 // One reset email per account per minute, however often the form is sent, so it can't be
 // used to flood someone's inbox. ( The token better-auth just stored counts as one. )
 async function sendResetEmail( user : { id : string, email : string, name : string }, token : string ) : Promise<void> {
@@ -125,8 +141,25 @@ export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 				create: {
 					// A new person through a provider: the admins hear, as with sign-up.
 					after: async( user, context ) => {
-						if ( context?.path?.startsWith( '/callback/' ) )
-							await notify( { type: 'user.joined', params: { name: user.name, email: user.email }, to: { roles: [ 'admin' ] } } )
+						if ( !context?.path?.startsWith( '/callback/' ) )
+							return
+
+						await notify( { type: 'user.joined', params: { name: user.name, email: user.email }, to: { roles: [ 'admin' ] } } )
+						await auditCallback( { action: 'user.signup', actor: { id: user.id, name: user.name }, target: { id: user.id, label: `${ user.name } <${ user.email }>` } } )
+					}
+				}
+			},
+			account: {
+				create: {
+					// A provider connected, on sign-in or from the profile page.
+					after: async( account, context ) => {
+						if ( account.providerId === 'credential' || !context?.path?.startsWith( '/callback/' ) )
+							return
+
+						const user = await db.user.findUnique( { where: { id: account.userId }, select: { id: true, name: true } } )
+
+						if ( user )
+							await auditCallback( { action: 'account.link', actor: user, target: { label: SOCIAL_LABELS[ account.providerId as SocialProvider ] ?? account.providerId } } )
 					}
 				}
 			}

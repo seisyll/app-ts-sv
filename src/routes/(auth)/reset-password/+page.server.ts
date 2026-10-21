@@ -4,6 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters'
 import { resetSchema } from '$lib/auth-schemas'
 import { m } from '$lib/paraglide/messages'
 import { auth } from '$lib/server/auth'
+import { audit } from '$lib/server/audit'
 import { authErrorMessage, isAuthError } from '$lib/server/auth-errors'
 import { db } from '$lib/server/db'
 import { validateForm } from '$lib/server/forms'
@@ -18,7 +19,7 @@ async function tokenOwner( token : string ) {
 		: null
 
 	return verification
-		? db.user.findUnique( { where: { id: verification.value }, select: { email: true, name: true, _count: { select: { accounts: true } } } } )
+		? db.user.findUnique( { where: { id: verification.value }, select: { id: true, email: true, name: true, _count: { select: { accounts: true } } } } )
 		: null
 }
 
@@ -52,6 +53,8 @@ export const actions : Actions = {
 		} catch ( caught ) {
 			return message( form, isAuthError( caught, 'INVALID_TOKEN' ) ? m.auth_link_expired() : authErrorMessage( caught ), { status: 400 } )
 		}
+
+		await audit( event, { action: 'account.password-reset', actor: { id: owner.id, name: owner.name } } )
 
 		// Straight in with the new password. Refused ( banned )? The login page says why.
 		try {

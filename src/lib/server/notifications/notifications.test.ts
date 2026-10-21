@@ -121,14 +121,17 @@ describe( 'notifications', () => {
 		await inA( () => service.notify( { type: 'user.joined', params: { name: 'Zed', email: 'zed@example.test' }, to: { users: [ users.ada, users.mia ] } } ) )
 
 		// Ada: in-app off, email on. Mia: user.joined emails are off by default.
-		// Emails go out after the response: give them a moment while other test files load the CPU.
-		await vi.waitFor( () => expect( listOutbox().map( ( mail ) => mail.to ) ).toEqual( [ 'ada@example.test' ] ), { timeout: 5_000 } )
+		// Emails go out after the response, so an earlier test's can still land after the clear:
+		// look for this test's own ( about Zed ), not at the whole outbox.
+		const aboutZed = () => listOutbox().filter( ( mail ) => mail.text.includes( 'Zed' ) ).map( ( mail ) => mail.to )
+
+		await vi.waitFor( () => expect( aboutZed() ).toEqual( [ 'ada@example.test' ] ), { timeout: 5_000 } )
 		expect( ( await inA( () => service.listNotifications( users.ada ) ) ).items.map( ( item ) => item.title ) ).not.toContain( 'Zed joined the workspace' )
 		expect( ( await inA( () => service.listPreferences( users.ada ) ) ).find( ( preference ) => preference.type === 'user.joined' ) ).toMatchObject( { enabled: false, email: true } )
 
 		// role.changed emails are on by default.
 		clearOutbox()
 		await inA( () => service.notify( { type: 'role.changed', params: { role: 'admin', by: 'Ada' }, to: { users: [ users.mia ] } } ) )
-		await vi.waitFor( () => expect( listOutbox() ).toMatchObject( [ { to: 'mia@example.test', subject: 'You\'re now Admin', text: expect.stringContaining( 'Changed by Ada' ) } ] ), { timeout: 5_000 } )
+		await vi.waitFor( () => expect( listOutbox() ).toEqual( expect.arrayContaining( [ expect.objectContaining( { to: 'mia@example.test', subject: 'You\'re now Admin', text: expect.stringContaining( 'Changed by Ada' ) } ) ] ) ), { timeout: 5_000 } )
 	}, 20_000 )
 } )

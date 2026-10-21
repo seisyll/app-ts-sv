@@ -178,12 +178,13 @@ export async function setMediaPublic( id : string, value : boolean ) : Promise<M
 }
 
 // The row first ( RLS: only this tenant's ), then its files. A file that fails to go is
-// left behind rather than resurrecting the row.
-export async function deleteMedia( id : string ) : Promise<boolean> {
-	const media = await db.media.findUnique( { where: { id }, select: { tenantId: true, kind: true, mime: true, createdAt: true } } )
+// left behind rather than resurrecting the row. Answers the file's name, or null when this
+// tenant has no such media.
+export async function deleteMedia( id : string ) : Promise<string | null> {
+	const media = await db.media.findUnique( { where: { id }, select: { tenantId: true, kind: true, name: true, mime: true, createdAt: true } } )
 
 	if ( !media )
-		return false
+		return null
 
 	await db.media.delete( { where: { id } } )
 
@@ -191,5 +192,5 @@ export async function deleteMedia( id : string ) : Promise<boolean> {
 
 	await Promise.all( files.map( ( file ) => rm( file, { force: true } ) ) )
 
-	return true
+	return media.name
 }

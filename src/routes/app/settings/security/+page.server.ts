@@ -3,6 +3,7 @@ import { message, setError, superValidate } from 'sveltekit-superforms'
 import { valibot } from 'sveltekit-superforms/adapters'
 import { captchaSettingsSchema } from '$lib/captcha'
 import { m } from '$lib/paraglide/messages'
+import { audit, changesBetween } from '$lib/server/audit'
 import { loadCaptchaSettings, saveCaptchaSettings, storedCaptcha, verifyCaptcha } from '$lib/server/captcha'
 import { validateForm } from '$lib/server/forms'
 import { requirePermission } from '$lib/server/guards'
@@ -27,9 +28,11 @@ export const actions : Actions = {
 		await requirePermission( event, { settings: [ 'update' ] } )
 
 		return validateForm( event, captchaSettingsSchema, async( form ) => {
+			const before = await loadCaptchaSettings()
+
 			// On needs both keys: a new provider can't keep the old one's secret.
 			if ( form.data.enabled ) {
-				const { provider, hasSecret } = await loadCaptchaSettings()
+				const { provider, hasSecret } = before
 
 				if ( !form.data.siteKey )
 					return setError( form, 'siteKey', m.captcha_key_needed() )
@@ -39,6 +42,7 @@ export const actions : Actions = {
 			}
 
 			await saveCaptchaSettings( form.data )
+			await audit( event, { action: 'captcha.settings', changes: changesBetween( before, form.data, { secret: [ 'secret' ] } ) } )
 			// Write-only: it never travels back to the browser.
 			form.data.secret = ''
 

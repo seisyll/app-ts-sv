@@ -26,6 +26,7 @@ model User {
 
   notifications           NotificationRecipient[]
   notificationPreferences NotificationPreference[]
+  auditLogs               AuditLog[]
 
   // better-auth lowercases emails, so plain uniqueness is case-insensitive in practice.
   @@unique([tenantId, email])

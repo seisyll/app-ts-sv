@@ -1,6 +1,7 @@
 import { error, json } from '@sveltejs/kit'
 import { parsePageQuery } from '$lib/components/data-table'
 import { m } from '$lib/paraglide/messages'
+import { audit } from '$lib/server/audit'
 import { requireApiPermission } from '$lib/server/guards'
 import { listMedia, saveMedia } from '$lib/server/media'
 import type { RequestHandler } from './$types'
@@ -21,5 +22,9 @@ export const POST : RequestHandler = async( event ) => {
 	if ( !( file instanceof File ) || file.size === 0 )
 		error( 400, m.media_no_file() )
 
-	return json( await saveMedia( file, user.id ), { status: 201 } )
+	const media = await saveMedia( file, user.id )
+
+	await audit( event, { action: 'media.upload', target: { id: media.id, label: media.name } } )
+
+	return json( media, { status: 201 } )
 }

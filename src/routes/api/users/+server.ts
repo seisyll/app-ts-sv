@@ -2,6 +2,7 @@ import { error, json } from '@sveltejs/kit'
 import { APIError } from 'better-auth/api'
 import { parsePageQuery } from '$lib/components/data-table'
 import { m } from '$lib/paraglide/messages'
+import { audit } from '$lib/server/audit'
 import { auth } from '$lib/server/auth'
 import { isAuthError, rethrowAuthError } from '$lib/server/auth-errors'
 import { describeQuery, exportAll, exportFormat, exportResponse, type ExportColumn } from '$lib/server/export'
@@ -69,6 +70,8 @@ export const POST : RequestHandler = async( event ) => {
 
 	// The other admins hear about it; the one who added them already knows.
 	await notify( { type: 'user.joined', params: { name: input.name, email: input.email }, to: { roles: [ 'admin' ], except: [ user.id ] } } )
+
+	await audit( event, { action: input.password ? 'user.create' : 'user.invite', target: { label: `${ input.name } <${ input.email }>` } } )
 
 	return json( { ok: true }, { status: 201 } )
 }

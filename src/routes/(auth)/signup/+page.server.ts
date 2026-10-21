@@ -4,6 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters'
 import { signupSchema } from '$lib/auth-schemas'
 import { m } from '$lib/paraglide/messages'
 import { auth, signUpEnabled } from '$lib/server/auth'
+import { audit } from '$lib/server/audit'
 import { authErrorMessage, isAuthError } from '$lib/server/auth-errors'
 import { validateForm } from '$lib/server/forms'
 import { mailReady } from '$lib/server/mail/gate'
@@ -41,6 +42,7 @@ export const actions : Actions = {
 				const { user } = await auth().api.signUpEmail( { body: { ...body, callbackURL: '/login' }, headers: authHeaders( event, captcha ) } )
 
 				await notify( { type: 'user.joined', params: { name: user.name, email: user.email }, to: { roles: [ 'admin' ], except: [ user.id ] } } )
+				await audit( event, { action: 'user.signup', actor: { id: user.id, name: user.name }, target: { id: user.id, label: `${ user.name } <${ user.email }>` } } )
 			} catch ( caught ) {
 				form.data.password = ''
 				form.data.captcha = ''

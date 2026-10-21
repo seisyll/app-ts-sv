@@ -121,7 +121,7 @@ describe( 'media storage', () => {
 		expect( await inA( () => media.readMedia( image.id, 'thumb' ) ) ).toMatchObject( { kind: 'image', mime: 'image/webp' } )
 		expect( await inB( () => media.readMedia( image.id ) ) ).toBeNull()
 		expect( ( await inB( () => media.listMedia( query( 'image' ) ) ) ).total ).toBe( 0 )
-		expect( await inB( () => media.deleteMedia( image.id ) ) ).toBe( false )
+		expect( await inB( () => media.deleteMedia( image.id ) ) ).toBeNull()
 	} )
 
 	it( 'serves a public file without a session, a private one only to members', async() => {
@@ -153,7 +153,7 @@ describe( 'media storage', () => {
 		const file = path.join( root, a.id, image.createdAt.slice( 0, 7 ).replace( '-', path.sep ), `${ image.id }.webp` )
 
 		expect( existsSync( file ) ).toBe( true )
-		expect( await inA( () => media.deleteMedia( image.id ) ) ).toBe( true )
+		expect( await inA( () => media.deleteMedia( image.id ) ) ).toBe( 'photo.jpg' )
 		expect( existsSync( file ) ).toBe( false )
 		expect( existsSync( file.replace( '.webp', '-thumb.webp' ) ) ).toBe( false )
 		expect( await inA( () => media.readMedia( image.id ) ) ).toBeNull()

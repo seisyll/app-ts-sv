@@ -4,6 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters'
 import { dev } from '$app/environment'
 import { mailSettingsSchema, type MailSettingsInput } from '$lib/mail'
 import { m } from '$lib/paraglide/messages'
+import { audit, changesBetween } from '$lib/server/audit'
 import { currentTenant } from '$lib/server/db'
 import { validateForm } from '$lib/server/forms'
 import { requirePermission } from '$lib/server/guards'
@@ -33,7 +34,10 @@ export const actions : Actions = {
 		await requirePermission( event, { settings: [ 'update' ] } )
 
 		return validateForm( event, mailSettingsSchema, async( form ) => {
+			const before = await loadMailSettings()
+
 			await saveMailSettings( form.data )
+			await audit( event, { action: 'mail.settings', changes: changesBetween( before, form.data, { secret: [ 'password' ] } ) } )
 			// Write-only: it never travels back to the browser.
 			form.data.password = ''
 

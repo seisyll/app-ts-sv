@@ -4,6 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters'
 import { profileSchema } from '$lib/auth-schemas'
 import { m } from '$lib/paraglide/messages'
 import { isSocialProvider, SOCIAL_LABELS } from '$lib/social'
+import { audit } from '$lib/server/audit'
 import { auth } from '$lib/server/auth'
 import { authErrorMessage } from '$lib/server/auth-errors'
 import { validateForm } from '$lib/server/forms'
@@ -38,11 +39,15 @@ async function providerOf( request : Request ) {
 
 export const actions : Actions = {
 	profile: ( event ) => validateForm( event, profileSchema, async( form ) => {
+		const { user } = await requireUser( event )
+
 		try {
 			await auth().api.updateUser( { body: form.data, headers: event.request.headers } )
 		} catch ( caught ) {
 			return message( form, authErrorMessage( caught ), { status: 400 } )
 		}
+
+		await audit( event, { action: 'account.profile', changes: { name: [ user.name, form.data.name ] } } )
 
 		return message( form, m.app_profile_saved() )
 	} ),
@@ -68,8 +73,10 @@ export const actions : Actions = {
 		try {
 			const account = ( await auth().api.listUserAccounts( { headers } ) ).find( ( row ) => row.providerId === provider )
 
-			if ( account )
+			if ( account ) {
 				await auth().api.unlinkAccount( { body: { accountId: account.id }, headers } )
+				await audit( event, { action: 'account.unlink', target: { label: SOCIAL_LABELS[ provider ] } } )
+			}
 		} catch ( caught ) {
 			return fail( 400, { social: authErrorMessage( caught ) } )
 		}

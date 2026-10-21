@@ -1,0 +1,27 @@
+// The audit trail ( src/lib/server/audit.ts ): who changed what in the workspace. Append-only:
+// the app role may insert and read, never update or delete ( see the migration ) — a trail
+// that can be edited proves nothing. The actor's name is a snapshot, so a row still says who
+// acted after their account is gone. Rows hold the action and its facts, not a sentence: the
+// trail is worded in each reader's language ( src/lib/audit.ts ).
+model AuditLog {
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId  String   @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  at        DateTime @default(now()) @db.Timestamptz
+  actorId   String?  @map("actor_id") @db.Uuid
+  actorName String   @map("actor_name")
+  // '<resource>.<verb>', e.g. user.role ( AUDIT_ACTIONS in src/lib/audit.ts ).
+  action    String
+  // What it acted on: an id, and a name snapshot for reading.
+  targetId  String?  @map("target_id")
+  target    String?
+  // Changed fields: { field: [ before, after ] }, or null for a secret that changed.
+  changes   Json?
+  ip        String?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  actor  User?  @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, at])
+  @@index([tenantId, action])
+  @@map("audit_logs")
+}

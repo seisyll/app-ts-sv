@@ -4,6 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters'
 import { mailTemplateSchema } from '$lib/mail'
 import { m } from '$lib/paraglide/messages'
 import { currentTenant } from '$lib/server/db'
+import { audit } from '$lib/server/audit'
 import { validateForm } from '$lib/server/forms'
 import { requirePermission } from '$lib/server/guards'
 import {
@@ -55,13 +56,17 @@ export const actions : Actions = {
 
 		return validateForm( event, mailTemplateSchema, async( form ) => {
 			await saveMailTemplate( key, form.data )
+			await audit( event, { action: 'mail.template', target: { id: key, label: MAIL_TEMPLATES[ key ].label() } } )
 
 			return message( form, m.mail_template_saved() )
 		} )
 	},
 	reset: async( event ) => {
 		await requirePermission( event, { settings: [ 'update' ] } )
-		await resetMailTemplate( templateKey( event.params.key ) )
+		const key = templateKey( event.params.key )
+
+		await resetMailTemplate( key )
+		await audit( event, { action: 'mail.template-reset', target: { id: key, label: MAIL_TEMPLATES[ key ].label() } } )
 
 		redirect( 303, event.url.pathname )
 	}

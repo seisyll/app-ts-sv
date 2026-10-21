@@ -1,5 +1,6 @@
 import { error, json } from '@sveltejs/kit'
 import * as v from 'valibot'
+import { audit } from '$lib/server/audit'
 import { readJson } from '$lib/server/forms'
 import { requireApiPermission } from '$lib/server/guards'
 import { deleteMedia, setMediaPublic } from '$lib/server/media'
@@ -15,6 +16,8 @@ export const PATCH : RequestHandler = async( event ) => {
 	if ( !media )
 		error( 404 )
 
+	await audit( event, { action: value ? 'media.publish' : 'media.unpublish', target: { id: media.id, label: media.name } } )
+
 	return json( media )
 }
 
@@ -23,8 +26,12 @@ export const PATCH : RequestHandler = async( event ) => {
 export const DELETE : RequestHandler = async( event ) => {
 	await requireApiPermission( event, { media: [ 'delete' ] } )
 
-	if ( !await deleteMedia( event.params.id ) )
+	const name = await deleteMedia( event.params.id )
+
+	if ( name === null )
 		error( 404 )
+
+	await audit( event, { action: 'media.delete', target: { id: event.params.id, label: name } } )
 
 	return json( { ok: true } )
 }

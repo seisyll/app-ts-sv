@@ -45,6 +45,7 @@ it.
 | `/hello/dashboard` | `Figure`, `StatCards`, `LifecycleRail`, `TrendChart` ( bar / area ), `UnitGrid`, `StatBreakdown`, `MonthPicker` on made-up numbers, with a reroll and a failed read |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
 | `/hello/brand` | `BrandMark` with and without a logo, `FaviconPreview`, the sign-in header |
+| `/hello/audit` | `AuditEntry`: trail entries worded from their stored action, names and changes |
 | `/hello/captcha` | `CaptchaWidget` with Turnstile's and hCaptcha's test keys |
 | `/hello/social` | `SocialButtons` and `ConnectedAccounts` (`src/lib/components/social`), posting to stand-in actions |
 | `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox` (with the public switch), `MediaDropzone` against a mock library |
@@ -378,6 +379,34 @@ dashboard pieces in `src/lib/components/dashboard`:
 - **Detach:** delete `src/lib/components/dashboard`, `src/lib/server/dashboard.ts`,
   `src/routes/app/+page.server.ts`, `/hello/dashboard` and `@number-flow/svelte`, and put a
   welcome back on `/app`.
+
+## Audit trail
+
+Who changed what in the workspace, at `/app/settings/audit` (module `audit`, permission
+`audit: [ 'list' ]`, admins): searchable, filterable by area and date, exportable, its query in
+the URL. From billing-app's audit log.
+
+```ts
+await audit( event, { action: 'user.role', target: { id, label: 'Bob <bob@x>' }, changes: { role: [ 'member', 'admin' ] } } )
+await audit( event, { action: 'captcha.settings', changes: changesBetween( before, form.data, { secret: [ 'secret' ] } ) } )
+```
+
+- **Explicit, everywhere it matters.** Every handler that changes something calls `audit()`
+  after the change (users, media, appearance and brand, mail, sign-in protection, own
+  account, sign-up, reset links, provider links through better-auth's hooks).
+  `src/lib/server/audit-coverage.test.ts` fails when a mutating route records nothing,
+  unless it is in its exemption list with a reason — sign-in, sign-out, a person's own
+  preferences, test buttons.
+- **Never fails the change.** Awaited, but an error only goes to the log.
+- **Append-only:** the app role may insert and read `audit_logs`, never update or delete. The
+  actor's name is a snapshot: a deleted account's entries keep it. Rows are kept forever.
+- **Worded per reader:** a row stores its action (`<resource>.<verb>`), target name and changed
+  fields (`{ field: [ before, after ] }`, a secret only as "changed"); `src/lib/audit.ts` turns
+  them into "Ada changed the role of Bob — Role: member → admin" in the reader's language.
+  Adding an action: an entry in `AUDIT_ACTIONS` and its message.
+- **Detach:** turn the module off (`audit()` becomes a no-op), or delete `src/lib/audit.ts`,
+  `src/lib/server/audit*.ts`, `src/lib/components/audit`, `/app/settings/audit`, `/api/audit`,
+  `/hello/audit`, the `audit()` calls and the migration.
 
 ## DataTable
 

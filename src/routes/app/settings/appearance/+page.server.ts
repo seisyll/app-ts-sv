@@ -2,6 +2,7 @@ import { message, setError, superValidate } from 'sveltekit-superforms'
 import { valibot } from 'sveltekit-superforms/adapters'
 import { m } from '$lib/paraglide/messages'
 import { loadAppearance, rememberAppearance, saveWorkspaceAppearance } from '$lib/server/appearance'
+import { audit, changesBetween } from '$lib/server/audit'
 import { brandImagesOn, loadBrandSetting, saveBrand } from '$lib/server/brand'
 import { validateForm } from '$lib/server/forms'
 import { requirePermission } from '$lib/server/guards'
@@ -23,6 +24,7 @@ export const actions : Actions = {
 
 		return validateForm( event, appearancePageSchema, async( form ) => {
 			const { logo, favicon, ...setting } = form.data
+			const [ { setting: before }, brand ] = await Promise.all( [ loadAppearance( user.id ), loadBrandSetting() ] )
 			// The brand first: a field it refuses stops the save before anything is written.
 			// Without the media library there are no cards, so nothing to save or clear.
 			const invalid = await brandImagesOn() ? await saveBrand( { logo, favicon } ) : null
@@ -31,6 +33,7 @@ export const actions : Actions = {
 				return setError( form, invalid, m.brand_not_image() )
 
 			await saveWorkspaceAppearance( setting )
+			await audit( event, { action: 'appearance.update', changes: changesBetween( { ...before, ...brand }, form.data ) } )
 			// The saver's own look changes too ( unless their overrides win ).
 			rememberAppearance( event.cookies, ( await loadAppearance( user.id ) ).resolved )
 
