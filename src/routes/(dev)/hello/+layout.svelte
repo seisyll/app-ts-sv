@@ -23,7 +23,9 @@
 		{ href: '/hello/dashboard', label: m.demo_dash_title() },
 		{ href: '/hello/shell', label: m.demo_shell_title() },
 		{ href: '/hello/brand', label: m.demo_brand_title(), module: 'appearance' },
+		{ href: '/hello/audit', label: m.audit_title(), module: 'audit' },
 		{ href: '/hello/captcha', label: 'Captcha', module: 'captcha' },
+		{ href: '/hello/sign-ins', label: m.signins_title(), module: 'signins' },
 		{ href: '/hello/social', label: m.demo_social_title() },
 		{ href: '/hello/site', label: m.demo_site_title(), module: 'site' }
 	]

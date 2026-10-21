@@ -8,6 +8,7 @@
 	import * as Field from '$lib/components/ui/field'
 	import { Input } from '$lib/components/ui/input'
 	import { Spinner } from '$lib/components/ui/spinner'
+	import { SignInList } from '$lib/components/sign-ins'
 	import { passwordSchema } from '$lib/auth-schemas'
 	import { m } from '$lib/paraglide/messages'
 
@@ -69,3 +70,15 @@
 		</form>
 	</Card.Content>
 </Card.Root>
+
+{#if data.signIns}
+	<Card.Root class="max-w-xl">
+		<Card.Header>
+			<Card.Title>{m.signins_mine()}</Card.Title>
+			<Card.Description>{m.signins_mine_desc()}</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<SignInList entries={data.signIns} />
+		</Card.Content>
+	</Card.Root>
+{/if}

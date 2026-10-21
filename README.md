@@ -46,6 +46,7 @@ it.
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
 | `/hello/brand` | `BrandMark` with and without a logo, `FaviconPreview`, the sign-in header |
 | `/hello/audit` | `AuditEntry`: trail entries worded from their stored action, names and changes |
+| `/hello/sign-ins` | `SignInList` and `OutcomeBadge` on made-up attempts |
 | `/hello/captcha` | `CaptchaWidget` with Turnstile's and hCaptcha's test keys |
 | `/hello/social` | `SocialButtons` and `ConnectedAccounts` (`src/lib/components/social`), posting to stand-in actions |
 | `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox` (with the public switch), `MediaDropzone` against a mock library |
@@ -599,6 +600,24 @@ sign-up forms, and **Connected accounts** on the profile page.
 - **Detach:** delete `src/lib/social.ts`, `src/lib/server/social.ts`,
   `src/lib/components/social`, `/login/social`, `/hello/social`, `scripts/apple-client-secret.ts`,
   and the social lines in `src/lib/server/auth.ts`, the auth pages and `/app/account`.
+
+### Sign-in log (`/app/settings/sign-ins`)
+
+Every attempt to sign in (module `signins`, from billing-app's login log): when, the email
+typed, the account it belongs to, the outcome (signed in, wrong password, locked out, captcha
+refused, unverified, banned), the method (password, Google, Apple), the address and the
+device. The sign-in guard's hooks write password attempts — including the ones it refuses
+itself before better-auth runs — and better-auth's session hook writes provider sign-ins.
+
+- **Admins** (`signin: [ 'list' ]`): figures for the last 24 hours (signed in, refused, refused
+  addresses — many refusals from few addresses is guessing), successes vs refusals per day for
+  14 days, and the table (filters, URL state, export).
+- **Everyone** sees their own latest attempts on the Password page — failed ones on their
+  email included — to spot a sign-in that wasn't them.
+- **Kept 90 days:** the scheduler's purge removes older entries (until it lands, nothing does).
+- **Detach:** turn the module off, or delete `src/lib/sign-ins.ts`, `src/lib/server/sign-ins.ts`,
+  `src/lib/components/sign-ins`, `/app/settings/sign-ins`, `/api/sign-ins`, `/hello/sign-ins`,
+  the `recordSignIn` calls and the migration.
 
 ### Users (`/app/users`)
 

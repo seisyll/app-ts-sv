@@ -14,7 +14,8 @@
 	/* ―― » A figure over time ( billing-app's login trend chart, generalised ): grouped bars —
 	        side by side, never stacked, so two series stay comparable — or an area. `data` is one
 	        row per period: `label` for the axis, then a number per series key. Feed it calendar
-	        periods ( lastMonths in $lib/months ), so a quiet one is a zero, not a gap. */
+	        periods ( lastMonths / lastDays in $lib/months ), so a quiet one is a zero, not a gap.
+	        Axis labels that would overlap are dropped, keeping the latest. */
 	let { title, description, series, data, kind = 'bar', empty } : {
 		title          : string
 		description ?  : string
@@ -40,7 +41,7 @@
 		{:else}
 			<Chart.Container {config} class="aspect-auto h-56 w-full">
 				{#if kind === 'area'}
-					<AreaChart {data} x="label" xScale={scaleBand()} {series} axis="x" rule={false} props={{ area: { 'fill-opacity': 0.3, motion: { type: 'tween', duration: 500, easing: cubicInOut } } }}>
+					<AreaChart {data} x="label" xScale={scaleBand()} {series} axis="x" rule={false} props={{ area: { 'fill-opacity': 0.3, motion: { type: 'tween', duration: 500, easing: cubicInOut } }, xAxis: { tickOcclusion: { padding: 16 } } }}>
 						{#snippet tooltip()}<Chart.Tooltip indicator="dot" />{/snippet}
 					</AreaChart>
 				{:else}
@@ -53,7 +54,7 @@
 						seriesLayout="group"
 						axis="x"
 						rule={false}
-						props={{ bars: { stroke: 'none', radius: 4, rounded: 'all', motion: { type: 'tween', duration: 500, easing: cubicInOut } }, highlight: { area: { fill: 'none' } } }}
+						props={{ bars: { stroke: 'none', radius: 4, rounded: 'all', motion: { type: 'tween', duration: 500, easing: cubicInOut } }, highlight: { area: { fill: 'none' } }, xAxis: { tickOcclusion: { padding: 16 } } }}
 					>
 						{#snippet tooltip()}<Chart.Tooltip indicator="dot" />{/snippet}
 					</BarChart>

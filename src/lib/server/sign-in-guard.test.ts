@@ -63,7 +63,9 @@ describe( 'sign-in guard', () => {
 		captcha = null
 	} )
 
-	const headers = ( token ?: string ) => new Headers( { 'x-client-ip': '203.0.113.7', ...( token ? { 'x-captcha-response': token } : {} ) } )
+	const headers = ( token ?: string ) => new Headers( { 'x-client-ip': '203.0.113.7', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0) Chrome/131.0', ...( token ? { 'x-captcha-response': token } : {} ) } )
+	// The sign-in log's latest entries, newest first.
+	const logged = async( take = 1 ) => ( await t.runWithTenant( a, () => t.db.signInEvent.findMany( { orderBy: { at: 'desc' }, take, select: { outcome: true, method: true, userId: true, ip: true, userAgent: true } } ) ) ).map( ( row ) => row.outcome )
 	const signIn = ( password : string, token ?: string ) => t.runWithTenant( a, () => auth.api.signInEmail( { body: { email: ada.email, password }, headers: headers( token ) } ) )
 
 	it( 'counts a wrong password against the email and the address; a success clears the email', async() => {
@@ -73,6 +75,9 @@ describe( 'sign-in guard', () => {
 
 		await expect( signIn( ada.password ) ).resolves.toMatchObject( { token: expect.any( String ) } )
 		expect( counts.has( account ) ).toBe( false )
+		// Both attempts are in the sign-in log, on Ada's account, with where they came from.
+		expect( await logged( 2 ) ).toEqual( [ 'success', 'wrong-password' ] )
+		expect( await t.runWithTenant( a, () => t.db.signInEvent.findFirst( { where: { outcome: 'wrong-password' } } ) ) ).toMatchObject( { method: 'password', ip: '203.0.113.7', userAgent: expect.stringContaining( 'Chrome' ), userId: expect.any( String ) } )
 		// The address keeps its count: a success on one account clears no other's guesses.
 		expect( counts.get( address ) ).toBe( 1 )
 	} )
@@ -81,6 +86,7 @@ describe( 'sign-in guard', () => {
 		counts.set( account, 10 )
 
 		await expect( signIn( ada.password ) ).rejects.toMatchObject( { statusCode: 429, body: { code: 'SIGN_IN_LOCKED', message: expect.stringContaining( '10 min' ) } } )
+		expect( await logged() ).toEqual( [ 'locked' ] )
 	} )
 
 	it( 'locks an address that failed 30 times, whichever email', async() => {
@@ -98,6 +104,7 @@ describe( 'sign-in guard', () => {
 		counts.set( account, 2 )
 		await expect( signIn( ada.password ) ).rejects.toMatchObject( { body: { code: 'CAPTCHA_REQUIRED' } } )
 		await expect( signIn( ada.password, 'bad' ) ).rejects.toMatchObject( { body: { code: 'CAPTCHA_INVALID' } } )
+		expect( await logged() ).toEqual( [ 'captcha' ] )
 		// A refused captcha isn't a guess: the count stays where it was.
 		expect( counts.get( account ) ).toBe( 2 )
 		await expect( signIn( ada.password, 'good' ) ).resolves.toBeTruthy()

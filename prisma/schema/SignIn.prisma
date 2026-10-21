@@ -1,0 +1,24 @@
+// Every sign-in attempt ( src/lib/server/sign-ins.ts ): who tried, how it went, from where.
+// Written by the sign-in guard's hooks ( password ) and better-auth's session hook ( Google,
+// Apple ). `userId` is the account the email belonged to, if any — so a person sees failed
+// attempts on their own account too. Kept 90 days ( purged by the scheduler ).
+model SignInEvent {
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId  String   @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  at        DateTime @default(now()) @db.Timestamptz
+  userId    String?  @map("user_id") @db.Uuid
+  email     String
+  // success | wrong-password | locked | captcha | unverified | banned | refused
+  outcome   String
+  // password | google | apple
+  method    String
+  ip        String?
+  userAgent String?  @map("user_agent")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, at])
+  @@index([tenantId, userId, at])
+  @@map("sign_in_events")
+}

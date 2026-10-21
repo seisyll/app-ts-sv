@@ -4,6 +4,7 @@ import type { CaptchaWidgetConfig } from '$lib/captcha'
 import { m } from '$lib/paraglide/messages'
 import { activeCaptcha, verifyCaptcha, type ActiveCaptcha } from '$lib/server/captcha'
 import { clear, hit, peek, rateLimit, tenantKey } from '$lib/server/redis'
+import { recordSignIn } from '$lib/server/sign-ins'
 
 /* ―― » Sign-in protection, in layers ( the fundraiser app's TRUST.md ):
           1. better-auth's per-IP rate limit, on /api/auth/* in production.
@@ -87,38 +88,63 @@ export const beforeAuth = createAuthMiddleware( async( ctx ) => {
 		return
 	}
 
-	const { account, address } = await failures( normalise( ( ctx.body as { email ?: unknown } )?.email ), ip )
+	const email = normalise( ( ctx.body as { email ?: unknown } )?.email )
+	const { account, address } = await failures( email, ip )
 	const locked = account.count >= LOCK_AFTER || address.count >= ADDRESS_LOCK_AFTER
+	// Refused here, the attempt never reaches better-auth's after-hook: logged before the throw.
+	const refuse = async( outcome : 'locked' | 'captcha', error : APIError ) : Promise<never> => {
+		await recordSignIn( { email, outcome, method: 'password', ip, userAgent: ctx.headers?.get( 'user-agent' ) } )
+
+		throw error
+	}
 
 	if ( locked && !captcha )
-		throw tooMany( Math.max( account.count >= LOCK_AFTER ? account.ttlMs : 0, address.count >= ADDRESS_LOCK_AFTER ? address.ttlMs : 0 ) )
+		await refuse( 'locked', tooMany( Math.max( account.count >= LOCK_AFTER ? account.ttlMs : 0, address.count >= ADDRESS_LOCK_AFTER ? address.ttlMs : 0 ) ) )
 
 	// The captcha first: a missing or wrong answer is told at once, not after the wait.
 	if ( captcha && ( locked || captcha.mode === 'always' || Math.max( account.count, address.count ) >= captcha.triggerAfter ) )
-		await requireCaptcha( captcha, ctx.headers?.get( CAPTCHA_TOKEN ), ip )
+		await requireCaptcha( captcha, ctx.headers?.get( CAPTCHA_TOKEN ), ip ).catch( ( caught : APIError ) => refuse( 'captcha', caught ) )
 
 	if ( account.count >= DELAY_AFTER )
 		await sleep( Math.min( ( account.count - DELAY_AFTER + 1 ) * DELAY_STEP_MS, DELAY_MAX_MS ) )
 } )
 
+// What better-auth's refusal was, for the sign-in log.
+function outcomeOf( returned : unknown ) : 'wrong-password' | 'unverified' | 'banned' | 'refused' {
+	if ( !isAPIError( returned ) )
+		return 'refused'
+
+	if ( returned.statusCode === 401 )
+		return 'wrong-password'
+
+	const code = ( returned.body as { code ?: string } | undefined )?.code
+
+	return code === 'EMAIL_NOT_VERIFIED' ? 'unverified' : code === 'BANNED_USER' ? 'banned' : 'refused'
+}
+
 // Wrong credentials count against the email and the address; a session clears the email.
 // Anything else ( unverified, banned, a captcha refused ) isn't a guess and counts nothing.
+// Every attempt goes into the sign-in log.
 export const afterAuth = createAuthMiddleware( async( ctx ) => {
 	if ( ctx.path !== '/sign-in/email' )
 		return
 
 	const email = normalise( ( ctx.body as { email ?: unknown } )?.email )
 	const ip = ctx.headers?.get( CLIENT_IP ) ?? null
+	const session = ( ctx.context as { newSession ?: { user : { id : string } } } ).newSession
+	const outcome = session ? 'success' : outcomeOf( ctx.context.returned )
 
-	if ( ( ctx.context as { newSession ?: unknown } ).newSession ) {
+	if ( session ) {
 		if ( email )
 			await clear( await accountKey( email ) )
-	} else if ( isAPIError( ctx.context.returned ) && ctx.context.returned.statusCode === 401 ) {
+	} else if ( outcome === 'wrong-password' ) {
 		await Promise.all( [
 			email && hit( await accountKey( email ), WINDOW_MS ),
 			ip && hit( await addressKey( ip ), WINDOW_MS )
 		] )
 	}
+
+	await recordSignIn( { email, outcome, method: 'password', userId: session?.user.id, ip, userAgent: ctx.headers?.get( 'user-agent' ) } )
 } )
 
 // The headers a form action hands to auth.api: the visitor's address ( set here, never

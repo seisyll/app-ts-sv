@@ -48,3 +48,16 @@ export function lastMonths( count : number, last : MonthWindow = currentMonth() 
 // "October 2026", or "Oct" with { month: 'short' }, in the current language.
 export const monthLabel = ( window : MonthWindow, options : Intl.DateTimeFormatOptions = { month: 'long', year: 'numeric' } ) =>
 	new Intl.DateTimeFormat( getLocale(), { ...options, timeZone: 'UTC' } ).format( window.start )
+
+export type DayWindow = { key : string, start : Date, end : Date }
+
+// The `count` calendar days ( UTC ) ending today, oldest first: 'YYYY-MM-DD' and [ start, end ).
+export function lastDays( count : number, now = new Date() ) : DayWindow[] {
+	const today = Date.UTC( now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() )
+
+	return Array.from( { length: count }, ( _, index ) => {
+		const start = new Date( today - ( count - 1 - index ) * 86_400_000 )
+
+		return { key: start.toISOString().slice( 0, 10 ), start, end: new Date( start.getTime() + 86_400_000 ) }
+	} )
+}

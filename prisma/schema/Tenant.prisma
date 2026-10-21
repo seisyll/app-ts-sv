@@ -28,6 +28,7 @@ model Tenant {
   captcha       CaptchaSetting?
   mailTemplates MailTemplate[]
   auditLogs     AuditLog[]
+  signIns       SignInEvent[]
 
   @@map("tenants")
 }

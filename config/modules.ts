@@ -52,6 +52,10 @@ export const MODULES_REGISTRY = {
 		description: 'The audit trail: who changed what in the workspace, filterable and exportable',
 		routes     : [ '/app/settings/audit', '/api/audit', '/(dev)/hello/audit' ]
 	},
+	signins: {
+		description: 'The sign-in log: every attempt, its outcome and where it came from, for admins and for each person',
+		routes     : [ '/app/settings/sign-ins', '/api/sign-ins', '/(dev)/hello/sign-ins' ]
+	},
 	captcha: {
 		description: 'A captcha on sign-in ( after failed attempts, or always ), sign-up and forgot-password, set per workspace',
 		routes     : [ '/app/settings/security', '/(dev)/hello/captcha' ]

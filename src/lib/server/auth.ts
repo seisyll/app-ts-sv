@@ -12,6 +12,7 @@ import type { PrismaClient } from '$lib/server/db/generated/client'
 import { sendMail } from '$lib/server/mail/gate'
 import { notify } from '$lib/server/notifications/gate'
 import { afterAuth, beforeAuth, CLIENT_IP } from '$lib/server/sign-in-guard'
+import { recordSignIn } from '$lib/server/sign-ins'
 import { socialProviders } from '$lib/server/social'
 import { appUrl } from '$lib/server/url'
 
@@ -146,6 +147,21 @@ export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 
 						await notify( { type: 'user.joined', params: { name: user.name, email: user.email }, to: { roles: [ 'admin' ] } } )
 						await auditCallback( { action: 'user.signup', actor: { id: user.id, name: user.name }, target: { id: user.id, label: `${ user.name } <${ user.email }>` } } )
+					}
+				}
+			},
+			session: {
+				create: {
+					// A sign-in through a provider, for the sign-in log ( password ones are the guard's ).
+					after: async( session, context ) => {
+						const provider = context?.path?.startsWith( '/callback/' ) ? ( context.params as { id ?: string } | undefined )?.id : undefined
+
+						if ( provider !== 'google' && provider !== 'apple' )
+							return
+
+						const user = await db.user.findUnique( { where: { id: session.userId }, select: { email: true } } )
+
+						await recordSignIn( { email: user?.email ?? '', userId: session.userId, outcome: 'success', method: provider, ip: session.ipAddress, userAgent: session.userAgent } )
 					}
 				}
 			},

@@ -12,7 +12,9 @@ export const statements = {
 	// publish: make a file public ( served without a session ) or private again.
 	media   : [ 'list', 'create', 'delete', 'publish' ],
 	// The audit trail: read only — nobody edits it, not even an admin.
-	audit   : [ 'list' ]
+	audit   : [ 'list' ],
+	// The sign-in log: everyone's attempts ( each person sees their own regardless ).
+	signin  : [ 'list' ]
 } as const
 
 export const ac = createAccessControl( statements )
@@ -26,7 +28,8 @@ export const admin = ac.newRole( {
 	...adminAc.statements,
 	settings: [ 'read', 'update' ],
 	media   : [ 'list', 'create', 'delete', 'publish' ],
-	audit   : [ 'list' ]
+	audit   : [ 'list' ],
+	signin  : [ 'list' ]
 } )
 
 export const roles = { admin, member } as const

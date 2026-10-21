@@ -6,9 +6,18 @@ import { audit } from '$lib/server/audit'
 import { auth } from '$lib/server/auth'
 import { authErrorMessage, isAuthError } from '$lib/server/auth-errors'
 import { validateForm } from '$lib/server/forms'
+import { requireUser } from '$lib/server/guards'
+import { moduleActive } from '$lib/server/modules'
+import { mySignIns } from '$lib/server/sign-ins'
 import type { Actions, PageServerLoad } from './$types'
 
-export const load : PageServerLoad = async() => ( { form: await superValidate( valibot( passwordSchema ) ) } )
+// The password form, and this person's latest sign-ins ( the sign-in log module ).
+export const load : PageServerLoad = async( event ) => {
+	const { user } = await requireUser( event )
+	const signIns = MODULES.signins && await moduleActive( 'signins' ) ? await mySignIns( user.id ) : null
+
+	return { form: await superValidate( valibot( passwordSchema ) ), signIns }
+}
 
 export const actions : Actions = {
 	default: ( event ) => validateForm( event, passwordSchema, async( form ) => {
