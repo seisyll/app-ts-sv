@@ -124,6 +124,30 @@ describe( 'media storage', () => {
 		expect( await inB( () => media.deleteMedia( image.id ) ) ).toBe( false )
 	} )
 
+	it( 'serves a public file without a session, a private one only to members', async() => {
+		const { GET } = await import( '../../routes/media/[id]/[[variant]]/+server' )
+		const [ image ] = ( await inA( () => media.listMedia( query( 'image' ) ) ) ).rows
+		const get = ( role ?: string ) => inA( async() => GET( {
+			params: { id: image.id },
+			locals: { session: async() => ( role ? { user: { role }, session: {} } : null ) }
+		} as never ) ).then( ( response ) => response, ( caught ) => caught as { status : number } )
+
+		expect( image.public ).toBe( false )
+		expect( ( await get() ).status ).toBe( 401 )
+		expect( ( await get( 'member' ) as Response ).headers.get( 'cache-control' ) ).toMatch( /^private/ )
+
+		expect( await inB( () => media.setMediaPublic( image.id, true ) ) ).toBeNull()
+		expect( await inA( () => media.setMediaPublic( image.id, true ) ) ).toMatchObject( { id: image.id, public: true } )
+
+		const response = await get() as Response
+
+		expect( response.status ).toBe( 200 )
+		expect( response.headers.get( 'cache-control' ) ).toMatch( /^public/ )
+		await response.body?.cancel()
+		// Still another tenant's file for B, public or not.
+		expect( await inB( () => media.readMedia( image.id ) ) ).toBeNull()
+	} )
+
 	it( 'deletes the row and its files', async() => {
 		const [ image ] = ( await inA( () => media.listMedia( query( 'image' ) ) ) ).rows
 		const file = path.join( root, a.id, image.createdAt.slice( 0, 7 ).replace( '-', path.sep ), `${ image.id }.webp` )

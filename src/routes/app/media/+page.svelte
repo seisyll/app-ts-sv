@@ -101,6 +101,14 @@
 		}
 	}
 
+	async function publish( item : MediaRow, value : boolean ) : Promise<void> {
+		try {
+			feeds[ item.kind ].replace( await http.patch<MediaRow>( `/api/media/${ item.id }`, { public: value } ) )
+		} catch ( caught ) {
+			toast.error( errorMessage( caught ) )
+		}
+	}
+
 	const views = [
 		{ value: 'masonry', label: m.media_view_masonry(), icon: GalleryVerticalEndIcon },
 		{ value: 'grid', label: m.media_view_grid(), icon: LayoutGridIcon },
@@ -169,4 +177,4 @@
 	{/if}
 </div>
 
-<MediaLightbox items={feed.rows} bind:index bind:open={viewing} ondelete={data.canDelete ? remove : undefined} />
+<MediaLightbox items={feed.rows} bind:index bind:open={viewing} ondelete={data.canDelete ? remove : undefined} onpublic={data.canPublish ? publish : undefined} />

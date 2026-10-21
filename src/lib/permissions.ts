@@ -9,7 +9,8 @@ import { adminAc, defaultStatements } from 'better-auth/plugins/admin/access'
 export const statements = {
 	...defaultStatements,
 	settings: [ 'read', 'update' ],
-	media   : [ 'list', 'create', 'delete' ]
+	// publish: make a file public ( served without a session ) or private again.
+	media   : [ 'list', 'create', 'delete', 'publish' ]
 } as const
 
 export const ac = createAccessControl( statements )
@@ -22,7 +23,7 @@ export const member = ac.newRole( {
 export const admin = ac.newRole( {
 	...adminAc.statements,
 	settings: [ 'read', 'update' ],
-	media   : [ 'list', 'create', 'delete' ]
+	media   : [ 'list', 'create', 'delete', 'publish' ]
 } )
 
 export const roles = { admin, member } as const

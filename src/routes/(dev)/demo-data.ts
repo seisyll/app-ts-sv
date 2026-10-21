@@ -55,6 +55,7 @@ export const mockMedia = ( n : number, name = `${ NAMES[ n % NAMES.length ] }.jp
 		height,
 		createdAt: new Date( Date.UTC( 2026, 9, 21 - n ) ).toISOString(),
 		uploader : 'Ada Lovelace',
+		public   : n % 4 === 0,
 		url      : `/api/hello/media/${ n }`,
 		thumbUrl : `/api/hello/media/${ n }`
 	}

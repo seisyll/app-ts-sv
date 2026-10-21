@@ -26,6 +26,11 @@
 
 		return true
 	}
+
+	// Public / private only flips the row here ( every fourth mock starts public ).
+	async function publish( item : MediaRow, value : boolean ) {
+		feed.replace( { ...item, public: value } )
+	}
 </script>
 
 <svelte:head>
@@ -66,4 +71,4 @@
 	</Card.Content>
 </Card.Root>
 
-<MediaLightbox items={feed.rows} bind:index bind:open={viewing} ondelete={remove} />
+<MediaLightbox items={feed.rows} bind:index bind:open={viewing} ondelete={remove} onpublic={publish} />

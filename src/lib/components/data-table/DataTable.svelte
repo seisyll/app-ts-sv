@@ -1,6 +1,7 @@
 <script lang="ts" generics="TData, TStats = undefined">
 	import { untrack, type Snippet } from 'svelte'
 	import { browser } from '$app/environment'
+	import { afterNavigate, replaceState } from '$app/navigation'
 	import { page } from '$app/state'
 	import {
 		getCoreRowModel,
@@ -37,13 +38,14 @@
 	import * as Select from '$lib/components/ui/select'
 	import { Spinner } from '$lib/components/ui/spinner'
 	import * as Table from '$lib/components/ui/table'
+	import { debounce } from '$lib/debounce'
 	import { m } from '$lib/paraglide/messages'
 	import type { BulkAction } from './bulk'
 	import DataTableBulkBar from './DataTableBulkBar.svelte'
 	import DataTableDateRangeFilter from './DataTableDateRangeFilter.svelte'
 	import DataTableFacetedFilter from './DataTableFacetedFilter.svelte'
 	import DataTableSearch from './DataTableSearch.svelte'
-	import { PAGE_SIZE_DEFAULT, type TableQuery } from './query'
+	import { fromUrlParams, PAGE_SIZE_DEFAULT, toUrlParams, URL_KEYS, type TableQuery } from './query'
 	import type { ExportFormat, TableSource } from './table-source.svelte'
 	import type { DateRangeConfig, FacetedFilterConfig, SearchConfig, SegmentOption } from './types'
 
@@ -55,7 +57,9 @@
 	        Sorting and filtering move with paging: sorting ten of forty thousand rows and
 	        calling it sorted is worse than not offering the control.
 	        A column with a plain string `header` gets a sort button for free; opt out with
-	        `enableSorting: false`. `meta.title` names a column in the Columns menu. */
+	        `enableSorting: false`. `meta.title` names a column in the Columns menu.
+	        `syncUrl` mirrors page, size, sort, search and filters in the address bar
+	        ( replaceState: reload and share keep them, Back leaves the list ). */
 	let {
 		source,
 		data,
@@ -79,7 +83,8 @@
 		toolbarActions,
 		onQuery,
 		rowCount,
-		loading
+		loading,
+		syncUrl = false
 	} : {
 		source ?                  : TableSource<TData, TStats>
 		data ?                    : TData[]
@@ -110,6 +115,9 @@
 		onQuery ?                 : ( query : TableQuery ) => void
 		rowCount ?                : number
 		loading ?                 : boolean
+		// Read and write the query in the URL ( see `fromUrlParams` ). The page's load must read
+		// it too, so the server render matches. One synced table per page.
+		syncUrl ?                 : boolean
 	} = $props()
 
 	const id = $props.id()
@@ -135,8 +143,11 @@
 	// svelte-ignore state_referenced_locally
 	const report = onQuery ?? source?.apply
 
-	// Cancel a pending keystroke / in-flight page when the table goes away.
-	$effect( () => () => source?.destroy() )
+	// Cancel a pending keystroke / in-flight page / address-bar write when the table goes away.
+	$effect( () => () => {
+		source?.destroy()
+		writeUrlSoon.cancel()
+	} )
 
 	const rows = $derived( data ?? source?.rows ?? [] )
 	const total = $derived( rowCount ?? source?.total ?? 0 )
@@ -149,13 +160,7 @@
 		return rowId === undefined || rowId === null ? String( index ) : String( rowId )
 	}
 
-	function emitQuery( immediate : boolean ) : void {
-		if ( !report )
-			return
-
-		// New query, new rows: a selection made on the old page would act on rows not shown.
-		rowSelection = {}
-
+	function currentQuery( immediate : boolean ) : TableQuery {
 		const facets : Record<string, string[]> = {}
 		let startDate : string | undefined
 		let endDate : string | undefined
@@ -174,7 +179,7 @@
 			facets[ filter.id ] = filter.value.map( String )
 		}
 
-		report( {
+		return {
 			pageIndex: pagination.pageIndex,
 			pageSize : pagination.pageSize,
 			search   : searchValue,
@@ -185,7 +190,30 @@
 			startDate,
 			endDate,
 			immediate
-		} )
+		}
+	}
+
+	function emitQuery( immediate : boolean ) : void {
+		if ( !report && !syncUrl )
+			return
+
+		const query = currentQuery( immediate )
+
+		if ( syncUrl ) {
+			writeUrlSoon.cancel()
+
+			if ( immediate )
+				writeUrl( query )
+			else
+				writeUrlSoon( query )
+		}
+
+		if ( !report )
+			return
+
+		// New query, new rows: a selection made on the old page would act on rows not shown.
+		rowSelection = {}
+		report( query )
 	}
 
 	// Narrowing returns to page 1 — page 4 of a one-page result would read as "no results".
@@ -282,6 +310,68 @@
 
 	// Read by the parent through bind:instance.
 	instance = table
+
+	/* ―― » URL state ( `syncUrl` ). Only what this table shows is taken from the address: its
+	        filter columns, its search scopes, a sortable column. Other params ( another
+	        component's, a campaign tag ) are left as they are. */
+	const facetIds = $derived( filters.map( ( filter ) => filter.columnId ) )
+	// What this table last put in the address bar, to tell its own writes from a navigation.
+	// svelte-ignore state_referenced_locally
+	let written = page.url.search
+
+	function adopt( query : TableQuery ) : void {
+		const sortable = query.sort && table.getAllFlatColumns().find( ( column ) => column.id === query.sort )?.getCanSort()
+		const scoped = query.searchBy === 'all' || search?.columns?.some( ( option ) => option.value === query.searchBy )
+
+		pagination = { pageIndex: query.pageIndex, pageSize: query.pageSize }
+		sorting = sortable ? [ { id: query.sort!, desc: query.dir === 'desc' } ] : []
+		searchValue = query.search
+		searchColumn = scoped ? query.searchBy : 'all'
+		columnFilters = [
+			...Object.entries( query.filters ).filter( ( [ id, values ] ) => facetIds.includes( id ) && values.length ).map( ( [ id, value ] ) => ( { id, value } ) ),
+			...( dateRange && query.startDate && query.endDate ? [ { id: dateRange.columnId, value: [ query.startDate, query.endDate ] } ] : [] )
+		]
+	}
+
+	function writeUrl( query : TableQuery ) : void {
+		const params = new URLSearchParams( location.search )
+
+		for ( const key of [ ...URL_KEYS, ...facetIds ] )
+			params.delete( key )
+
+		for ( const [ key, value ] of toUrlParams( query, { pageSize } ) )
+			params.append( key, value )
+
+		written = String( params ) ? `?${ params }` : ''
+
+		if ( written !== location.search )
+			replaceState( `${ location.pathname }${ written }${ location.hash }`, page.state )
+	}
+
+	// Typing rewrites the address once per pause, like the source's request.
+	const writeUrlSoon = debounce( 300, writeUrl )
+
+	// How the table was wired, read once like `serverMode`.
+	// svelte-ignore state_referenced_locally
+	if ( syncUrl ) {
+		// svelte-ignore state_referenced_locally
+		adopt( fromUrlParams( page.url.searchParams, { pageSize } ) )
+		// The load read the same address, so the first page already matches: no request.
+		// svelte-ignore state_referenced_locally
+		source?.seed( currentQuery( true ) )
+	}
+
+	// A link to this page with another query ( the nav's bare /app/users ) keeps the table
+	// mounted: take the new address. The table's own replaceState is not a navigation.
+	afterNavigate( ( { type, to } ) => {
+		if ( !syncUrl || type === 'enter' || !to || to.url.search === written )
+			return
+
+		written = to.url.search
+		adopt( fromUrlParams( to.url.searchParams, { pageSize } ) )
+		rowSelection = {}
+		report?.( currentQuery( true ) )
+	} )
 
 	function setSearch( value : string ) : void {
 		searchValue = value

@@ -54,6 +54,7 @@
 		dateRange={{ columnId: 'createdAt' }}
 		enableSelection
 		{bulkActions}
+		syncUrl
 	>
 		{#snippet toolbarActions()}
 			<AddUserDialog canInvite={data.canInvite} onadded={refresh} />

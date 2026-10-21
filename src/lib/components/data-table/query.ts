@@ -47,6 +47,13 @@ export const PAGE_SIZE_MAX = 100
 const DAY = /^\d{4}-\d{2}-\d{2}$/
 const FILTER_PREFIX = 'f.'
 
+// A real calendar day: the shape alone lets 2026-02-31 through.
+const isDay = ( value : string ) => {
+	const time = DAY.test( value ) ? Date.parse( `${ value }T00:00:00Z` ) : Number.NaN
+
+	return Number.isFinite( time ) && new Date( time ).toISOString().startsWith( value )
+}
+
 export function toPageQuery( query : TableQuery, paged = true ) : PageQuery {
 	return {
 		skip     : paged ? query.pageIndex * query.pageSize : 0,
@@ -101,7 +108,7 @@ export function parsePageQuery( params : URLSearchParams, { maxTake = PAGE_SIZE_
 	const day = ( key : string ) => {
 		const value = params.get( key ) ?? ''
 
-		return DAY.test( value ) ? value : undefined
+		return isDay( value ) ? value : undefined
 	}
 	const filters : Record<string, string[]> = {}
 
@@ -122,5 +129,73 @@ export function parsePageQuery( params : URLSearchParams, { maxTake = PAGE_SIZE_
 		filters,
 		startDate: day( 'startDate' ),
 		endDate  : day( 'endDate' )
+	}
+}
+
+/* ―― » The page's own address bar ( <DataTable syncUrl> ), in words a person can read and
+        edit — not the endpoint's skip/take:
+
+          /app/users?page=2&size=20&sort=name&dir=desc&q=ada&in=email&from=2026-01-01&to=2026-01-31&role=admin
+
+        Defaults are left out. Every other key is a facet ( column id → values ), so the
+        table's filter columns must not be named like the keys below. A load reads the same
+        query with `toPageQuery( fromUrlParams( url.searchParams ) )` — a trust boundary like
+        `parsePageQuery`: clamped and shape-checked, still allow-listed by the endpoint. */
+export const URL_KEYS = [ 'page', 'size', 'sort', 'dir', 'q', 'in', 'from', 'to' ] as const
+
+export function toUrlParams( query : TableQuery, { pageSize = PAGE_SIZE_DEFAULT } = {} ) : URLSearchParams {
+	const params = new URLSearchParams()
+	const set = ( key : string, value : string | undefined, fallback ?: string ) => {
+		if ( value && value !== fallback )
+			params.set( key, value )
+	}
+
+	set( 'page', String( query.pageIndex + 1 ), '1' )
+	set( 'size', String( query.pageSize ), String( pageSize ) )
+	set( 'sort', query.sort )
+	set( 'dir', query.sort ? query.dir : undefined, 'asc' )
+	set( 'q', query.search )
+	set( 'in', query.search ? query.searchBy : undefined, 'all' )
+	set( 'from', query.startDate )
+	set( 'to', query.endDate )
+
+	for ( const [ column, values ] of Object.entries( query.filters ) )
+		for ( const value of values )
+			params.append( column, value )
+
+	return params
+}
+
+export function fromUrlParams( params : URLSearchParams, { pageSize = PAGE_SIZE_DEFAULT } = {} ) : TableQuery {
+	const int = ( key : string, fallback : number ) => {
+		const value = Number.parseInt( params.get( key ) ?? '', 10 )
+
+		return Number.isFinite( value ) ? value : fallback
+	}
+	const day = ( key : string ) => {
+		const value = params.get( key ) ?? ''
+
+		return isDay( value ) ? value : undefined
+	}
+	const filters : Record<string, string[]> = {}
+
+	for ( const key of new Set( params.keys() ) ) {
+		if ( !( URL_KEYS as readonly string[] ).includes( key ) )
+			filters[ key ] = params.getAll( key ).filter( Boolean )
+	}
+
+	const sort = params.get( 'sort' ) || undefined
+
+	return {
+		pageIndex: Math.max( 1, int( 'page', 1 ) ) - 1,
+		pageSize : Math.min( PAGE_SIZE_MAX, Math.max( 1, int( 'size', pageSize ) ) ),
+		search   : ( params.get( 'q' ) ?? '' ).trim(),
+		searchBy : params.get( 'in' ) || 'all',
+		sort,
+		dir      : sort ? ( params.get( 'dir' ) === 'desc' ? 'desc' : 'asc' ) : undefined,
+		filters,
+		startDate: day( 'from' ),
+		endDate  : day( 'to' ),
+		immediate: true
 	}
 }

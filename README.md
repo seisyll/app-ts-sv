@@ -37,10 +37,10 @@ database). Everything under it returns 404 outside `vite dev`.
 |---|---|
 | `/hello` | i18n, formatting, the mock API |
 | `/hello/save-bar` | `SaveBar` + `Draft` (`src/lib/components/save-bar`) |
-| `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory and server-paged against a mock endpoint |
+| `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory, and server-paged against a mock endpoint with its query in the URL |
 | `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
-| `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox`, `MediaDropzone` against a mock library |
+| `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox` (with the public switch), `MediaDropzone` against a mock library |
 | `/hello/editor` | `RichEditor` with images and template variables; the server's validation and its HTML and email renders |
 | `/hello/notifications` | `NotificationBell`, `NotificationList` and the all-clear moment against a mock inbox |
 | `/hello/mail` | The dev outbox: every email the app sent, as HTML and text, plus a sample of each email |
@@ -119,14 +119,19 @@ fundraiser app's storage, grid and lightbox, with billing-app's rules for what g
   upright, strips metadata, stores WebP at most 2560px plus a 480px thumbnail (an animated GIF
   keeps its first frame). **PDFs** are stored as sent and always downloaded.
 - **Serving:** `/media/<id>` and `/media/<id>/thumb`, to signed-in members of the workspace
-  only (`media: [ 'list' ]`); private, immutable caching; a `sandbox` CSP; `nosniff` on every
-  response.
-- **Permissions:** members list and upload, admins also delete (`src/lib/permissions.ts`).
+  (`media: [ 'list' ]`), private and immutable caching; a `sandbox` CSP; `nosniff` on every
+  response. The row is read through RLS first, so another workspace's id is a 404.
+- **Public files** (`media.public`): served to anyone on the workspace's host, cached
+  publicly for a day — a logo, an image in an email. Files start private; an admin switches
+  one in the lightbox's details (`PATCH /api/media/<id> { public }`), which also copies its
+  link. A globe marks public files in the grid. Making one private again reaches shared
+  caches within that day.
+- **Permissions:** members list and upload, admins also delete and publish (`src/lib/permissions.ts`).
 - **Components** (`src/lib/components/media`): `MediaField` (value = media id; `name` posts it
   with a form), `MediaPicker`, `MediaGrid`, `MediaLightbox` (zoom, pan, pinch, swipe, details,
   delete), `MediaDropzone`, `uploadMedia()`, `MediaFeed`.
 - **Not built:** per-workspace quotas (the fundraiser app's `StorageUsage` is the model),
-  public media, more image sizes, streaming uploads.
+  more image sizes, streaming uploads.
 - **Detach:** delete `src/lib/components/media`, `src/lib/server/media.ts`, `src/lib/media.ts`,
   `/app/media`, `/api/media`, `/media`, the migration and `sharp`.
 
@@ -154,8 +159,7 @@ const mail = renderEmailHTML( body, { baseUrl, values: { customer_name: 'Ada' } 
   `<RichText>` needs no sanitizer — but only ever give it `renderRichText()` output.
 - **Images** come from the media library (the picker), resizable and alignable in place.
 - **Email HTML** is inline-styled, with absolute URLs and variables filled in (escaped).
-  Images in `/media` need a session, so a recipient can't load them yet: email images need
-  public media or attachments, decided with the mailer.
+  A recipient has no session, so an image in an email must be a **public** file (see Media).
 - **Not built:** Markdown output, collaborative editing, tables, alt-text editing, keyboard
   resizing of images.
 - **Detach:** delete `src/lib/editor`, `src/lib/components/editor`, `/hello/editor` and the
@@ -258,6 +262,12 @@ await sendMail( { to: { email, name }, template: 'user.invite', values: { invite
   `parsePageQuery( url.searchParams )` and answers `Paged<T>` —
   see `src/routes/(dev)/api/hello/customers/+server.ts`. `parsePageQuery` only shapes the
   input: allow-list `sort`, `searchBy` and filter columns in the endpoint.
+- **URL state** (`syncUrl`, one table per page): page, size, sort, search and filters live in
+  the address bar — `?page=2&size=20&sort=name&dir=desc&q=ada&in=email&from=…&to=…&role=admin`
+  (defaults left out; any other key is a facet, so don't name a filter column like those
+  keys). Written with `replaceState`: reload and share keep the view, Back leaves the list.
+  The load must read the same query so the server render matches:
+  `listUsers( toPageQuery( fromUrlParams( url.searchParams ) ) )` (see `/app/users`).
 - A column with a string `header` gets a sort button; `enableSorting: false` opts out.
 - Helpers: `selectColumn()`, `rowNumberColumn()`, `facetedFilter`, `dateRangeFilter`,
   `textCell()` (escapes HTML), `runBulk()` for bulk actions.

@@ -1,6 +1,7 @@
 // Uploaded files ( src/lib/server/media.ts ). The bytes live on disk under UPLOAD_ROOT,
 // named by this row's id — never by anything a client sent — and served only through
-// /media/<id>, which reads this row first, so RLS decides who can fetch a file.
+// /media/<id>, which reads this row first, so RLS decides who can fetch a file: the
+// workspace's members, or anyone on the workspace's host once `public` is set.
 model Media {
   id         String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
   tenantId   String    @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
@@ -12,6 +13,8 @@ model Media {
   size       Int
   width      Int?
   height     Int?
+  // Served without a session ( a logo, an image in an email ). Off until someone turns it on.
+  public     Boolean   @default(false)
   uploaderId String?   @map("uploader_id") @db.Uuid
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
 

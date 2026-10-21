@@ -19,6 +19,7 @@ const row = ( n : number, kind : MediaRow[ 'kind' ] = 'image' ) : MediaRow => ( 
 	height   : kind === 'image' ? 30 : null,
 	createdAt: '2026-10-21T08:00:00.000Z',
 	uploader : 'Ada Lovelace',
+	public   : false,
 	url      : PIXEL,
 	thumbUrl : PIXEL
 } )
@@ -96,6 +97,25 @@ describe( 'MediaLightbox', () => {
 		await page.getByRole( 'alertdialog' ).getByRole( 'button', { name: 'Delete' } ).click()
 
 		expect( ondelete ).toHaveBeenCalledWith( expect.objectContaining( { name: 'Photo 1.jpg' } ) )
+	} )
+
+	it( 'says whether a file is public, and switches it when allowed', async() => {
+		const onpublic = vi.fn( async() => {} )
+
+		await render( MediaLightbox, { items: [ row( 1 ) ], open: true, onpublic } )
+		await expect.element( page.getByText( 'Private — members only' ) ).toBeInTheDocument()
+		await expect.element( page.getByRole( 'button', { name: 'Copy link' } ) ).not.toBeInTheDocument()
+
+		await page.getByRole( 'button', { name: 'Make public' } ).click()
+		expect( onpublic ).toHaveBeenCalledWith( expect.objectContaining( { name: 'Photo 1.jpg' } ), true )
+	} )
+
+	it( 'offers the link of a public file, even without the switch', async() => {
+		await render( MediaLightbox, { items: [ { ...row( 1 ), public: true } ], open: true } )
+
+		await expect.element( page.getByText( 'Public — anyone with the link' ) ).toBeInTheDocument()
+		await expect.element( page.getByRole( 'button', { name: 'Copy link' } ) ).toBeInTheDocument()
+		await expect.element( page.getByRole( 'button', { name: 'Make private' } ) ).not.toBeInTheDocument()
 	} )
 
 	it( 'offers a download instead of zoom for a document', async() => {
