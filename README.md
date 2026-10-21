@@ -42,11 +42,12 @@ it.
 | `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory, and server-paged against a mock endpoint with its query in the URL |
 | `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
+| `/hello/brand` | `BrandMark` with and without a logo, `FaviconPreview`, the sign-in header |
 | `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox` (with the public switch), `MediaDropzone` against a mock library |
 | `/hello/editor` | `RichEditor` with images and template variables; the server's validation and its HTML and email renders |
 | `/hello/notifications` | `NotificationBell`, `NotificationList` and the all-clear moment against a mock inbox |
 | `/hello/mail` | The dev outbox: every email the app sent, as HTML and text, plus a sample of each email |
-| `/hello/site` | Every public-site theme, switchable, with sign-up on or off |
+| `/hello/site` | Every public-site theme, switchable, with sign-up and a logo on or off |
 
 The palette button in the playground's header tries every palette, style and radius on every
 page here (it only paints; reload to go back).
@@ -142,7 +143,7 @@ nothing else. A build without the `site` module has no public site at all.
   `src/lib/themes/themes.svelte.test.ts` (contract tests) and `/hello/site`.
   `bun run check` fails if it breaks the contract.
 - **No database:** the public site works before `db:setup`, and on a shared deployment's
-  bare domain.
+  bare domain. With one, it shows the workspace's logo (see Logo and favicon).
 - **Detach:** turn the `site` module off in the client config. To delete it for good,
   remove `src/routes/(site)`, `src/lib/themes`, `/hello/site`, `$theme` in
   `svelte.config.js` and the `site_*` messages. The `@fontsource-variable` packages
@@ -170,6 +171,25 @@ people may override it; each person overrides any knob from the palette button i
 - **Detach:** turn the `appearance` module off (everyone gets the defaults). To delete it for good: keep one style (`STYLES = [ 'vega' ]` and its import), delete the picker, the
   settings page, `/api/appearance` and the migration's table/columns; leave `style-vega` on
   `<html>`, since the components are unstyled without a style class.
+
+### Logo and favicon
+
+On the same settings page, above the colours: a **logo** (the sidebar's square, the public
+site's header and footer, above the sign-in forms) and a **favicon** (the browser tab), each
+with a preview, saved with the rest under the SaveBar.
+
+- **Storage:** `logo_media_id` / `favicon_media_id` on `appearance_settings`, pointing at
+  media; deleting the file clears them. Saving checks each is an image of this workspace and
+  makes it **public** (see Media) — visitors who aren't signed in load them too.
+- **Reading:** the root layout's load (`loadBrand`, `src/lib/server/brand.ts`) gives every
+  page `data.brand` = `{ name, logo, favicon }` (thumbnail URLs), or `null` with no database
+  or no tenant — then each surface shows its own mark: initials in the sidebar and above
+  sign-in, the theme's mark on the public site, no favicon.
+- **Themes** get `site.logo` and show it instead of their mark.
+- **Not built:** an Apple touch icon or `/favicon.ico` (the favicon is the WebP thumbnail),
+  wide-logo layouts in the sidebar (it's a square there).
+- **Detach:** delete `src/lib/brand.ts`, `src/lib/server/brand.ts`, `src/routes/+layout.server.ts`,
+  `BrandMark` / `FaviconPreview` uses, the two cards and the migration's columns.
 
 ## Media
 
@@ -309,7 +329,8 @@ await sendMail( { to: { email, name }, template: 'user.invite', values: { invite
     notification emails go out after the response
   - each user's own language: notification emails use the language of the request that
     triggered them
-  - images in email bodies, until media can be public
+  - images in email bodies: media can be public now (see Media), but the mail editor doesn't
+    offer images yet
   - removing a workspace's mail settings from the UI
 - **Detach:** turn the `mail` module off. To delete it for good:
   - delete `src/lib/server/mail`, `src/lib/mail.ts`, `/app/settings/mail`, `/hello/mail`,
@@ -406,6 +427,9 @@ from one tenant doesn't exist in another; the same email can sign up separately 
   All are form actions, so they work without JavaScript. A password reset ends every
   session of that account.
 - **First admin:** `bun run db:seed` creates `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `TENANT_SLUG`.
+- **Demo admin:** the seed also creates `DEMO_EMAIL` / `DEMO_PASSWORD` (`.env.example` ships
+  a known pair) for local work and coding agents' browser checks — never when
+  `NODE_ENV=production`. Empty either one to skip it.
 - **Roles:** `src/lib/permissions.ts` (`admin`, `member`). Add a resource there and grant it.
 - **Guards** (`src/lib/server/guards.ts`):
 

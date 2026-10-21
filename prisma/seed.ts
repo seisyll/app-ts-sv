@@ -9,31 +9,41 @@ const prisma = new PrismaClient( { adapter: new PrismaPg( { connectionString: pr
 const slug = process.env.TENANT_SLUG || 'default'
 const name = process.env.TENANT_NAME || 'Acme Inc'
 
+// An admin who signs in with a password. The owner bypasses RLS, so tenantId is set
+// explicitly; the hash is better-auth's own scrypt. An existing account is left as it is.
+async function seedAdmin( tenantId : string, label : string, email : string | undefined, password : string | undefined, userName : string ) {
+	if ( !email || !password )
+		return console.log( `· no ${ label } email / password: skipped` )
+
+	email = email.toLowerCase()
+
+	if ( await prisma.user.findUnique( { where: { tenantId_email: { tenantId, email } } } ) )
+		return console.log( `· ${ label } ${ email } exists` )
+
+	const hash = await hashPassword( password )
+
+	await prisma.$transaction( async( tx ) => {
+		const user = await tx.user.create( { data: { tenantId, email, name: userName, role: 'admin', emailVerified: true } } )
+
+		// better-auth's credential account: accountId is the user id.
+		await tx.account.create( { data: { tenantId, userId: user.id, providerId: 'credential', accountId: user.id, password: hash } } )
+	} )
+	console.log( `✔ ${ label } ${ email }` )
+}
+
 try {
 	const tenant = await prisma.tenant.upsert( { where: { slug }, update: {}, create: { slug, name } } )
 
 	console.log( `✔ tenant "${ tenant.slug }" ( ${ tenant.id } )` )
 
-	// The first admin ( sign-up is off by default, so someone has to exist ). The owner
-	// bypasses RLS, so tenantId is set explicitly; the hash is better-auth's own scrypt.
-	const email = process.env.ADMIN_EMAIL?.toLowerCase()
-	const password = process.env.ADMIN_PASSWORD
+	// The first admin: sign-up is off by default, so someone has to exist.
+	await seedAdmin( tenant.id, 'admin', process.env.ADMIN_EMAIL, process.env.ADMIN_PASSWORD, process.env.ADMIN_NAME || 'Admin' )
 
-	if ( !email || !password ) {
-		console.log( '· no ADMIN_EMAIL / ADMIN_PASSWORD: skipped the admin user' )
-	} else if ( await prisma.user.findUnique( { where: { tenantId_email: { tenantId: tenant.id, email } } } ) ) {
-		console.log( `· admin ${ email } exists` )
-	} else {
-		const hash = await hashPassword( password )
-
-		await prisma.$transaction( async( tx ) => {
-			const user = await tx.user.create( { data: { tenantId: tenant.id, email, name: process.env.ADMIN_NAME || 'Admin', role: 'admin', emailVerified: true } } )
-
-			// better-auth's credential account: accountId is the user id.
-			await tx.account.create( { data: { tenantId: tenant.id, userId: user.id, providerId: 'credential', accountId: user.id, password: hash } } )
-		} )
-		console.log( `✔ admin ${ email }` )
-	}
+	// A demo admin with a known password, for local work and coding agents. Never in production.
+	if ( process.env.NODE_ENV === 'production' )
+		console.log( '· production: skipped the demo admin' )
+	else
+		await seedAdmin( tenant.id, 'demo admin', process.env.DEMO_EMAIL, process.env.DEMO_PASSWORD, 'Demo' )
 } finally {
 	await prisma.$disconnect()
 }

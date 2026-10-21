@@ -23,7 +23,7 @@
 	]}
 >
 	<a href="/" class="flex items-center gap-2.75 text-foreground">
-		<Mark />
+		{#if site.logo}<img src={site.logo} alt="" class="h-7 w-auto max-w-40 object-contain" />{:else}<Mark />{/if}
 		<span class="font-serif text-[23px] font-medium tracking-[0.02em]">{site.name}</span>
 	</a>
 

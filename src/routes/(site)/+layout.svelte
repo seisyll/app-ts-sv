@@ -7,8 +7,8 @@
 
 	let { data, children } = $props()
 
-	// The active theme ( the client config's, see svelte.config.js ), styled under its .theme-<id> class.
-	const site = $derived( siteChrome( data ) )
+	// The active theme ( the client config's, see svelte.config.js ), under its .theme-<id> class.
+	const site = $derived( siteChrome( { signUp: data.signUp, logo: data.brand?.logo } ) )
 </script>
 
 <div class="theme-{id} min-h-svh">

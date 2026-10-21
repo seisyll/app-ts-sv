@@ -8,6 +8,7 @@
 	import type { ThemeModule } from '$lib/themes/contract'
 	import * as plain from '$lib/themes/plain'
 	import { m } from '$lib/paraglide/messages'
+	import { DEMO_LOGO } from '../../demo-data'
 
 	// Every theme side by side, without switching the client's theme and restarting. The list is also a
 	// type check: a theme that breaks the contract fails `bun run check` here.
@@ -15,9 +16,10 @@
 
 	let current = $state( themes[ 0 ].id )
 	let signUp = $state( false )
+	let logo = $state( false )
 
 	const theme = $derived( themes.find( ( item ) => item.id === current ) ?? themes[ 0 ] )
-	const site = $derived( siteChrome( { signUp } ) )
+	const site = $derived( siteChrome( { signUp, logo: logo ? DEMO_LOGO : null } ) )
 	const content = $derived( homeContent( { signUp } ) )
 </script>
 
@@ -44,5 +46,9 @@
 	<label class="flex items-center gap-2 text-sm">
 		<Switch bind:checked={signUp} />
 		{m.demo_site_signup()}
+	</label>
+	<label class="flex items-center gap-2 text-sm">
+		<Switch bind:checked={logo} />
+		{m.brand_logo()}
 	</label>
 </div>

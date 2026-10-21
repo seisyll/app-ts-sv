@@ -20,6 +20,16 @@ describe.each( themes.map( ( theme ) => [ theme.id, theme ] as const ) )( 'theme
 		expect( container.querySelector( 'a[href="/signup"]' ) ).toBeNull()
 	} )
 
+	it( 'header and footer: the workspace logo, when there is one', async() => {
+		const logo = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22/%3E'
+		const site = siteChrome( { signUp: false, logo } )
+		const header = await render( theme.Header, { site } )
+		const footer = await render( theme.Footer, { site } )
+
+		for ( const { container } of [ header, footer ] )
+			expect( container.querySelector( `a[href="/"] img[src="${ logo }"]` ) ).not.toBeNull()
+	} )
+
 	it( 'header: sign-up when it is on', async() => {
 		await render( theme.Header, { site: siteChrome( { signUp: true } ) } )
 

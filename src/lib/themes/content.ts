@@ -13,7 +13,7 @@ import type { HomeContent, Site } from './contract'
         the messages ( site_* in messages/*.json ) to make it yours; themes only decide how
         it looks. Functions, not constants: they run in the request's locale. */
 
-type Options = { signUp : boolean }
+type Options = { signUp : boolean, logo ?: string | null }
 
 const start = ( { signUp } : Options ) => ( signUp ? { label: m.site_start(), href: '/signup' } : { label: m.site_sign_in(), href: '/login' } )
 const price = ( value : number ) => money( value, APP.currency, { minimumFractionDigits: 0, maximumFractionDigits: 0 } )
@@ -28,6 +28,7 @@ export function siteChrome( options : Options ) : Site {
 
 	return {
 		name   : APP.name,
+		logo   : options.logo,
 		nav,
 		signIn : { label: m.site_sign_in(), href: '/login' },
 		start  : start( options ),

@@ -1,7 +1,7 @@
-// A workspace's default appearance ( src/lib/appearance.ts ). One row per tenant, created
-// on the first save; no row means the defaults. Ids are validated against the catalog at
-// the endpoint and degrade to defaults when read, so there are no CHECKs to migrate when
-// a palette or style is added or removed.
+// A workspace's default appearance ( src/lib/appearance.ts ) and its brand ( src/lib/brand.ts ).
+// One row per tenant, created on the first save; no row means the defaults. Ids are validated
+// against the catalog at the endpoint and degrade to defaults when read, so there are no
+// CHECKs to migrate when a palette or style is added or removed.
 model AppearanceSetting {
   id                String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
   tenantId          String   @unique @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
@@ -9,9 +9,15 @@ model AppearanceSetting {
   style             String   @default("vega")
   radius            String   @default("medium")
   allowUserOverride Boolean  @default(true) @map("allow_user_override")
+  // Public media ( set public on save ): the sidebar, public site and sign-in mark, and the
+  // browser tab's icon. Deleting the file clears them.
+  logoId            String?  @map("logo_media_id") @db.Uuid
+  faviconId         String?  @map("favicon_media_id") @db.Uuid
   updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  logo    Media? @relation("logo", fields: [logoId], references: [id], onDelete: SetNull)
+  favicon Media? @relation("favicon", fields: [faviconId], references: [id], onDelete: SetNull)
 
   @@map("appearance_settings")
 }

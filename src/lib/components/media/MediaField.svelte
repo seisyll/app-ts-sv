@@ -12,13 +12,15 @@
 	/* ―― » One image on a record ( billing-app's MediaField ): a preview, upload, choose from
 	        the library, remove. The value is the media id — bind it, or give `name` and the
 	        field posts it with its form ( empty when removed ). Removing only unlinks: the
-	        file stays in the library. */
-	let { value = $bindable( null ), name, label, endpoint = '/api/media', disabled = false } : {
+	        file stays in the library. `contain` previews the whole image ( a logo ) instead
+	        of filling the square ( a photo ). */
+	let { value = $bindable( null ), name, label, endpoint = '/api/media', disabled = false, contain = false } : {
 		value ?    : string | null
 		name ?     : string
 		label      : string
 		endpoint ? : string
 		disabled ? : boolean
+		contain ?  : boolean
 	} = $props()
 
 	// The row last chosen here; otherwise the preview comes from the id alone.
@@ -58,7 +60,7 @@
 	<div class="flex items-center gap-4">
 		<div class="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted text-muted-foreground">
 			{#if preview && !missing}
-				<img src={preview} alt="" class="size-full object-cover" onerror={() => ( missing = true )} />
+				<img src={preview} alt="" class={contain ? 'size-full object-contain p-1.5' : 'size-full object-cover'} onerror={() => ( missing = true )} />
 			{:else if missing}
 				<ImageOffIcon class="size-6" aria-hidden="true" />
 			{:else}

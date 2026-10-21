@@ -16,7 +16,7 @@
 		onlogout
 	} : {
 		nav        : NavGroup[]
-		brand      : { name : string, logo ?: string, href ?: string }
+		brand      : { name : string, logo ?: string | null, href ?: string }
 		user ?     : NavUserInfo
 		userMenu ? : NavUserItem[]
 		onlogout ? : () => void

@@ -9,7 +9,10 @@
 	<div class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:px-6">
 		<div class="flex flex-wrap justify-between gap-10">
 			<div class="flex max-w-xs flex-col gap-2">
-				<a href="/" class="font-semibold tracking-tight">{site.name}</a>
+				<a href="/" class="flex items-center gap-2 font-semibold tracking-tight">
+					{#if site.logo}<img src={site.logo} alt="" class="h-6 w-auto max-w-32 object-contain" />{/if}
+					{site.name}
+				</a>
 				<p class="text-sm text-muted-foreground">{site.tagline}</p>
 			</div>
 			<div class="flex gap-16">

@@ -68,7 +68,7 @@
 <AppShell
 	{nav}
 	open={data.sidebarOpen}
-	brand={{ name: data.tenant.name, href: '/app' }}
+	brand={{ name: data.tenant.name, logo: data.brand?.logo, href: '/app' }}
 	user={{ name: data.user.name, email: data.user.email, avatar: data.user.image }}
 	userMenu={[ { label: m.app_nav_profile(), icon: UserIcon, href: '/app/account' } ]}
 	onlogout={() => logoutForm?.requestSubmit()}

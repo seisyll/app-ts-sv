@@ -33,8 +33,8 @@ export const MODULES_REGISTRY = {
 		routes     : [ '/app/users', '/api/users' ]
 	},
 	appearance: {
-		description: 'Palette, component style and radius, per workspace and per person',
-		routes     : [ '/app/settings/appearance', '/api/appearance' ]
+		description: 'Palette, component style and radius, per workspace and per person; the workspace logo and favicon ( with media )',
+		routes     : [ '/app/settings/appearance', '/api/appearance', '/(dev)/hello/brand' ]
 	},
 	media: {
 		description: 'Uploads, the media library, the image field and the editor\'s image picker',
