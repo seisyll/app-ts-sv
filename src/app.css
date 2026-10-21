@@ -1,6 +1,18 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn-svelte/tailwind.css';
+/* The component styles ( appearance ): the ui/ components carry bare cn-* markers, and the
+   `.style-<id>` class on <html> picks which sheet styles them. layer(base), so any
+   unlayered app CSS outranks them without a specificity fight. One line per style in
+   APPEARANCE_STYLES ( src/lib/appearance.ts ); drop a line and its row to ship fewer. */
+@import './lib/styles/style-vega.css' layer(base);
+@import './lib/styles/style-nova.css' layer(base);
+@import './lib/styles/style-maia.css' layer(base);
+@import './lib/styles/style-lyra.css' layer(base);
+@import './lib/styles/style-mira.css' layer(base);
+@import './lib/styles/style-luma.css' layer(base);
+@import './lib/styles/style-sera.css' layer(base);
+@import './lib/styles/style-rhea.css' layer(base);
 @import '@fontsource-variable/inter';
 
 @custom-variant dark (&:is(.dark *));

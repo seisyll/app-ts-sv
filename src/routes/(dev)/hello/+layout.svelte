@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import { Button } from '$lib/components/ui/button'
-	import { LocaleSwitcher, ThemeToggle } from '$lib/layout'
+	import { NO_OVERRIDE } from '$lib/appearance'
+	import { AppearancePicker, LocaleSwitcher, ThemeToggle } from '$lib/layout'
 	import { m } from '$lib/paraglide/messages'
 
-	let { children } = $props()
+	let { data, children } = $props()
 
 	// One entry per playground page. Component names stay untranslated.
 	const pages = [
@@ -27,6 +28,8 @@
 			</div>
 
 			<div class="flex items-center gap-2">
+				<!-- Paint-only: try every palette, style and radius on every page here. -->
+				<AppearancePicker setting={{ ...data.appearance, allowUserOverride: true }} override={NO_OVERRIDE} />
 				<LocaleSwitcher />
 				<ThemeToggle />
 			</div>

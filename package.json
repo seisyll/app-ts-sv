@@ -21,7 +21,9 @@
 		"db:provision": "bun scripts/db-provision.ts",
 		"db:seed": "bun prisma/seed.ts",
 		"db:setup": "bun run db:up && bun run db:migrate && bun run db:provision && bun run db:seed",
-		"db:reset": "docker compose -f docker-compose.dev.yml down -v && bun run db:setup"
+		"db:reset": "docker compose -f docker-compose.dev.yml down -v && bun run db:setup",
+		"generate:palettes": "bun run scripts/generate-palettes.ts",
+		"sync:ui": "bun run scripts/sync-ui.ts"
 	},
 	"devDependencies": {
 		"@electric-sql/pglite": "^0.4.3",

@@ -3,6 +3,7 @@ import { sequence } from '@sveltejs/kit/hooks'
 import { svelteKitHandler } from 'better-auth/svelte-kit'
 import { building } from '$app/environment'
 import { paraglideMiddleware } from '$lib/paraglide/server'
+import { appearanceClassOf } from '$lib/server/appearance'
 import { auth, type Session } from '$lib/server/auth'
 import { requireUser } from '$lib/server/guards'
 import { runWithTenant, type TenantRef } from '$lib/server/db'
@@ -18,6 +19,13 @@ const handleLocale : Handle = ( { event, resolve } ) => paraglideMiddleware( eve
 	return resolve( event, {
 		transformPageChunk: ( { html } ) => html.replace( '%paraglide.lang%', locale )
 	} )
+} )
+
+// Paints <html> with the appearance classes from the cookie ( see $lib/server/appearance ).
+// Read at transform time, after the loads, so a cookie the /app layout healed this request
+// is the one painted.
+const handleAppearance : Handle = ( { event, resolve } ) => resolve( event, {
+	transformPageChunk: ( { html } ) => html.replace( '%app.appearance%', appearanceClassOf( event.cookies ) )
 } )
 
 // Puts the request's tenant in scope for `db`. Looked up on first use and then reused, so
@@ -54,4 +62,4 @@ const handleAppGuard : Handle = async( { event, resolve } ) => {
 	return resolve( event )
 }
 
-export const handle = sequence( handleLocale, handleTenant, handleAuth, handleAppGuard )
+export const handle = sequence( handleLocale, handleAppearance, handleTenant, handleAuth, handleAppGuard )

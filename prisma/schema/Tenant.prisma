@@ -14,6 +14,7 @@ model Tenant {
   accounts      Account[]
   verifications Verification[]
   rateLimits    RateLimit[]
+  appearance    AppearanceSetting?
 
   @@map("tenants")
 }

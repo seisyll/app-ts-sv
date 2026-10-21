@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+	import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
 	import { cn, type WithElementRef } from "$lib/utils.js";
 	import type { HTMLLiAttributes } from "svelte/elements";
 
@@ -16,12 +16,12 @@
 	data-slot="breadcrumb-separator"
 	role="presentation"
 	aria-hidden="true"
-	class={cn("[&>svg]:size-3.5", className)}
+	class={cn("cn-breadcrumb-separator", className)}
 	{...restProps}
 >
 	{#if children}
 		{@render children?.()}
 	{:else}
-		<ChevronRightIcon class="cn-rtl-flip" />
+		<ChevronRightIcon />
 	{/if}
 </li>

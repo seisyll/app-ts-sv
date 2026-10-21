@@ -33,6 +33,9 @@ database). Everything under it returns 404 outside `vite dev`.
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
 | `/hello/site` | Every public-site theme, switchable, with sign-up on or off |
 
+The palette button in the playground's header tries every palette, style and radius on every
+page here (it only paints; reload to go back).
+
 ## Public site and themes
 
 `/` is the public site: a landing page (hero, features, how it works, stats, testimonials,
@@ -63,6 +66,29 @@ THEME=plain bun run dev     # or THEME=… in .env; restart after changing it
 - **Detach:** delete `src/routes/(site)`, `src/lib/themes` and `/hello/site`, remove `$theme`
   from `svelte.config.js` and the `site_*` messages. The `@fontsource-variable` packages
   other than Inter are aurora's.
+
+## Appearance
+
+People pick how the app looks: a **palette** (8 colour sets, light and dark), a **style** (shadcn's
+8 component grammars — Vega, Nova, Maia, Lyra, Mira, Luma, Sera, Rhea) and a **radius** (5
+corners). An admin sets the workspace default at `/app/settings/appearance` and decides whether
+people may override it; each person overrides any knob from the palette button in the header.
+
+- **How it paints:** the answer is three classes on `<html>`, server-rendered from an
+  `appearance` cookie so pages never flash; the `/app` layout reads the truth from the database
+  and heals the cookie. Catalog and resolution: `src/lib/appearance.ts`.
+- **Storage:** `appearance_settings` (one row per workspace, under RLS; no row = defaults) and
+  three nullable columns on `users` (null = follow the workspace). Turning overrides off ignores
+  people's choices without deleting them.
+- **Components:** `src/lib/components/ui/` is shadcn-svelte's *authoring* flavour — bare `cn-*`
+  markers — and `src/lib/styles/style-<id>.css` holds each style's look. Update or add components
+  with `bun run sync:ui -- --source <shadcn-svelte checkout> [name …]`, not `shadcn-svelte add`.
+- **Adding a palette:** a row in `PALETTES`, then `bun run generate:palettes`. **Shipping fewer
+  styles:** drop rows from `STYLES` and the matching `@import`s in `app.css`.
+- **Rules** for new palettes, styles and house styles (and for public themes): `DESIGN.md`.
+- **Detach:** keep one style (`STYLES = [ 'vega' ]` and its import), delete the picker, the
+  settings page, `/api/appearance` and the migration's table/columns; leave `style-vega` on
+  `<html>`, since the components are unstyled without a style class.
 
 ## DataTable
 

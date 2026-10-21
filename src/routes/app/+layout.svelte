@@ -1,10 +1,13 @@
 <script lang="ts">
 	import HouseIcon from '@lucide/svelte/icons/house'
+	import PaletteIcon from '@lucide/svelte/icons/palette'
 	import SettingsIcon from '@lucide/svelte/icons/settings'
 	import ShieldIcon from '@lucide/svelte/icons/shield'
 	import UserIcon from '@lucide/svelte/icons/user'
 	import UsersIcon from '@lucide/svelte/icons/users'
-	import { AppShell, filterNav, LocaleSwitcher, ThemeToggle, type NavGroup } from '$lib/layout'
+	import { paintAppearance } from '$lib/appearance'
+	import { AppearancePicker, AppShell, filterNav, LocaleSwitcher, ThemeToggle, type NavGroup } from '$lib/layout'
+	import { mutate } from '$lib/mutate'
 	import { m } from '$lib/paraglide/messages'
 	import { hasPermission } from '$lib/permissions'
 
@@ -24,12 +27,21 @@
 			label: m.app_nav_admin(),
 			items: [
 				{ title: m.app_nav_users(), href: '/app/users', icon: UsersIcon, permission: { user: [ 'list' ] } },
+				{ title: m.app_nav_appearance(), href: '/app/settings/appearance', icon: PaletteIcon, permission: { settings: [ 'update' ] }, keywords: [ 'theme', 'colour' ] },
 				{ title: m.app_nav_settings(), href: '/app/settings', icon: SettingsIcon, permission: { settings: [ 'update' ] } }
 			]
 		}
 	] satisfies NavGroup[], ( permission ) => hasPermission( data.user.role, permission ) ) )
 
 	let logoutForm = $state<HTMLFormElement>()
+
+	// <html> is never re-rendered: keep its appearance classes on the server's answer, which
+	// changes when an admin saves the workspace default or this person saves elsewhere.
+	$effect( () => paintAppearance( data.appearance.resolved ) )
+
+	// The picker saves without reloading the page ( a table keeps its page and filters ).
+	const saveAppearance = async( override : typeof data.appearance.override ) =>
+		( await mutate( '/api/appearance/me', { method: 'PUT', body: override, refresh: false, fallback: m.appearance_save_failed() } ) ).ok
 </script>
 
 <AppShell
@@ -41,6 +53,9 @@
 	onlogout={() => logoutForm?.requestSubmit()}
 >
 	{#snippet actions()}
+		{#if data.appearance.setting.allowUserOverride}
+			<AppearancePicker setting={data.appearance.setting} override={data.appearance.override} onsave={saveAppearance} />
+		{/if}
 		<LocaleSwitcher size="sm" />
 		<ThemeToggle />
 	{/snippet}

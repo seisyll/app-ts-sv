@@ -12,6 +12,10 @@ model User {
   banned        Boolean?  @default(false)
   banReason     String?   @map("ban_reason")
   banExpires    DateTime? @map("ban_expires") @db.Timestamptz
+  // Personal appearance overrides; null follows the workspace ( AppearanceSetting ).
+  appearancePalette String? @map("appearance_palette")
+  appearanceStyle   String? @map("appearance_style")
+  appearanceRadius  String? @map("appearance_radius")
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 

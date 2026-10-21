@@ -1,3 +1,4 @@
+export { default as AppearancePicker } from './AppearancePicker.svelte'
 export { default as AppShell } from './AppShell.svelte'
 export { default as LocaleSwitcher } from './LocaleSwitcher.svelte'
 export { default as ThemeToggle } from './ThemeToggle.svelte'

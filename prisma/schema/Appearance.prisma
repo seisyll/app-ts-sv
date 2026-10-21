@@ -1,0 +1,17 @@
+// A workspace's default appearance ( src/lib/appearance.ts ). One row per tenant, created
+// on the first save; no row means the defaults. Ids are validated against the catalog at
+// the endpoint and degrade to defaults when read, so there are no CHECKs to migrate when
+// a palette or style is added or removed.
+model AppearanceSetting {
+  id                String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId          String   @unique @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  palette           String   @default("neutral")
+  style             String   @default("vega")
+  radius            String   @default("medium")
+  allowUserOverride Boolean  @default(true) @map("allow_user_override")
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("appearance_settings")
+}
