@@ -5,8 +5,9 @@ import { sveltekitCookies } from 'better-auth/svelte-kit'
 import { getRequestEvent } from '$app/server'
 import { APP } from '$lib/config'
 import { ac, DEFAULT_ROLE, roles } from '$lib/permissions'
-import { db, tenantTransaction } from '$lib/server/db'
+import { currentTenant, db, tenantTransaction } from '$lib/server/db'
 import type { PrismaClient } from '$lib/server/db/generated/client'
+import { appUrl, sendMail } from '$lib/server/mail'
 
 /* ―― » better-auth on the tenant-scoped database: users, sessions and accounts are rows
         of the request's tenant, so a session from one tenant does not exist in another
@@ -14,17 +15,50 @@ import type { PrismaClient } from '$lib/server/db/generated/client'
 
         Email + password, scrypt hashing ( better-auth's default ), roles from
         $lib/permissions via the admin plugin. Sign-up is OFF unless AUTH_SIGNUP=true —
-        the fundraiser app shipped with it on and any visitor became a user.
+        the fundraiser app shipped with it on and any visitor became a user. With it on,
+        a new account must verify its email before it can sign in. Reset, verification and
+        invite links go out through the workspace's mail ( $lib/server/mail ).
 
         Env: BETTER_AUTH_SECRET ( ≥ 32 chars ), BETTER_AUTH_URL ( single tenancy ),
         AUTH_SIGNUP. Shared tenancy derives the base URL from each request's host; unknown
         hosts never get this far ( tenant resolution 404s them on the first query ). */
 
+type UserUpdate = { where : Record<string, unknown> }
+
+/* ―― » better-auth's schema calls user.email unique, so some writes go `where: { email }`
+        ( verifying an email does ). Here it is unique per TENANT, which Prisma only accepts
+        spelled out as the compound key — so that one shape is rewritten, everything else
+        passes through. */
+function emailPerTenant<C extends object>( client : C ) : C {
+	return new Proxy( client, {
+		get: ( target, key, receiver ) => {
+			const value = Reflect.get( target, key, receiver )
+
+			if ( key !== 'user' )
+				return value
+
+			const users = value as { update : ( args : UserUpdate ) => Promise<unknown> }
+
+			return new Proxy( users, {
+				get: ( model, method, modelReceiver ) => ( method === 'update'
+					? async( args : UserUpdate ) => {
+						const { email, ...rest } = args.where
+
+						return users.update( typeof email === 'string' && !( 'id' in rest ) && !( 'tenantId_email' in rest )
+							? { ...args, where: { ...rest, tenantId_email: { tenantId: ( await currentTenant() ).id, email } } }
+							: args )
+					}
+					: Reflect.get( model, method, modelReceiver ) )
+			} )
+		}
+	} )
+}
+
 // better-auth's adapter wants a Prisma client. Give it the tenant-scoped one, with
 // $transaction opening a tenant transaction — the scoped client can't nest one itself.
-const authDb = new Proxy( db, {
+const authDb = new Proxy( emailPerTenant( db ), {
 	get: ( target, key, receiver ) => ( key === '$transaction'
-		? ( fn : Parameters<typeof tenantTransaction>[0] ) => tenantTransaction( fn )
+		? ( fn : Parameters<typeof tenantTransaction>[0] ) => tenantTransaction( ( tx ) => fn( emailPerTenant( tx ) ) )
 		: Reflect.get( target, key, receiver ) )
 } ) as unknown as PrismaClient
 
@@ -39,6 +73,15 @@ function secret() : string {
 	return value
 }
 
+// One reset email per account per minute, however often the form is sent, so it can't be
+// used to flood someone's inbox. ( The token better-auth just stored counts as one. )
+async function sendResetEmail( user : { id : string, email : string, name : string }, token : string ) : Promise<void> {
+	const recent = await db.verification.count( { where: { value: user.id, identifier: { startsWith: 'reset-password:' }, createdAt: { gt: new Date( Date.now() - 60_000 ) } } } )
+
+	if ( recent <= 1 )
+		await sendMail( { to: user, template: 'password.reset', values: { link: appUrl( `/reset-password?token=${ token }` ) } } )
+}
+
 // `cookies: false` for code that runs outside a SvelteKit request ( tests, scripts ).
 export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 	const shared = process.env.TENANCY === 'shared'
@@ -49,9 +92,29 @@ export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 		baseURL : shared ? { allowedHosts: [ '*' ], protocol: 'auto' } : process.env.BETTER_AUTH_URL,
 		database: prismaAdapter( authDb, { provider: 'postgresql' } ),
 		emailAndPassword: {
-			enabled          : true,
-			disableSignUp    : !signUpEnabled(),
-			minPasswordLength: 10
+			enabled                      : true,
+			disableSignUp                : !signUpEnabled(),
+			minPasswordLength            : 10,
+			// Only self-made accounts can be unverified: the seed's admin is verified, an admin
+			// vouches for the people they add, and an invite is accepted through its email.
+			requireEmailVerification     : signUpEnabled(),
+			revokeSessionsOnPasswordReset: true,
+			// Our own page, not better-auth's redirect: it says up front when a link has expired.
+			// Never throws: the answer must not depend on whether the email has an account.
+			sendResetPassword            : ( { user, token } ) => sendResetEmail( user, token ).catch( ( caught ) => console.error( '[auth] reset email failed', caught ) ),
+			// Opening the link proves the address as well as an email verification would.
+			onPasswordReset              : async( { user } ) => {
+				if ( !user.emailVerified )
+					await db.user.update( { where: { id: user.id }, data: { emailVerified: true } } )
+			}
+		},
+		emailVerification: {
+			sendOnSignUp               : true,
+			// A sign-in refused for an unverified email sends a fresh link.
+			sendOnSignIn               : true,
+			autoSignInAfterVerification: true,
+			sendVerificationEmail      : ( { user, url } ) => sendMail( { to: user, template: 'email.verify', values: { link: url } } )
+				.catch( ( caught ) => console.error( '[auth] verification email failed', caught ) )
 		},
 		advanced: {
 			// Ids come from the database ( uuidv7() ).
@@ -64,9 +127,12 @@ export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 		rateLimit: {
 			storage    : 'database',
 			customRules: {
-				'/sign-in/email' : { window: 60, max: 10 },
-				'/sign-up/email' : { window: 60, max: 5 },
-				'/change-password': { window: 60, max: 5 }
+				'/sign-in/email'          : { window: 60, max: 10 },
+				'/sign-up/email'          : { window: 60, max: 5 },
+				'/change-password'        : { window: 60, max: 5 },
+				// Each of these sends an email.
+				'/request-password-reset' : { window: 60, max: 3 },
+				'/send-verification-email': { window: 60, max: 3 }
 			}
 		},
 		telemetry: { enabled: false },

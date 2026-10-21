@@ -2,6 +2,7 @@
 	import BellIcon from '@lucide/svelte/icons/bell'
 	import HouseIcon from '@lucide/svelte/icons/house'
 	import ImagesIcon from '@lucide/svelte/icons/images'
+	import MailIcon from '@lucide/svelte/icons/mail'
 	import PaletteIcon from '@lucide/svelte/icons/palette'
 	import SettingsIcon from '@lucide/svelte/icons/settings'
 	import ShieldIcon from '@lucide/svelte/icons/shield'
@@ -37,6 +38,7 @@
 			items: [
 				{ title: m.app_nav_users(), href: '/app/users', icon: UsersIcon, permission: { user: [ 'list' ] } },
 				{ title: m.app_nav_appearance(), href: '/app/settings/appearance', icon: PaletteIcon, permission: { settings: [ 'update' ] }, keywords: [ 'theme', 'colour' ] },
+				{ title: m.mail_title(), href: '/app/settings/mail', icon: MailIcon, permission: { settings: [ 'update' ] }, keywords: [ 'email', 'smtp', 'templates' ] },
 				{ title: m.app_nav_settings(), href: '/app/settings', icon: SettingsIcon, permission: { settings: [ 'update' ] } }
 			]
 		}

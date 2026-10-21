@@ -20,11 +20,11 @@ export const userColumns = ( { me, onchange } : Options ) : ColumnDef<UserRow>[]
 	{ accessorKey: 'role', header: m.users_role(), filterFn: facetedFilter, cell: ( { row } ) => roleLabel( row.original.role ) },
 	{
 		id           : 'status',
-		accessorFn   : ( row ) => ( row.banned ? 'banned' : 'active' ),
+		accessorFn   : ( row ) => ( row.banned ? 'banned' : row.invited ? 'invited' : 'active' ),
 		header       : m.users_status(),
 		enableSorting: false,
 		filterFn     : facetedFilter,
-		cell         : ( { row } ) => renderComponent( StatusBadge, { banned: row.original.banned } )
+		cell         : ( { row } ) => renderComponent( StatusBadge, { banned: row.original.banned, invited: row.original.invited } )
 	},
 	{
 		accessorKey: 'createdAt',
@@ -43,7 +43,7 @@ export const userColumns = ( { me, onchange } : Options ) : ColumnDef<UserRow>[]
 
 export const userFilters = () : FacetedFilterConfig[] => [
 	{ columnId: 'role', title: m.users_role(), options: ROLE_NAMES.map( ( value ) => ( { value, label: roleLabel( value ) } ) ) },
-	{ columnId: 'status', title: m.users_status(), options: [ { value: 'active', label: m.users_status_active() }, { value: 'banned', label: m.users_status_banned() } ] }
+	{ columnId: 'status', title: m.users_status(), options: [ { value: 'active', label: m.users_status_active() }, { value: 'invited', label: m.users_status_invited() }, { value: 'banned', label: m.users_status_banned() } ] }
 ]
 
 export const userSearch = () => ( {

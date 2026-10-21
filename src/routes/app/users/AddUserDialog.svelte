@@ -12,7 +12,8 @@
 	import { DEFAULT_ROLE, type RoleName } from '$lib/permissions'
 	import { newUserSchema, ROLE_NAMES, roleLabel } from '$lib/users'
 
-	let { onadded } : { onadded : () => void } = $props()
+	// canInvite: the workspace can send mail, so the password may be left out.
+	let { canInvite, onadded } : { canInvite : boolean, onadded : () => void } = $props()
 
 	let open = $state( false )
 
@@ -21,7 +22,7 @@
 		id       : 'add-user',
 		initial  : blank,
 		submit   : ( values ) => http.post( '/api/users', values ),
-		success  : ( values ) => m.users_added( { name: values.name } ),
+		success  : ( values ) => ( values.password ? m.users_added( { name: values.name } ) : m.users_invited( { email: values.email } ) ),
 		onSuccess: () => {
 			open = false
 			onadded()
@@ -47,7 +48,7 @@
 		<form method="POST" use:enhance novalidate class="flex flex-col gap-6">
 			<Dialog.Header>
 				<Dialog.Title>{m.users_add()}</Dialog.Title>
-				<Dialog.Description>{m.users_add_desc()}</Dialog.Description>
+				<Dialog.Description>{canInvite ? m.users_add_desc_invite() : m.users_add_desc()}</Dialog.Description>
 			</Dialog.Header>
 
 			<Field.Group>
@@ -63,7 +64,8 @@
 				</Field.Field>
 				<Field.Field data-invalid={$errors.password ? true : undefined}>
 					<Field.Label for="add-user-password">{m.users_password()}</Field.Label>
-					<Input id="add-user-password" type="password" autocomplete="new-password" bind:value={$values.password} aria-invalid={$errors.password ? true : undefined} />
+					<Input id="add-user-password" type="password" autocomplete="new-password" bind:value={$values.password} aria-invalid={$errors.password ? true : undefined} aria-describedby="add-user-password-hint" />
+					<Field.Description id="add-user-password-hint">{canInvite ? m.users_password_invite() : m.users_password_no_mail()}</Field.Description>
 					<Field.Error errors={shown( $errors.password )} />
 				</Field.Field>
 				<Field.Field data-invalid={$errors.role ? true : undefined}>
@@ -88,7 +90,7 @@
 				</Dialog.Close>
 				<Button type="submit" disabled={$submitting}>
 					{#if $submitting}<Spinner data-icon="inline-start" />{/if}
-					{m.users_add()}
+					{canInvite && !$values.password ? m.users_invite() : m.users_add()}
 				</Button>
 			</Dialog.Footer>
 		</form>

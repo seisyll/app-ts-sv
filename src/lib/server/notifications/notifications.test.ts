@@ -69,7 +69,7 @@ describe( 'notifications', () => {
 	} )
 
 	it( 'reaches named users once, and skips anyone who turned the type off', async() => {
-		await inA( () => service.setPreferences( users.alan, { 'role.changed': false, 'not.a.type': false } ) )
+		await inA( () => service.setPreferences( users.alan, { 'role.changed': { enabled: false }, 'not.a.type': { enabled: false } } ) )
 		await inA( () => service.notify( { type: 'role.changed', params: { role: 'admin', by: 'Ada' }, to: { users: [ users.mia, users.mia, users.alan, null ] } } ) )
 
 		expect( ( await inA( () => service.listNotifications( users.mia ) ) ).items ).toMatchObject( [ { type: 'role.changed', title: 'You\'re now Admin', body: 'Changed by Ada', readAt: null } ] )
@@ -110,5 +110,24 @@ describe( 'notifications', () => {
 		await t.asOwner()
 		expect( await t.prisma.notificationRecipient.count( { where: { userId: users.ada, tenantId: b.id } } ) ).toBe( 0 )
 		await t.asApp()
+	} )
+
+	// No mail server in these workspaces, so the copies land in the dev outbox.
+	it( 'emails whoever wants it, by the catalog\'s default until they choose', async() => {
+		const { clearOutbox, listOutbox } = await import( '$lib/server/mail/outbox' )
+
+		clearOutbox()
+		await inA( () => service.setPreferences( users.ada, { 'user.joined': { enabled: false, email: true } } ) )
+		await inA( () => service.notify( { type: 'user.joined', params: { name: 'Zed', email: 'zed@example.test' }, to: { users: [ users.ada, users.mia ] } } ) )
+
+		// Ada: in-app off, email on. Mia: user.joined emails are off by default.
+		await vi.waitFor( () => expect( listOutbox().map( ( mail ) => mail.to ) ).toEqual( [ 'ada@example.test' ] ) )
+		expect( ( await inA( () => service.listNotifications( users.ada ) ) ).items.map( ( item ) => item.title ) ).not.toContain( 'Zed joined the workspace' )
+		expect( ( await inA( () => service.listPreferences( users.ada ) ) ).find( ( preference ) => preference.type === 'user.joined' ) ).toMatchObject( { enabled: false, email: true } )
+
+		// role.changed emails are on by default.
+		clearOutbox()
+		await inA( () => service.notify( { type: 'role.changed', params: { role: 'admin', by: 'Ada' }, to: { users: [ users.mia ] } } ) )
+		await vi.waitFor( () => expect( listOutbox() ).toMatchObject( [ { to: 'mia@example.test', subject: 'You\'re now Admin', text: expect.stringContaining( 'Changed by Ada' ) } ] ) )
 	} )
 } )

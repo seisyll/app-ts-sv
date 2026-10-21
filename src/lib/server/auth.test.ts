@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { createTestDatabase, type TestDatabase } from '$lib/test/database'
 import type { TenantRef } from '$lib/server/db'
 
@@ -48,8 +48,16 @@ describe( 'auth', () => {
 		await expect( inTenant( a, () => closedAuth.api.signUpEmail( { body: ada } ) ) ).rejects.toThrow()
 	} )
 
+	// No mail server in these tenants: verification emails land in the dev outbox.
+	const outbox = () => import( './mail/outbox' )
+	const linkIn = ( text : string ) => new URL( text.match( /http\S+verify-email\S+/ )![ 0 ] ).searchParams.get( 'token' )!
+
 	it( 'signs a user up into the request\'s tenant, with a hashed password and the default role', async() => {
-		await inTenant( a, () => auth.api.signUpEmail( { body: ada } ) )
+		const { clearOutbox, listOutbox } = await outbox()
+
+		clearOutbox()
+
+		const result = await inTenant( a, () => auth.api.signUpEmail( { body: ada } ) )
 
 		await t.asOwner()
 
@@ -57,8 +65,24 @@ describe( 'auth', () => {
 
 		await t.asApp()
 
-		expect( user ).toMatchObject( { tenantId: a.id, role: 'member' } )
+		expect( user ).toMatchObject( { tenantId: a.id, role: 'member', emailVerified: false } )
 		expect( user.accounts[ 0 ].password ).not.toContain( ada.password )
+		// No session until the email is verified; the link is on its way.
+		expect( result.token ).toBeNull()
+		await vi.waitFor( () => expect( listOutbox() ).toMatchObject( [ { to: ada.email, subject: 'Confirm your email for A' } ] ) )
+	} )
+
+	it( 'refuses to sign in until the email is verified, and sends a fresh link instead', async() => {
+		const { listOutbox } = await outbox()
+
+		await expect( signIn( a, ada.email, ada.password ) ).rejects.toMatchObject( { body: { code: 'EMAIL_NOT_VERIFIED' } } )
+		await vi.waitFor( () => expect( listOutbox() ).toHaveLength( 2 ) )
+
+		await inTenant( a, () => auth.api.verifyEmail( { query: { token: linkIn( listOutbox()[ 0 ].text ) } } ) )
+
+		await t.asOwner()
+		expect( ( await t.prisma.user.findFirstOrThrow( { where: { tenantId: a.id, email: ada.email } } ) ).emailVerified ).toBe( true )
+		await t.asApp()
 	} )
 
 	it( 'signs in with the right password only', async() => {
@@ -79,6 +103,9 @@ describe( 'auth', () => {
 
 	it( 'lets the same email exist separately in another tenant', async() => {
 		await inTenant( b, () => auth.api.signUpEmail( { body: { ...ada, password: 'another long password' } } ) )
+		await t.asOwner()
+		await t.prisma.user.update( { where: { tenantId_email: { tenantId: b.id, email: ada.email } }, data: { emailVerified: true } } )
+		await t.asApp()
 
 		await expect( signIn( b, ada.email, ada.password ) ).rejects.toThrow()
 		expect( await signIn( b, ada.email, 'another long password' ) ).toMatch( /session_token=/ )

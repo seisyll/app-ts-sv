@@ -41,6 +41,7 @@
 		"@tailwindcss/vite": "^4.3.3",
 		"@tanstack/table-core": "^8.21.3",
 		"@types/node": "^24.13.3",
+		"@types/nodemailer": "^8.0.2",
 		"@types/pg": "^8.21.0",
 		"@valibot/to-json-schema": "^1.0.0",
 		"@vitest/browser": "^4.1.12",
@@ -78,6 +79,7 @@
 		"@tiptap/starter-kit": "^3.27.3",
 		"@tiptap/static-renderer": "^3.27.3",
 		"better-auth": "^1.6.23",
+		"nodemailer": "^10.1.7",
 		"pg": "^8.22.0",
 		"sharp": "^0.35.3",
 		"svelte-tiptap": "^3.0.1"

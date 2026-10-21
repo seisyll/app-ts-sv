@@ -22,49 +22,61 @@
 	<title>{m.auth_signup_title()}</title>
 </svelte:head>
 
-<Card.Root>
-	<Card.Header>
-		<Card.Title><h1 class="text-xl">{m.auth_signup_title()}</h1></Card.Title>
-		<Card.Description>{m.auth_signup_desc()}</Card.Description>
-	</Card.Header>
-	<Card.Content>
-		<form method="POST" use:enhance novalidate>
-			<Field.Group>
-				{#if $message}
-					<Alert variant="destructive">
-						<AlertDescription>{$message}</AlertDescription>
-					</Alert>
-				{/if}
-
-				<Field.Field data-invalid={$errors.name ? true : undefined}>
-					<Field.Label for="name">{m.auth_name()}</Field.Label>
-					<Input id="name" name="name" autocomplete="name" bind:value={$values.name} aria-invalid={$errors.name ? true : undefined} />
-					<Field.Error errors={shown( $errors.name )} />
-				</Field.Field>
-
-				<Field.Field data-invalid={$errors.email ? true : undefined}>
-					<Field.Label for="email">{m.auth_email()}</Field.Label>
-					<Input id="email" name="email" type="email" autocomplete="email" bind:value={$values.email} aria-invalid={$errors.email ? true : undefined} />
-					<Field.Error errors={shown( $errors.email )} />
-				</Field.Field>
-
-				<Field.Field data-invalid={$errors.password ? true : undefined}>
-					<Field.Label for="password">{m.auth_password()}</Field.Label>
-					<Input id="password" name="password" type="password" autocomplete="new-password" bind:value={$values.password} aria-invalid={$errors.password ? true : undefined} />
-					<Field.Description>{m.auth_password_hint()}</Field.Description>
-					<Field.Error errors={shown( $errors.password )} />
-				</Field.Field>
-
-				<Button type="submit" class="w-full" disabled={$submitting}>
-					{#if $submitting}
-						<Spinner data-icon="inline-start" />
+{#if data.sent}
+	<Card.Root>
+		<Card.Header>
+			<Card.Title><h1 class="text-xl">{m.auth_check_inbox()}</h1></Card.Title>
+			<Card.Description>{m.auth_check_inbox_desc()}</Card.Description>
+		</Card.Header>
+		<Card.Footer class="text-muted-foreground justify-center text-sm">
+			<a href="/login" class="text-foreground underline underline-offset-4">{m.auth_back_to_login()}</a>
+		</Card.Footer>
+	</Card.Root>
+{:else}
+	<Card.Root>
+		<Card.Header>
+			<Card.Title><h1 class="text-xl">{m.auth_signup_title()}</h1></Card.Title>
+			<Card.Description>{m.auth_signup_desc()}</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<form method="POST" use:enhance novalidate>
+				<Field.Group>
+					{#if $message}
+						<Alert variant="destructive">
+							<AlertDescription>{$message}</AlertDescription>
+						</Alert>
 					{/if}
-					{m.auth_signup_submit()}
-				</Button>
-			</Field.Group>
-		</form>
-	</Card.Content>
-	<Card.Footer class="text-muted-foreground justify-center text-sm">
-		{m.auth_have_account()}&nbsp;<a href="/login" class="text-foreground underline underline-offset-4">{m.auth_login_link()}</a>
-	</Card.Footer>
-</Card.Root>
+
+					<Field.Field data-invalid={$errors.name ? true : undefined}>
+						<Field.Label for="name">{m.auth_name()}</Field.Label>
+						<Input id="name" name="name" autocomplete="name" bind:value={$values.name} aria-invalid={$errors.name ? true : undefined} />
+						<Field.Error errors={shown( $errors.name )} />
+					</Field.Field>
+
+					<Field.Field data-invalid={$errors.email ? true : undefined}>
+						<Field.Label for="email">{m.auth_email()}</Field.Label>
+						<Input id="email" name="email" type="email" autocomplete="email" bind:value={$values.email} aria-invalid={$errors.email ? true : undefined} />
+						<Field.Error errors={shown( $errors.email )} />
+					</Field.Field>
+
+					<Field.Field data-invalid={$errors.password ? true : undefined}>
+						<Field.Label for="password">{m.auth_password()}</Field.Label>
+						<Input id="password" name="password" type="password" autocomplete="new-password" bind:value={$values.password} aria-invalid={$errors.password ? true : undefined} />
+						<Field.Description>{m.auth_password_hint()}</Field.Description>
+						<Field.Error errors={shown( $errors.password )} />
+					</Field.Field>
+
+					<Button type="submit" class="w-full" disabled={$submitting}>
+						{#if $submitting}
+							<Spinner data-icon="inline-start" />
+						{/if}
+						{m.auth_signup_submit()}
+					</Button>
+				</Field.Group>
+			</form>
+		</Card.Content>
+		<Card.Footer class="text-muted-foreground justify-center text-sm">
+			{m.auth_have_account()}&nbsp;<a href="/login" class="text-foreground underline underline-offset-4">{m.auth_login_link()}</a>
+		</Card.Footer>
+	</Card.Root>
+{/if}

@@ -14,7 +14,11 @@ export function authErrorMessage( error : unknown ) : string {
 	if ( error.statusCode === 429 )
 		return m.auth_too_many()
 
-	// 403: banned / unverified — better-auth's own message says which.
+	// A fresh link is already on its way ( emailVerification.sendOnSignIn ).
+	if ( error.body?.code === 'EMAIL_NOT_VERIFIED' )
+		return m.auth_verify_first()
+
+	// 403: banned — better-auth's own message says so.
 	return error.message || m.http_failed()
 }
 

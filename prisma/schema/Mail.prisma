@@ -1,0 +1,41 @@
+// A workspace's outgoing mail server ( src/lib/server/mail ). One row per tenant; no row
+// means mail isn't set up — in dev it goes to the outbox at /hello/mail instead. The
+// password is encrypted with BETTER_AUTH_SECRET and never leaves the server.
+model MailSetting {
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId  String   @unique @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  host      String
+  port      Int
+  // tls: encrypted from the first byte ( usually 465 ); starttls: upgraded after connecting
+  // ( usually 587 ); none: plain, for a local catcher only. See MAIL_SECURITY.
+  security  String   @default("starttls")
+  username  String?
+  password  String?
+  fromName  String   @map("from_name")
+  fromEmail String   @map("from_email")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("mail_settings")
+}
+
+// A workspace's own wording for one email in one language. No row means the default in
+// code ( MAIL_TEMPLATES in src/lib/server/mail/templates.ts ), so a reworded default
+// reaches every workspace that never customised it.
+model MailTemplate {
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId  String   @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  // A catalog key, e.g. password.reset.
+  key       String
+  locale    String
+  subject   String
+  // Rich text ( richTextSchema ), {{variables}} included.
+  body      Json     @db.JsonB
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key, locale])
+  @@map("mail_templates")
+}

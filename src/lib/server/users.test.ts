@@ -1,7 +1,21 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import type { PageQuery } from '$lib/components/data-table'
 import type { TenantRef } from '$lib/server/db'
 import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+
+// The SMTP boundary, for an invite that can't be sent.
+const smtp = vi.hoisted( () => ( { fail: null as Error | null } ) )
+
+vi.mock( 'nodemailer', () => ( {
+	default: {
+		createTransport: () => ( {
+			sendMail: async() => {
+				if ( smtp.fail )
+					throw smtp.fail
+			}
+		} )
+	}
+} ) )
 
 // User administration on the tenant-scoped database ( PGlite, real migrations ), through
 // better-auth's admin API as a signed-in admin.
@@ -31,7 +45,8 @@ describe( 'users', () => {
 
 		await t.runWithTenant( tenant, () => auth.api.signUpEmail( { body: { name, email, password } } ) )
 		await t.asOwner()
-		const user = await t.prisma.user.update( { where: { tenantId_email: { tenantId: tenant.id, email } }, data: { role } } )
+		// Sign-up is on, so better-auth wants the email verified before a sign-in.
+		const user = await t.prisma.user.update( { where: { tenantId_email: { tenantId: tenant.id, email } }, data: { role, emailVerified: true } } )
 		await t.asApp()
 
 		return { id: user.id, headers: await signIn( tenant, email ) }
@@ -88,7 +103,7 @@ describe( 'users', () => {
 	} )
 
 	it( 'adds a user to the admin\'s tenant, with a role, even with sign-up off', async() => {
-		await inA( () => users.createUser( auth, admin.headers, { name: 'Ken', email: 'ken@example.test', password, role: 'admin' } ) )
+		await inA( () => users.createUser( auth, admin.headers, { name: 'Ken', email: 'ken@example.test', password, role: 'admin' }, 'Ada' ) )
 
 		const page = await inA( () => users.listUsers( query( { search: 'ken' } ) ) )
 
@@ -139,5 +154,37 @@ describe( 'users', () => {
 
 		await expect( inA( () => users.changeUser( auth, admin.headers, admin.id, bea.id, { action: 'ban' } ) ) ).rejects.toThrow()
 		expect( ( await userIn( bea.id ) )?.banned ).toBeFalsy()
+	} )
+
+	// No mail server in tenant A yet: the invite lands in the dev outbox.
+	it( 'invites someone without a password, who gets in by choosing one from the email', async() => {
+		const { listOutbox } = await import( './mail/outbox' )
+
+		await inA( () => users.createUser( auth, admin.headers, { name: 'Kim', email: 'kim@example.test', password: '', role: 'member' }, 'Ada' ) )
+		expect( ( await inA( () => users.listUsers( query( { filters: { status: [ 'invited' ] } } ) ) ) ).rows ).toMatchObject( [ { name: 'Kim', invited: true } ] )
+
+		const [ invite ] = listOutbox()
+
+		expect( invite ).toMatchObject( { to: 'kim@example.test', subject: 'Ada invited you to A' } )
+
+		const token = new URL( invite.text.match( /http\S+reset-password\S+/ )![ 0 ] ).searchParams.get( 'token' )!
+
+		await inA( () => auth.api.resetPassword( { body: { token, newPassword: password } } ) )
+
+		// Signing in works ( sign-up is on: only a verified email may ) — the invite verified it.
+		const headers = await signIn( a, 'kim@example.test' )
+
+		expect( await inA( () => auth.api.getSession( { headers } ) ) ).toMatchObject( { user: { email: 'kim@example.test', emailVerified: true } } )
+		expect( ( await inA( () => users.listUsers( query( { search: 'kim' } ) ) ) ).rows ).toMatchObject( [ { invited: false } ] )
+	} )
+
+	it( 'takes the account back out when the invite can\'t be sent', async() => {
+		await t.asOwner()
+		await t.prisma.mailSetting.create( { data: { tenantId: a.id, host: 'smtp.example.test', port: 587, fromName: 'A', fromEmail: 'a@example.test' } } )
+		await t.asApp()
+		smtp.fail = new Error( 'connection refused' )
+
+		await expect( inA( () => users.createUser( auth, admin.headers, { name: 'Lee', email: 'lee@example.test', password: '', role: 'member' }, 'Ada' ) ) ).rejects.toThrow( 'connection refused' )
+		expect( ( await inA( () => users.listUsers( query( { search: 'lee' } ) ) ) ).total ).toBe( 0 )
 	} )
 } )

@@ -16,10 +16,13 @@ export type UserRow = {
 	image     : string | null
 	role      : string
 	banned    : boolean
+	// Added without a password and hasn't accepted the invite yet.
+	invited   : boolean
 	createdAt : string
 }
 
-export const newUserSchema = v.object( { name, email, password: newPassword, role: v.picklist( ROLE_NAMES ) } )
+// No password: invite them by email to choose their own ( needs the workspace's mail ).
+export const newUserSchema = v.object( { name, email, password: v.union( [ v.literal( '' ), newPassword ] ), role: v.picklist( ROLE_NAMES ) } )
 
 export type NewUser = v.InferOutput<typeof newUserSchema>
 

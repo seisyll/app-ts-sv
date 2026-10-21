@@ -34,6 +34,10 @@
 					<Alert variant="destructive">
 						<AlertDescription>{$message}</AlertDescription>
 					</Alert>
+				{:else if data.linkError}
+					<Alert variant="destructive">
+						<AlertDescription>{m.auth_verify_link_expired()}</AlertDescription>
+					</Alert>
 				{/if}
 
 				<Field.Field data-invalid={$errors.email ? true : undefined}>
@@ -43,7 +47,12 @@
 				</Field.Field>
 
 				<Field.Field data-invalid={$errors.password ? true : undefined}>
-					<Field.Label for="password">{m.auth_password()}</Field.Label>
+					<div class="flex items-center justify-between gap-2">
+						<Field.Label for="password">{m.auth_password()}</Field.Label>
+						{#if data.forgot}
+							<a href="/forgot-password" class="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">{m.auth_forgot_link()}</a>
+						{/if}
+					</div>
 					<Input id="password" name="password" type="password" autocomplete="current-password" bind:value={$values.password} aria-invalid={$errors.password ? true : undefined} />
 					<Field.Error errors={shown( $errors.password )} />
 				</Field.Field>

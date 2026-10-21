@@ -6,13 +6,23 @@ import { auth, signUpEnabled } from '$lib/server/auth'
 import { authErrorMessage } from '$lib/server/auth-errors'
 import { validateForm } from '$lib/server/forms'
 import { safeRedirect } from '$lib/server/guards'
+import { mailReady } from '$lib/server/mail'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load : PageServerLoad = async( event ) => {
 	if ( await event.locals.session() )
 		redirect( 303, safeRedirect( event.url.searchParams.get( 'redirectTo' ) ) )
 
-	return { form: await superValidate( valibot( loginSchema ) ), signUp: signUpEnabled() }
+	const mail = await mailReady()
+
+	return {
+		form     : await superValidate( valibot( loginSchema ) ),
+		// Sign-up sends a verification email, so it needs the workspace's mail too.
+		signUp   : signUpEnabled() && mail,
+		forgot   : mail,
+		// Back from a verification link that had expired ( better-auth adds ?error= ).
+		linkError: event.url.searchParams.has( 'error' )
+	}
 }
 
 export const actions : Actions = {
