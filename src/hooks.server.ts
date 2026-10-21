@@ -6,6 +6,7 @@ import { paraglideMiddleware } from '$lib/paraglide/server'
 import { appearanceClassOf } from '$lib/server/appearance'
 import { auth, type Session } from '$lib/server/auth'
 import { checkEnv } from '$lib/server/env'
+import { log, withLog } from '$lib/server/log'
 import { requireUser } from '$lib/server/guards'
 import { runWithTenant, type TenantRef } from '$lib/server/db'
 import { handleModules } from '$lib/server/modules'
@@ -41,11 +42,43 @@ export const init : ServerInit = () => {
         the request that caused it and the stack. 404s — scanners try every host for
         WordPress — and other 4xx are the visitor's business, not ours. What the visitor
         sees is unchanged. */
-export const handleError : HandleServerError = ( { error, event, status, message } ) => {
+export const handleError : HandleServerError = ( { error, status, message } ) => {
+	// The request's method, path and id are on the line already ( handleLog ).
 	if ( status >= 500 )
-		console.error( `[${ status }] ${ event.request.method } ${ event.url.pathname }`, error )
+		log.error( { err: error, status }, 'server fault' )
 
 	return { message }
+}
+
+/* ―― » Each request in its own log context ( src/lib/server/log.ts ): an id — the proxy's, if
+        it sent a sane one, else new — that every line logged while answering carries, and is
+        returned as X-Request-ID so a report can name it. One line when it's answered: debug,
+        or in production a warning when it took over a second ( in dev, compiling a page on
+        first visit would set it off every time ). */
+const REQUEST_ID = /^[\w-]{8,64}$/
+
+const handleLog : Handle = ( { event, resolve } ) => {
+	const sent = event.request.headers.get( 'x-request-id' ) ?? ''
+	const id = REQUEST_ID.test( sent ) ? sent : crypto.randomUUID()
+	const started = performance.now()
+
+	return withLog( { req: id, method: event.request.method, path: event.url.pathname, host: event.url.host }, async() => {
+		const response = await resolve( event )
+		const ms = Math.round( performance.now() - started )
+
+		if ( !dev && ms > 1_000 )
+			log.warn( { status: response.status, ms }, 'slow request' )
+		else
+			log.debug( { status: response.status, ms }, 'request' )
+
+		try {
+			response.headers.set( 'x-request-id', id )
+		} catch {
+			// Immutable headers: the id stays in the log.
+		}
+
+		return response
+	} )
 }
 
 /* ―― » Headers every response carries ( the content security policy is SvelteKit's, from
@@ -122,4 +155,4 @@ const handleAppGuard : Handle = async( { event, resolve } ) => {
 	return resolve( event )
 }
 
-export const handle = sequence( handleHeaders, handleLocale, handleAppearance, handleTenant, handleModules, handleAuth, handleAppGuard )
+export const handle = sequence( handleLog, handleHeaders, handleLocale, handleAppearance, handleTenant, handleModules, handleAuth, handleAppGuard )

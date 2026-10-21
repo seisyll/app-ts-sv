@@ -1,3 +1,5 @@
+import { log } from '$lib/server/log'
+
 /* ―― » The environment, checked once when the server starts ( hooks.server.ts `init`, from
         billing-app's env.ts ). Everything else still reads process.env where it's used; this
         only makes a broken deployment say so at boot, one line per variable, instead of on
@@ -41,5 +43,5 @@ export function checkEnv( env = process.env, production = env.NODE_ENV === 'prod
 	if ( production )
 		throw new Error( report )
 
-	console.warn( report )
+	log.warn( report )
 }

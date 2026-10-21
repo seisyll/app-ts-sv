@@ -5,6 +5,7 @@ import { sveltekitCookies } from 'better-auth/svelte-kit'
 import { getRequestEvent } from '$app/server'
 import { APP } from '$lib/config'
 import { ac, DEFAULT_ROLE, roles } from '$lib/permissions'
+import { log } from '$lib/server/log'
 import { SOCIAL_LABELS, type SocialProvider } from '$lib/social'
 import { audit, type AuditEntry } from '$lib/server/audit'
 import { currentTenant, db, tenantTransaction } from '$lib/server/db'
@@ -124,7 +125,7 @@ export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 			revokeSessionsOnPasswordReset: true,
 			// Our own page, not better-auth's redirect: it says up front when a link has expired.
 			// Never throws: the answer must not depend on whether the email has an account.
-			sendResetPassword            : MODULES.mail ? ( { user, token } ) => sendResetEmail( user, token ).catch( ( caught ) => console.error( '[auth] reset email failed', caught ) ) : undefined,
+			sendResetPassword            : MODULES.mail ? ( { user, token } ) => sendResetEmail( user, token ).catch( ( caught ) => log.error( { err: caught, scope: 'auth' }, 'reset email failed' ) ) : undefined,
 			// Opening the link proves the address as well as an email verification would.
 			onPasswordReset              : async( { user } ) => {
 				if ( !user.emailVerified )
@@ -186,7 +187,7 @@ export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 			sendOnSignIn               : true,
 			autoSignInAfterVerification: true,
 			sendVerificationEmail      : ( { user, url } ) => sendMail( { to: user, template: 'email.verify', values: { link: url } } )
-				.catch( ( caught ) => console.error( '[auth] verification email failed', caught ) )
+				.catch( ( caught ) => log.error( { err: caught, scope: 'auth' }, 'verification email failed' ) )
 		} : undefined,
 		advanced: {
 			// Ids come from the database ( uuidv7() ).

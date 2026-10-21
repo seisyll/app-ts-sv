@@ -691,6 +691,23 @@ the caller's permission again. Your own row has no actions, and the endpoints re
   `{ where, orderBy, skip, take }`. The `spec` allow-lists the search, facet and sort fields.
   Date ranges are calendar days in `APP.timeZone`.
 
+## Logs
+
+`log` (`src/lib/server/log.ts`, on pino, from the fundraiser app's Trace) instead of
+`console`: `log.warn( 'message' )`, or `log.error( { err: caught, scope: 'mail' }, 'the invite
+failed' )` — `err` keeps its stack.
+
+- **Production:** one JSON object per line on stdout, ISO time and the level by name — the
+  container's log, which Docker keeps and rotates and any collector reads. **Dev:** the same,
+  readable (pino-pretty, which never reaches the build).
+- **Every request has an id** — the proxy's `X-Request-ID` if it sent one, else new —
+  returned in `X-Request-ID`, and every line logged while answering carries it with the
+  method, path and host, with no logger to pass around. One line per request at `debug`;
+  over a second, a `warn` (production only).
+- **Never a secret:** `password`, `secret`, `token`, cookies and authorization headers are
+  redacted wherever they sit in a logged object.
+- `LOG_LEVEL`: `trace`, `debug`, `info` (default), `warn`, `error`, `fatal`, `silent` (tests).
+
 ## SEO
 
 - **`<Seo>`** (`$lib/components/seo`): a page's title, description, canonical URL (this host,

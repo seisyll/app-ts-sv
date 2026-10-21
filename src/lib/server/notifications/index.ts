@@ -3,6 +3,7 @@ import type { Prisma } from '$lib/server/db/generated/client'
 import type { RoleName } from '$lib/permissions'
 import type { NotificationItem, NotificationPage } from '$lib/notifications'
 import { db, tenantTransaction } from '$lib/server/db'
+import { log } from '$lib/server/log'
 import { mailReady, sendMail } from '$lib/server/mail/gate'
 import { moduleActive } from '$lib/server/modules'
 import { appUrl } from '$lib/server/url'
@@ -36,7 +37,7 @@ export async function notify<T extends NotificationType>( { type, params, to } :
 		const parsed = v.safeParse( NOTIFICATIONS[ type ].schema, params )
 
 		if ( !parsed.success ) {
-			console.error( `[notify] ${ type }: params don't fit the catalog`, v.flatten( parsed.issues ).nested )
+			log.error( { scope: 'notify', type, issues: v.flatten( parsed.issues ).nested }, "params don't fit the catalog" )
 
 			return
 		}
@@ -81,7 +82,7 @@ export async function notify<T extends NotificationType>( { type, params, to } :
 			await tx.notificationRecipient.createMany( { data: inApp.map( ( user ) => ( { eventId: event.id, userId: user.id } ) ), skipDuplicates: true } )
 		} )
 	} catch ( caught ) {
-		console.error( `[notify] ${ type } failed`, caught )
+		log.error( { err: caught, scope: 'notify', type }, 'failed' )
 	}
 }
 
@@ -98,9 +99,9 @@ async function emailNotification( type : NotificationType, params : unknown, rea
 		const values = { title, body: body ?? '', link: appUrl( href ?? '/app/notifications' ) }
 
 		await Promise.all( readers.map( ( reader ) => sendMail( { to: reader, template: 'notification', values } )
-			.catch( ( caught ) => console.error( `[notify] ${ type }: an email failed`, caught ) ) ) )
+			.catch( ( caught ) => log.error( { err: caught, scope: 'notify', type }, 'an email failed' ) ) ) )
 	} catch ( caught ) {
-		console.error( `[notify] ${ type }: emails failed`, caught )
+		log.error( { err: caught, scope: 'notify', type }, 'emails failed' )
 	}
 }
 

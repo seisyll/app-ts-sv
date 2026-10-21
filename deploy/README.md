@@ -94,7 +94,9 @@ docker compose up -d
 
 - `docker compose ps` — every service and its health. The app's health is `GET /health`
   (the database answers; Redis is reported, never fatal).
-- `docker compose logs -f app` — the app; `caddy`, `migrate`, `backup` likewise.
+- `docker compose logs -f app` — the app, one JSON object per line, each request's lines
+  sharing its `req` id (the `X-Request-ID` a visitor's browser got); `caddy`, `migrate`,
+  `backup` likewise. `LOG_LEVEL=debug` in `app.env` adds a line per request.
 - Caddy drops requests for other software's weak spots (`.php`, `/wp-*`, `/.env`, `/.git`),
   sets `X-Forwarded-For` itself (the app trusts nothing else for the visitor's address), and
   never lets `/internal/*` through from outside.

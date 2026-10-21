@@ -1,5 +1,6 @@
 import { Redis } from 'ioredis'
 import { currentTenant } from '$lib/server/db'
+import { log } from '$lib/server/log'
 
 /* ―― » Redis ( the fundraiser app's client ), optional infrastructure: with REDIS_URL set the
         counters below are shared by every instance and outlive a restart; without it, or
@@ -26,7 +27,7 @@ export function redis() : Redis | null {
 	// An 'error' event without a listener would crash the process. Said once, not per retry.
 	client.on( 'error', ( caught ) => {
 		if ( !warned )
-			console.warn( `[redis] unavailable, carrying on without it: ${ caught.message }` )
+			log.warn( { scope: 'redis', reason: caught.message }, 'unavailable, carrying on without it' )
 
 		warned = true
 	} )

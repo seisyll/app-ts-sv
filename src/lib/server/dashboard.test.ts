@@ -61,7 +61,7 @@ describe( 'dashboard', () => {
 	} )
 
 	it( 'gives a failed read as null, and the rest still', async() => {
-		const spy = vi.spyOn( console, 'error' ).mockImplementation( () => {} )
+		const spy = vi.spyOn( ( await import( '$lib/server/log' ) ).log, 'error' )
 		const result = await t.runWithTenant( a, async() => {
 			vi.spyOn( t.db.media, 'groupBy' ).mockRejectedValueOnce( new Error( 'down' ) )
 

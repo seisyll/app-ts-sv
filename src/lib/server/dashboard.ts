@@ -1,5 +1,6 @@
 import { lastMonths, type MonthWindow } from '$lib/months'
 import { db } from '$lib/server/db'
+import { log } from '$lib/server/log'
 import { moduleActive } from '$lib/server/modules'
 
 /* ―― » The workspace's figures for /app ( under RLS: this workspace only ). Each is its own
@@ -12,7 +13,7 @@ async function read<T>( name : string, fn : () => Promise<T> ) : Promise<T | nul
 	try {
 		return await fn()
 	} catch ( caught ) {
-		console.error( `[dashboard] ${ name } failed`, caught )
+		log.error( { err: caught, scope: 'dashboard', figure: name }, 'a figure failed' )
 
 		return null
 	}

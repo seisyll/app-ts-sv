@@ -7,6 +7,7 @@ import { m } from '$lib/paraglide/messages'
 import { auth } from '$lib/server/auth'
 import { validateForm } from '$lib/server/forms'
 import { authErrorMessage } from '$lib/server/auth-errors'
+import { log } from '$lib/server/log'
 import { mailReady } from '$lib/server/mail'
 import { authHeaders, captchaWidget } from '$lib/server/sign-in-guard'
 import type { Actions, PageServerLoad } from './$types'
@@ -38,7 +39,7 @@ export const actions : Actions = {
 				if ( caught instanceof APIError && ( caught.statusCode === 403 || caught.statusCode === 429 ) )
 					return message( form, authErrorMessage( caught ), { status: 400 } )
 
-				console.error( '[auth] reset request failed', caught )
+				log.error( { err: caught, scope: 'auth' }, 'reset request failed' )
 			}
 
 			return message( form, m.auth_forgot_sent() )

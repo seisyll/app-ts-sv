@@ -1,4 +1,5 @@
 import type { Paged, PageQuery } from '$lib/components/data-table'
+import { log } from '$lib/server/log'
 import type { SignInMethod, SignInOutcome, SignInRow } from '$lib/sign-ins'
 import { lastDays } from '$lib/months'
 import { db } from '$lib/server/db'
@@ -34,7 +35,7 @@ export async function recordSignIn( attempt : SignInAttempt ) : Promise<void> {
 
 		await db.signInEvent.create( { data: { email, userId, outcome: attempt.outcome, method: attempt.method, ip: attempt.ip ?? null, userAgent: attempt.userAgent?.slice( 0, 400 ) ?? null } } )
 	} catch ( caught ) {
-		console.error( '[sign-ins] couldn\'t record an attempt', caught )
+		log.error( { err: caught, scope: 'sign-ins' }, "couldn't record an attempt" )
 	}
 }
 

@@ -1,3 +1,5 @@
+import { log } from '$lib/server/log'
+
 /* ―― » Where browsers report what the content security policy blocked ( svelte.config.js,
         `report-uri` ). Logged, one line each, so a policy too tight for a new feature shows
         up in the server log instead of as a silently broken page. Anyone can post here: a
@@ -12,11 +14,11 @@ export const POST = async( { request } ) => {
 		}
 	} )()
 
-	// The fields are the sender's words: one line each, so they can't forge log lines.
-	const field = ( key : string ) => String( report?.[ key ] ?? '?' ).replace( /[\s\p{Cc}]+/gu, ' ' ).slice( 0, 300 )
+	// The sender's words, capped: as JSON fields they can't forge log lines.
+	const field = ( key : string ) => String( report?.[ key ] ?? '?' ).slice( 0, 300 )
 
 	if ( report )
-		console.warn( `[csp] ${ field( 'violated-directive' ) } blocked ${ field( 'blocked-uri' ) } on ${ field( 'document-uri' ) }` )
+		log.warn( { scope: 'csp', directive: field( 'violated-directive' ), blocked: field( 'blocked-uri' ), page: field( 'document-uri' ) }, 'content security policy blocked something' )
 
 	return new Response( null, { status: 204 } )
 }

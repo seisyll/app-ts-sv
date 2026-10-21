@@ -81,7 +81,8 @@ describe( 'audit', () => {
 	} )
 
 	it( 'never fails the change it describes', async() => {
-		const error = vi.spyOn( console, 'error' ).mockImplementation( () => {} )
+		// The log the service sees: the test database reset the module registry.
+		const error = vi.spyOn( ( await import( '$lib/server/log' ) ).log, 'error' )
 
 		await expect( inA( () => service.audit( { locals: { session: async() => { throw new Error( 'down' ) } } } as never, { action: 'account.password' } ) ) ).resolves.toBeUndefined()
 		expect( error ).toHaveBeenCalled()

@@ -38,7 +38,9 @@ const config : UserConfig = {
 					environment: 'node',
 					include    : [ 'src/**/*.test.ts' ],
 					exclude    : [ 'src/**/*.svelte.test.ts' ],
-					setupFiles : [ './src/lib/test/setup.ts' ]
+					setupFiles : [ './src/lib/test/setup.ts' ],
+					// Quiet logs: a test that cares spies on `log` ( src/lib/server/log.ts ).
+					env        : { LOG_LEVEL: 'silent' }
 				}
 			},
 			{

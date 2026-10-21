@@ -78,7 +78,7 @@ describe( 'notifications', () => {
 	} )
 
 	it( 'never throws, and writes nothing, for params that don\'t fit', async() => {
-		const log = vi.spyOn( console, 'error' ).mockImplementation( () => {} )
+		const log = vi.spyOn( ( await import( '$lib/server/log' ) ).log, 'error' )
 
 		await expect( inA( () => service.notify( { type: 'user.joined', params: { name: 1 } as never, to: { users: [ users.mia ] } } ) ) ).resolves.toBeUndefined()
 		expect( log ).toHaveBeenCalled()

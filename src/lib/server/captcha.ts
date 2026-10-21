@@ -1,6 +1,7 @@
 import { symmetricDecrypt, symmetricEncrypt } from 'better-auth/crypto'
 import { CAPTCHA_PROVIDER_IDS, type CaptchaProvider, type CaptchaSettingsInput, type CaptchaWidgetConfig } from '$lib/captcha'
 import { currentTenant, db } from '$lib/server/db'
+import { log } from '$lib/server/log'
 import { moduleActive } from '$lib/server/modules'
 
 /* ―― » The workspace's captcha ( the fundraiser app's Captcha.ts, plus hCaptcha ): set on
@@ -54,7 +55,7 @@ export async function storedCaptcha() : Promise<ActiveCaptcha & { enabled : bool
 
 		return { enabled: row.enabled, provider: row.provider, siteKey: row.siteKey, secret, mode: row.mode === 'always' ? 'always' : 'adaptive', triggerAfter: row.triggerAfter }
 	} catch {
-		console.warn( '[captcha] the stored secret no longer decrypts ( BETTER_AUTH_SECRET changed? ): captcha is off until it is entered again' )
+		log.warn( { scope: 'captcha' }, 'the stored secret no longer decrypts ( BETTER_AUTH_SECRET changed? ): captcha is off until it is entered again' )
 
 		return null
 	}

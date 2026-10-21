@@ -8,6 +8,7 @@ import { isAuthError, rethrowAuthError } from '$lib/server/auth-errors'
 import { describeQuery, exportAll, exportFormat, exportResponse, type ExportColumn } from '$lib/server/export'
 import { readJson } from '$lib/server/forms'
 import { requireApiPermission } from '$lib/server/guards'
+import { log } from '$lib/server/log'
 import { mailReady } from '$lib/server/mail/gate'
 import { notify } from '$lib/server/notifications/gate'
 import { createUser, listUsers } from '$lib/server/users'
@@ -64,7 +65,7 @@ export const POST : RequestHandler = async( event ) => {
 			rethrowAuthError( caught )
 
 		// The invite email didn't go ( createUser already took the account back out ).
-		console.error( '[users] invite failed', caught )
+		log.error( { err: caught, scope: 'users' }, 'invite failed' )
 		error( 502, { message: m.users_invite_failed() } )
 	} )
 

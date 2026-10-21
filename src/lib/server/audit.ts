@@ -3,6 +3,7 @@ import type { Paged, PageQuery } from '$lib/components/data-table'
 import type { AuditAction, AuditChanges, AuditRow } from '$lib/audit'
 import { db } from '$lib/server/db'
 import { listArgs, type ListSpec } from '$lib/server/list'
+import { log } from '$lib/server/log'
 import { moduleActive } from '$lib/server/modules'
 
 /* ―― » The audit trail's writer ( billing-app's recordAudit ). Called by every handler that
@@ -44,7 +45,7 @@ export async function audit( event : RequestEvent, entry : AuditEntry ) : Promis
 			ip       : event.getClientAddress()
 		} } )
 	} catch ( caught ) {
-		console.error( `[audit] couldn't record ${ entry.action }`, caught )
+		log.error( { err: caught, scope: 'audit', action: entry.action }, "couldn't record an entry" )
 	}
 }
 

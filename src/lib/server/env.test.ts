@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { checkEnv, envProblems } from './env'
+import { log } from './log'
 
 const good = {
 	DATABASE_URL      : 'postgresql://app_rls:secret@db:5432/app',
@@ -29,7 +30,7 @@ describe( 'envProblems', () => {
 
 describe( 'checkEnv', () => {
 	it( 'stops a production server, and only warns in development', () => {
-		const warn = vi.spyOn( console, 'warn' ).mockImplementation( () => {} )
+		const warn = vi.spyOn( log, 'warn' )
 
 		expect( () => checkEnv( {}, true ) ).toThrow( /DATABASE_URL: required/ )
 		expect( () => checkEnv( {}, false ) ).not.toThrow()
