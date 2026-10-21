@@ -1,5 +1,6 @@
-# Local Postgres for development: bun run db:setup ( starts this, migrates, provisions, seeds ).
-# Bound to 127.0.0.1:5433 so it neither clashes with a local Postgres nor faces the network.
+# Local Postgres ( and Redis ) for development: bun run db:setup ( starts them, migrates,
+# provisions, seeds ). Bound to 127.0.0.1 on uncommon ports ( 5433, 6380 ) so they neither
+# clash with local servers nor face the network.
 services:
   db:
     image: postgres:18-alpine
@@ -14,6 +15,17 @@ services:
       - db-data:/var/lib/postgresql
     healthcheck:
       test: [ CMD-SHELL, pg_isready -U postgres -d app ]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # Optional ( REDIS_URL ): shared counters for the sign-in throttle. Nothing is kept on disk.
+  redis:
+    image: redis:8-alpine
+    ports:
+      - 127.0.0.1:6380:6379
+    healthcheck:
+      test: [ CMD, redis-cli, ping ]
       interval: 2s
       timeout: 3s
       retries: 30

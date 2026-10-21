@@ -411,6 +411,24 @@ bun run db:reset       # wipe and set up again
 - **Tests** run on PGlite (Postgres in-process, `src/lib/test/database.ts`): the real
   migrations, no Docker.
 
+## Redis
+
+Optional: set `REDIS_URL` (`docker-compose.dev.yml` runs one on `127.0.0.1:6380`) and the
+counters in `src/lib/server/redis.ts` are shared by every instance. Without it — or while
+it's down — each helper answers `null` and its caller carries on: nothing that needs Redis
+may stop people signing in.
+
+```ts
+const window = await hit( await tenantKey( 'login', email ), 15 * 60_000 )   // { count, ttlMs } | null
+const { allowed } = await rateLimit( await tenantKey( 'contact', ip ), 5, 60_000 )
+```
+
+- **Keys** go through `tenantKey()`, so one workspace's counters never touch another's.
+- **Windows are fixed:** the first hit starts one, later hits don't move its end.
+- `redis()` is the ioredis client itself (or `null`), for anything else.
+- **Detach:** delete `src/lib/server/redis.ts`, the compose service and `ioredis`; the
+  sign-in throttle goes with it.
+
 ## Auth
 
 better-auth on the tenant-scoped database: an account belongs to one tenant; a session
