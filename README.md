@@ -98,6 +98,31 @@ bun run db:reset       # wipe and set up again
 - **Tests** run on PGlite (Postgres in-process, `src/lib/test/database.ts`): the real
   migrations, no Docker.
 
+## Auth
+
+better-auth on the tenant-scoped database: an account belongs to one tenant; a session
+from one tenant doesn't exist in another; the same email can sign up separately in each.
+
+- **Pages:** `/login`, `/signup` (404 unless `AUTH_SIGNUP=true`), `/logout` (a POST), and
+  the signed-in area `/app` (profile, password, admin-only settings). All are form actions:
+  they work without JavaScript.
+- **First admin:** `bun run db:seed` creates `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `TENANT_SLUG`.
+- **Roles:** `src/lib/permissions.ts` (`admin`, `member`). Add a resource there and grant it.
+- **Guards** (`src/lib/server/guards.ts`):
+
+| | Signed out | Lacks permission |
+|---|---|---|
+| Page: `requireUser( event )`, `requirePermission( event, { settings: [ 'update' ] } )` | → `/login?redirectTo=…` | 404 |
+| Endpoint: `requireApiUser`, `requireApiPermission` | 401 | 403 |
+
+  Everything under `/app` is guarded in `hooks.server.ts` — a check in `+layout.server.ts`
+  alone doesn't protect a page's load or actions (they run in parallel). Pages that need
+  more than a signed-in user call `requirePermission` themselves.
+- **Nav:** give a `NavItem` a `permission` and pass the nav through `filterNav( nav, … )` to
+  hide it from users without it (the page still guards itself).
+- **Env:** `BETTER_AUTH_SECRET` (≥ 32 chars), `BETTER_AUTH_URL` (single tenancy; shared
+  derives it per request), `AUTH_SIGNUP`.
+
 ## Testing
 
 ```bash

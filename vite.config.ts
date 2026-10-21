@@ -2,8 +2,8 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js'
 import { sveltekit } from '@sveltejs/kit/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { playwright } from '@vitest/browser-playwright'
-import type { Plugin } from 'vite'
-import { defineConfig } from 'vitest/config'
+import { loadEnv, type Plugin } from 'vite'
+import { defineConfig, type ViteUserConfig as UserConfig } from 'vitest/config'
 
 /* ―― » Production builds replace every module under src/routes/(dev)/ with a 404 stub, so
         the playground's code and demo data never ship ( a runtime 404 alone still bundled
@@ -39,7 +39,7 @@ function stripDevRoutes() : Plugin {
 	}
 }
 
-export default defineConfig( {
+const config : UserConfig = {
 	plugins: [
 		stripDevRoutes(),
 		tailwindcss(),
@@ -110,4 +110,13 @@ export default defineConfig( {
 			]
 		}
 	}
+}
+
+export default defineConfig( ( { mode } ) => {
+	// .env into process.env for dev and tests ( server code reads process.env so scripts can
+	// share it ). Real environment variables win. Production never reads .env: the host
+	// provides the environment.
+	Object.assign( process.env, { ...loadEnv( mode, process.cwd(), '' ), ...process.env } )
+
+	return config
 } )

@@ -1,0 +1,30 @@
+import * as v from 'valibot'
+import { m } from '$lib/paraglide/messages'
+
+// Auth forms, validated in the browser and again by the form actions.
+const email = v.pipe( v.string(), v.trim(), v.nonEmpty(), v.email() )
+const name = v.pipe( v.string(), v.trim(), v.nonEmpty(), v.maxLength( 60 ) )
+// Matches emailAndPassword.minPasswordLength in $lib/server/auth.
+const newPassword = v.pipe( v.string(), v.minLength( 10 ), v.maxLength( 128 ) )
+
+export const loginSchema = v.object( {
+	email,
+	password: v.pipe( v.string(), v.nonEmpty() )
+} )
+
+export const signupSchema = v.object( { name, email, password: newPassword } )
+
+export const profileSchema = v.object( { name } )
+
+export const passwordSchema = v.pipe(
+	v.object( {
+		currentPassword    : v.pipe( v.string(), v.nonEmpty() ),
+		newPassword,
+		confirmPassword    : v.string(),
+		revokeOtherSessions: v.optional( v.boolean(), true )
+	} ),
+	v.forward(
+		v.partialCheck( [ [ 'newPassword' ], [ 'confirmPassword' ] ], ( input ) => input.newPassword === input.confirmPassword, () => m.auth_password_mismatch() ),
+		[ 'confirmPassword' ]
+	)
+)

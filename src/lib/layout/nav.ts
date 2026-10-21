@@ -1,4 +1,5 @@
 import type { Component } from 'svelte'
+import type { Permission } from '$lib/permissions'
 
 // One sidebar entry. A leaf has `href` ( a full path, base included — it's compared with
 // page.url.pathname as-is ); a parent has `items` ( one collapsible level ).
@@ -7,8 +8,10 @@ export type NavItem = {
 	href ?    : string
 	icon ?    : Component
 	// Extra command-palette terms: synonyms, other-language words.
-	keywords ?: string[]
-	items ?   : NavItem[]
+	keywords ?   : string[]
+	// Shown only to users who have it ( filterNav ). The page must still guard itself.
+	permission ? : Permission
+	items ?      : NavItem[]
 }
 
 // A labelled block of the sidebar. The whole sidebar is `NavGroup[]`.
@@ -46,6 +49,21 @@ export function navTrail( groups : NavGroup[], path : string ) : NavItem[] {
 	}
 
 	return []
+}
+
+// Drop what `allowed` rejects, then any parent or group left empty.
+export function filterNav( groups : NavGroup[], allowed : ( permission : Permission ) => boolean ) : NavGroup[] {
+	const keep = ( item : NavItem ) => !item.permission || allowed( item.permission )
+
+	return groups
+		.map( ( group ) => ( {
+			...group,
+			items: group.items
+				.filter( keep )
+				.map( ( item ) => ( item.items ? { ...item, items: item.items.filter( keep ) } : item ) )
+				.filter( ( item ) => !item.items || item.items.length > 0 )
+		} ) )
+		.filter( ( group ) => group.items.length > 0 )
 }
 
 const segmentsOf = ( href : string ) => href.split( '/' ).filter( Boolean ).flatMap( ( part ) => part.split( '-' ) )

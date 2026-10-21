@@ -10,7 +10,10 @@
 
 <main class="flex min-h-svh flex-col items-center justify-center gap-4 p-6">
 	<h1 class="text-2xl font-semibold tracking-tight">{m.home_title()}</h1>
-	{#if dev}
-		<Button href="/hello">{m.home_playground()}</Button>
-	{/if}
+	<div class="flex gap-2">
+		<Button href="/login">{m.home_sign_in()}</Button>
+		{#if dev}
+			<Button href="/hello" variant="outline">{m.home_playground()}</Button>
+		{/if}
+	</div>
 </main>

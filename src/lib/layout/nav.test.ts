@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { navSearchGroups, navTrail, type NavGroup } from './nav'
+import { filterNav, navSearchGroups, navTrail, type NavGroup } from './nav'
 import { navSearchFilter } from './search-score'
 
 const nav : NavGroup[] = [
@@ -65,5 +65,21 @@ describe( 'navSearchFilter', () => {
 	it( 'matches synonyms through keywords and drops junk below the floor', () => {
 		expect( scoreOf( '/team/members', 'staff' ) ).toBeGreaterThan( 0 )
 		expect( scoreOf( '/help', 'zzz' ) ).toBe( 0 )
+	} )
+} )
+
+describe( 'filterNav', () => {
+	const gated : NavGroup[] = [
+		{ items: [ { title: 'Home', href: '/' } ] },
+		{ label: 'Admin', items: [ { title: 'Settings', href: '/settings', permission: { settings: [ 'update' ] } } ] },
+		{ items: [ { title: 'Team', items: [ { title: 'Roles', href: '/roles', permission: { settings: [ 'update' ] } }, { title: 'Members', href: '/members' } ] } ] }
+	]
+
+	it( 'drops items the user lacks, then empty parents and groups', () => {
+		const visible = filterNav( gated, () => false )
+
+		expect( visible.map( ( group ) => group.label ?? group.items[ 0 ].title ) ).toEqual( [ 'Home', 'Team' ] )
+		expect( visible[ 1 ].items[ 0 ].items?.map( ( item ) => item.title ) ).toEqual( [ 'Members' ] )
+		expect( filterNav( gated, () => true ) ).toHaveLength( 3 )
 	} )
 } )
