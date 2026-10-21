@@ -933,5 +933,21 @@
 	"signins_mine": "Riwayat masuk terbaru",
 	"signins_mine_desc": "Percobaan terbaru pada akun Anda. Ada yang tidak Anda kenali? Ganti kata sandi Anda.",
 	"signins_none": "Belum ada riwayat masuk.",
-	"demo_signins_desc": "SignInList dan OutcomeBadge dengan percobaan karangan. Halaman admin menambahkan tabel, angka, dan grafik."
+	"demo_signins_desc": "SignInList dan OutcomeBadge dengan percobaan karangan. Halaman admin menambahkan tabel, angka, dan grafik.",
+	"picker_placeholder": "Pilih…",
+	"picker_search": "Ketik untuk mencari…",
+	"picker_empty": "Tidak ada yang cocok.",
+	"picker_loading": "Memuat…",
+	"picker_more": "{count} lainnya tidak ditampilkan — persempit pencarian.",
+	"picker_count": "{count} dipilih",
+	"picker_chosen": "Dipilih",
+	"picker_remove": "Hapus {label}",
+	"demo_picker_desc": "Combobox asinkron di atas endpoint daftar berhalaman mana pun: mencari selagi Anda mengetik, dan memberi tahu bila hasilnya lebih banyak dari yang tampil. Di sini: API pelanggan tiruan.",
+	"demo_picker_single": "Satu pilihan",
+	"demo_picker_single_desc": "Mengikat value dan label; ada entri \"tidak ada\" yang eksplisit.",
+	"demo_picker_owner": "Pemilik akun",
+	"demo_picker_nobody": "Tidak ada",
+	"demo_picker_multiple": "Beberapa",
+	"demo_picker_multiple_desc": "multiple: nilai dan chip, dipersempit ke pelanggan Pro dan Team lewat parameter tetap.",
+	"demo_picker_team": "Anggota tim"
 }

@@ -15,6 +15,7 @@
 		{ href: '/hello/save-bar', label: 'SaveBar' },
 		{ href: '/hello/data-table', label: 'DataTable' },
 		{ href: '/hello/forms', label: m.demo_forms_title() },
+		{ href: '/hello/pickers', label: 'RemotePicker' },
 		{ href: '/hello/media', label: m.media_title(), module: 'media' },
 		{ href: '/hello/editor', label: m.demo_editor_title(), module: 'editor' },
 		{ href: '/hello/notifications', label: m.notif_title(), module: 'notifications' },

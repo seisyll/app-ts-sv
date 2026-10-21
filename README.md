@@ -40,6 +40,7 @@ it.
 | `/hello` | i18n, formatting, the mock API |
 | `/hello/save-bar` | `SaveBar` + `Draft` (`src/lib/components/save-bar`) |
 | `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory, and server-paged against a mock endpoint with its query in the URL |
+| `/hello/pickers` | `RemotePicker` (`src/lib/components/pickers`): one choice and several, over the mock customers endpoint |
 | `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
 | `/hello/components` | The `ui/` components the app doesn't use yet: chart, tabs, accordion, calendar, carousel, empty, item, input-otp, native-select, slider, progress, radio-group, button-group, pagination, menubar, navigation-menu, context-menu, drawer, hover-card |
 | `/hello/dashboard` | `Figure`, `StatCards`, `LifecycleRail`, `TrendChart` ( bar / area ), `UnitGrid`, `StatBreakdown`, `MonthPicker` on made-up numbers, with a reroll and a failed read |
@@ -459,6 +460,15 @@ await audit( event, { action: 'captcha.settings', changes: changesBetween( befor
 |---|---|---|
 | Saves to a JSON endpoint | `apiForm( schema, { submit } )` (`src/lib/forms.ts`) | `await readJson( request, schema )` — 400 with field errors, shown under the fields |
 | `<form>` action (works without JS) | `superForm( data.form, { validators: valibot( schema ) } )` | `validateForm( event, schema, save )` (`src/lib/server/forms.ts`) |
+
+**Picking a record** from a list that can be long: `RemotePicker` searches any paged list
+endpoint (the DataTable contract: `?search=&take=`) as the person types — never a `<select>`
+over a first page that silently leaves the rest out — and says how many more there are.
+
+```svelte
+<RemotePicker path="/api/users" toOption={( user ) => ( { value: user.id, label: user.name, hint: user.email } )} bind:value bind:label name="ownerId" />
+<RemotePicker path="/api/users" {toOption} multiple bind:values bind:selected params={{ 'f.role': 'admin' }} name="reviewers" />
+```
 
 `apiForm` pairs with SaveBar: `<SaveBar show={form.isTainted( $tainted )} saving={$submitting} saveType="submit" ondiscard={() => form.reset()} />`
 inside the `<form use:enhance novalidate>`. See `/hello/forms`.

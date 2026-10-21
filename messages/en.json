@@ -933,5 +933,21 @@
 	"signins_mine": "Recent sign-ins",
 	"signins_mine_desc": "The latest attempts on your account. One you don't recognise? Change your password.",
 	"signins_none": "No sign-ins recorded yet.",
-	"demo_signins_desc": "SignInList and OutcomeBadge on made-up attempts. The admin page adds a table, figures and a chart."
+	"demo_signins_desc": "SignInList and OutcomeBadge on made-up attempts. The admin page adds a table, figures and a chart.",
+	"picker_placeholder": "Choose…",
+	"picker_search": "Type to search…",
+	"picker_empty": "Nothing matches.",
+	"picker_loading": "Loading…",
+	"picker_more": "{count} more not shown — narrow the search.",
+	"picker_count": "{count} chosen",
+	"picker_chosen": "Chosen",
+	"picker_remove": "Remove {label}",
+	"demo_picker_desc": "An async combobox over any paged list endpoint: it searches as you type, and says when there are more results than it shows. Here: the mock customers API.",
+	"demo_picker_single": "One choice",
+	"demo_picker_single_desc": "Binds value and label; an explicit \"nobody\" entry.",
+	"demo_picker_owner": "Account owner",
+	"demo_picker_nobody": "Nobody",
+	"demo_picker_multiple": "Several",
+	"demo_picker_multiple_desc": "multiple: values and chips, narrowed to Pro and Team customers by fixed params.",
+	"demo_picker_team": "Team members"
 }
