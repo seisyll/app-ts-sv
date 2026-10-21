@@ -3,6 +3,19 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!-- Dark or light before the first paint: mode-watcher's own snippet, kept here because
+		     only this file can carry the content security policy's nonce. Its storage key and
+		     class are <ModeWatcher />'s ( src/routes/+layout.svelte, injection off there );
+		     src/lib/csp.test.ts checks they still are. -->
+		<script nonce="%sveltekit.nonce%">
+			try {
+				const mode = localStorage.getItem( 'mode-watcher-mode' ) ?? 'system'
+				const light = mode === 'light' || ( mode === 'system' && matchMedia( '(prefers-color-scheme: light)' ).matches )
+
+				document.documentElement.classList.toggle( 'dark', !light )
+				document.documentElement.style.colorScheme = light ? 'light' : 'dark'
+			} catch {}
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

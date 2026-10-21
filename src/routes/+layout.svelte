@@ -17,7 +17,8 @@
 	{/if}
 </svelte:head>
 
-<ModeWatcher />
+<!-- Its pre-paint script lives in app.html, where the CSP nonce is. -->
+<ModeWatcher disableHeadScriptInjection />
 <Toaster />
 <NavProgress />
 {@render children()}

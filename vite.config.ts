@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { playwright } from '@vitest/browser-playwright'
 import { loadEnv } from 'vite'
 import { defineConfig, type ViteUserConfig as UserConfig } from 'vitest/config'
+import { MODULE_IDS } from './config/modules.ts'
 import { loadClient, modules } from './config/vite.ts'
 
 // The plugins come with the client ( see the bottom ); the rest is the same for every build.
@@ -85,10 +86,10 @@ export default defineConfig( async( { mode } ) => {
 	// Which client this build is for ( CLIENT → config/clients ): its modules and its theme.
 	const client = await loadClient()
 
-	// svelte.config.js points $theme at it, and trusts Apple's origin only with social
-	// sign-in; it's read when sveltekit() loads that file.
+	// svelte.config.js points $theme at it, and opens its content security policy only to
+	// the third parties this build's modules use; it's read when sveltekit() loads that file.
 	process.env.APP_THEME = client.theme
-	process.env.APP_SOCIAL = String( !!client.modules.social )
+	process.env.APP_MODULES = MODULE_IDS.filter( ( id ) => client.modules[ id ] ).join( ',' )
 
 	return {
 		...config,

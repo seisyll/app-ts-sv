@@ -690,6 +690,32 @@ the caller's permission again. Your own row has no actions, and the endpoints re
   `{ where, orderBy, skip, take }`. The `spec` allow-lists the search, facet and sort fields.
   Date ranges are calendar days in `APP.timeZone`.
 
+## Security
+
+- **Content security policy** (`svelte.config.js`, enforced): scripts only from the app — its
+  inline ones carry a per-request nonce — plus the captcha providers in a build with
+  `captcha`. Inline styles are allowed (Svelte transitions need them); images from anywhere
+  over https (rich text may show one); no framing (`frame-ancestors 'none'`), no plugins,
+  forms post only here (and to Google / Apple with `social`). Browsers report what it blocks
+  to `/csp`, which logs one line each — a policy too tight for a new feature shows up there.
+  A new third party goes in the directive it needs, under its module's guard. An inline
+  script of your own must carry `nonce="%sveltekit.nonce%"`, which only `src/app.html` can:
+  that's why mode-watcher's pre-paint snippet lives there (`src/lib/csp.test.ts`).
+- **Headers** (`hooks.server.ts`): `nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`,
+  a `Permissions-Policy` that turns off camera, microphone, location and payment, and in
+  production over HTTPS `Strict-Transport-Security` for a year (no preload — your call).
+- **Environment** (`src/lib/server/env.ts`): checked when the server starts — one line per
+  broken variable; production refuses to start, development warns. It insists on the secret's
+  length, `DATABASE_URL` as `app_rls`, `BETTER_AUTH_URL` (single) or `APP_DOMAIN` (shared), and
+  each social provider's ID and secret together. Add a rule with each variable that must be
+  right before anyone visits.
+- **Errors** (`handleError`): only 5xx reach the log, with method, path and stack; 404s from
+  scanners and other 4xx stay quiet. What the visitor sees doesn't change.
+- **Permission ratchet** (`src/lib/server/permission-coverage.test.ts`): every route handler is
+  signed-in (a guard, or under `/app`), or listed as public with its reason; and the
+  permission each one asks for is on record. Taking a check out — or weakening one — fails by
+  name. A new handler is a line there, like the audit trail's tripwire next to it.
+
 ## Deploy
 
 `deploy/` is a production stack for one server — the app behind Caddy (automatic HTTPS,

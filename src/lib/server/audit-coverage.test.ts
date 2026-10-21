@@ -1,6 +1,5 @@
-import { readdirSync, readFileSync } from 'node:fs'
-import path from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { routeHandlers } from '$lib/test/route-handlers'
 
 /* ―― » A tripwire, not a test of behaviour ( billing-app's audit-coverage ). The trail is
         append-only, which makes a MISSING entry invisible: nothing errors, the page just has
@@ -14,6 +13,7 @@ const EXEMPT : Record<string, string> = {
 	'(auth)/login/social/+server.ts#POST'               : 'only sends the browser to the provider; the callback records',
 	'(auth)/logout/+page.server.ts#default'             : 'ends a session',
 	'(auth)/forgot-password/+page.server.ts#default'    : 'sends a link; changes nothing until it is used',
+	'csp/+server.ts#POST'                               : 'a browser report of what the policy blocked; logged, not stored',
 	'app/account/+page.server.ts#link'                  : 'only sends the browser to the provider; the callback records ( auth.ts )',
 	'app/account/notifications/+page.server.ts#default' : 'a person\'s own notification preferences',
 	'api/appearance/me/+server.ts#PUT'                  : 'a person\'s own display preference',
@@ -22,40 +22,8 @@ const EXEMPT : Record<string, string> = {
 	'app/settings/security/+page.server.ts#test'        : 'checks a captcha answer; changes nothing'
 }
 
-const ROUTES = path.resolve( 'src/routes' )
-
-const files = ( dir : string ) : string[] => readdirSync( dir, { withFileTypes: true } ).flatMap( ( entry ) => {
-	const full = path.join( dir, entry.name )
-
-	return entry.isDirectory() ? ( entry.name === '(dev)' ? [] : files( full ) ) : [ full ]
-} )
-
-// Each mutating handler in a route file: its name and its source, up to the next one.
-function handlers( file : string, source : string ) : { name : string, body : string }[] {
-	if ( file.endsWith( '+server.ts' ) ) {
-		const starts = [ ...source.matchAll( /^export const (\w+)/gm ) ]
-
-		return starts
-			.map( ( match, index ) => ( { name: match[ 1 ], body: source.slice( match.index, starts[ index + 1 ]?.index ) } ) )
-			.filter( ( handler ) => [ 'POST', 'PUT', 'PATCH', 'DELETE' ].includes( handler.name ) )
-	}
-
-	const block = source.slice( source.indexOf( 'export const actions' ) )
-
-	if ( !source.includes( 'export const actions' ) )
-		return []
-
-	const starts = [ ...block.matchAll( /^\t(\w+)\s*:/gm ) ]
-
-	return starts.map( ( match, index ) => ( { name: match[ 1 ], body: block.slice( match.index, starts[ index + 1 ]?.index ) } ) )
-}
-
-const all = files( ROUTES )
-	.filter( ( file ) => /\+(server|page\.server)\.ts$/.test( file ) )
-	.flatMap( ( file ) => handlers( file, readFileSync( file, 'utf8' ) ).map( ( handler ) => ( {
-		...handler,
-		key: `${ path.relative( ROUTES, file ).replaceAll( '\\', '/' ) }#${ handler.name }`
-	} ) ) )
+// What can change something: a mutating method, or a form action.
+const all = routeHandlers().filter( ( handler ) => handler.name !== 'load' && handler.name !== 'GET' )
 
 describe( 'audit coverage', () => {
 	it( 'finds the mutating handlers it is meant to watch', () => {

@@ -8,6 +8,19 @@ import adapter from '@sveltejs/adapter-node'
 const THEMES_DIR = 'src/lib/themes'
 const theme = process.env.APP_THEME || 'aurora'
 
+/* ―― » The content security policy ( README, Security ): only this app's own scripts — each
+        page's inline ones carry a per-request nonce SvelteKit adds — plus the third parties a
+        module in this build talks to. Styles allow inline: Svelte's transitions and the
+        components' style attributes need it, and a stylesheet can't run code. Any https
+        image: rich text may show one. Violations are reported to /csp.
+        APP_MODULES comes from vite.config.ts; tools that read only this file get every
+        module, the loosest policy, which is enough for them. */
+const built = ( id ) => process.env.APP_MODULES === undefined || process.env.APP_MODULES.split( ',' ).includes( id )
+// The captcha providers' script, widget frame and verification calls ( $lib/captcha.ts ).
+const CAPTCHA = built( 'captcha' ) ? [ 'https://challenges.cloudflare.com', 'https://www.google.com', 'https://www.gstatic.com', 'https://recaptcha.google.com', 'https://js.hcaptcha.com', 'https://*.hcaptcha.com', 'https://hcaptcha.com' ] : []
+// Sign-in forms post here and are sent on to the provider, and Apple posts its answer back.
+const SOCIAL = built( 'social' ) ? [ 'https://accounts.google.com', 'https://appleid.apple.com' ] : []
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	compilerOptions: {
@@ -21,9 +34,25 @@ const config = {
 			// The module registry and client configs, shared with vite.config.ts.
 			$config: 'config'
 		},
-		// Sign in with Apple posts its answer from Apple's origin ( src/lib/server/social.ts ),
-		// with the social module only. Tools that read just this file get it on.
-		csrf: { trustedOrigins: process.env.APP_SOCIAL === 'false' ? [] : [ 'https://appleid.apple.com' ] }
+		// Sign in with Apple posts its answer from Apple's origin ( src/lib/server/social.ts ).
+		csrf: { trustedOrigins: built( 'social' ) ? [ 'https://appleid.apple.com' ] : [] },
+		csp : {
+			mode      : 'auto',
+			directives: {
+				'default-src'    : [ 'self' ],
+				'script-src'     : [ 'self', ...CAPTCHA ],
+				'style-src'      : [ 'self', 'unsafe-inline' ],
+				'img-src'        : [ 'self', 'data:', 'blob:', 'https:' ],
+				'font-src'       : [ 'self', 'data:' ],
+				'connect-src'    : [ 'self', ...CAPTCHA ],
+				'frame-src'      : [ 'self', ...CAPTCHA ],
+				'form-action'    : [ 'self', ...SOCIAL ],
+				'frame-ancestors': [ 'none' ],
+				'base-uri'       : [ 'self' ],
+				'object-src'     : [ 'none' ],
+				'report-uri'     : [ '/csp' ]
+			}
+		}
 	}
 }
 

@@ -1,10 +1,11 @@
-import type { Handle } from '@sveltejs/kit'
+import type { Handle, HandleServerError, ServerInit } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 import { svelteKitHandler } from 'better-auth/svelte-kit'
-import { building } from '$app/environment'
+import { building, dev } from '$app/environment'
 import { paraglideMiddleware } from '$lib/paraglide/server'
 import { appearanceClassOf } from '$lib/server/appearance'
 import { auth, type Session } from '$lib/server/auth'
+import { checkEnv } from '$lib/server/env'
 import { requireUser } from '$lib/server/guards'
 import { runWithTenant, type TenantRef } from '$lib/server/db'
 import { handleModules } from '$lib/server/modules'
@@ -30,12 +31,46 @@ const handleAppearance : Handle = ( { event, resolve } ) => resolve( event, {
 	transformPageChunk: ( { html } ) => html.replace( '%app.appearance%', appearanceClassOf( event.cookies ) )
 } )
 
-// Browsers must not guess a response's type: an upload served as image/webp stays one.
+// A broken deployment says so before anyone visits ( src/lib/server/env.ts ).
+export const init : ServerInit = () => {
+	if ( !building )
+		checkEnv()
+}
+
+/* ―― » Only real server faults reach the log ( the fundraiser app's handleError ): a 5xx, with
+        the request that caused it and the stack. 404s — scanners try every host for
+        WordPress — and other 4xx are the visitor's business, not ours. What the visitor
+        sees is unchanged. */
+export const handleError : HandleServerError = ( { error, event, status, message } ) => {
+	if ( status >= 500 )
+		console.error( `[${ status }] ${ event.request.method } ${ event.url.pathname }`, error )
+
+	return { message }
+}
+
+/* ―― » Headers every response carries ( the content security policy is SvelteKit's, from
+        svelte.config.js ):
+          · nosniff — an upload served as image/webp stays one;
+          · the referrer leaves the site as its origin only, never a page's path or query;
+          · no camera, microphone, location or payment, which nothing here asks for;
+          · HSTS over HTTPS in production: browsers stop trying plain HTTP for a year. Never
+            in dev, where it would pin http://localhost. No preload — that is each project's
+            decision, and hard to undo. */
+const HEADERS = {
+	'x-content-type-options': 'nosniff',
+	'referrer-policy'       : 'strict-origin-when-cross-origin',
+	'permissions-policy'    : 'camera=(), microphone=(), geolocation=(), payment=()'
+}
+
 const handleHeaders : Handle = async( { event, resolve } ) => {
 	const response = await resolve( event )
 
 	try {
-		response.headers.set( 'x-content-type-options', 'nosniff' )
+		for ( const [ name, value ] of Object.entries( HEADERS ) )
+			response.headers.set( name, value )
+
+		if ( !dev && event.url.protocol === 'https:' )
+			response.headers.set( 'strict-transport-security', 'max-age=31536000; includeSubDomains' )
 	} catch {
 		// Immutable headers ( a response passed through from fetch ): leave them as they are.
 	}
