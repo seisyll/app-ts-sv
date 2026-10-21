@@ -2,56 +2,12 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js'
 import { sveltekit } from '@sveltejs/kit/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { playwright } from '@vitest/browser-playwright'
-import { loadEnv, type Plugin } from 'vite'
+import { loadEnv } from 'vite'
 import { defineConfig, type ViteUserConfig as UserConfig } from 'vitest/config'
+import { loadClient, modules } from './config/vite.ts'
 
-/* ―― » Production builds replace every module under src/routes/(dev)/ with a 404 stub, so
-        the playground's code and demo data never ship ( a runtime 404 alone still bundled
-        them ). Dev and tests are untouched.
-        ponytail: one hard-coded folder; becomes per-module route stubbing with the
-        extension / module registry. */
-function stripDevRoutes() : Plugin {
-	let building = false
-
-	return {
-		name   : 'strip-dev-routes',
-		enforce: 'pre',
-		configResolved( config ) {
-			building = config.command === 'build'
-		},
-		load( id ) {
-			const file = id.split( '?' )[ 0 ].replaceAll( '\\', '/' )
-
-			if ( !building || !file.includes( '/src/routes/(dev)/' ) )
-				return
-
-			if ( file.endsWith( '.svelte' ) )
-				return ''
-
-			if ( /\/\+server\.[jt]s$/.test( file ) )
-				return 'export const fallback = () => new Response( "Not found", { status: 404 } )'
-
-			if ( /\/\+(page|layout)(\.server)?\.[jt]s$/.test( file ) )
-				return 'import { error } from "@sveltejs/kit"; export const load = () => error( 404 )'
-
-			return 'export {}'
-		}
-	}
-}
-
+// The plugins come with the client ( see the bottom ); the rest is the same for every build.
 const config : UserConfig = {
-	plugins: [
-		stripDevRoutes(),
-		tailwindcss(),
-		sveltekit(),
-		paraglideVitePlugin( {
-			project : './project.inlang',
-			outdir  : './src/lib/paraglide',
-			// Cookie first ( set by the locale switcher ), then the configured default.
-			// Add 'preferredLanguage' before 'baseLocale' to honour the browser language.
-			strategy: [ 'cookie', 'baseLocale' ]
-		} )
-	],
 	// Not source: agent skills ( Windows can't rename a folder the watcher holds open, which
 	// breaks `skilld install` ) and uploaded media ( every upload would wake the watcher ).
 	// Anchored to this checkout: a git worktree under .claude/worktrees/ is source to its own
@@ -120,11 +76,31 @@ const config : UserConfig = {
 	}
 }
 
-export default defineConfig( ( { mode } ) => {
+export default defineConfig( async( { mode } ) => {
 	// .env into process.env for dev and tests ( server code reads process.env so scripts can
 	// share it ). Real environment variables win. Production never reads .env: the host
 	// provides the environment.
 	Object.assign( process.env, { ...loadEnv( mode, process.cwd(), '' ), ...process.env } )
 
-	return config
+	// Which client this build is for ( CLIENT → config/clients ): its modules and its theme.
+	const client = await loadClient()
+
+	// svelte.config.js points $theme at it; it's read when sveltekit() loads that file.
+	process.env.APP_THEME = client.theme
+
+	return {
+		...config,
+		plugins: [
+			modules( client ),
+			tailwindcss(),
+			sveltekit(),
+			paraglideVitePlugin( {
+				project : './project.inlang',
+				outdir  : './src/lib/paraglide',
+				// Cookie first ( set by the locale switcher ), then the configured default.
+				// Add 'preferredLanguage' before 'baseLocale' to honour the browser language.
+				strategy: [ 'cookie', 'baseLocale' ]
+			} )
+		]
+	}
 } )

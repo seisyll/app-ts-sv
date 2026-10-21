@@ -22,7 +22,7 @@
 		{
 			items: [
 				{ title: m.app_nav_home(), href: '/app', icon: HouseIcon },
-				{ title: m.app_nav_media(), href: '/app/media', icon: ImagesIcon, permission: { media: [ 'list' ] }, keywords: [ 'images', 'files', 'upload' ] }
+				{ title: m.app_nav_media(), href: '/app/media', icon: ImagesIcon, module: 'media', permission: { media: [ 'list' ] }, keywords: [ 'images', 'files', 'upload' ] }
 			]
 		},
 		{
@@ -30,27 +30,31 @@
 			items: [
 				{ title: m.app_nav_profile(), href: '/app/account', icon: UserIcon },
 				{ title: m.app_nav_security(), href: '/app/account/security', icon: ShieldIcon, keywords: [ 'password' ] },
-				{ title: m.app_nav_notifications(), href: '/app/account/notifications', icon: BellIcon, keywords: [ 'preferences' ] }
+				{ title: m.app_nav_notifications(), href: '/app/account/notifications', icon: BellIcon, module: 'notifications', keywords: [ 'preferences' ] }
 			]
 		},
 		{
 			label: m.app_nav_admin(),
 			items: [
-				{ title: m.app_nav_users(), href: '/app/users', icon: UsersIcon, permission: { user: [ 'list' ] } },
-				{ title: m.app_nav_appearance(), href: '/app/settings/appearance', icon: PaletteIcon, permission: { settings: [ 'update' ] }, keywords: [ 'theme', 'colour' ] },
-				{ title: m.mail_title(), href: '/app/settings/mail', icon: MailIcon, permission: { settings: [ 'update' ] }, keywords: [ 'email', 'smtp', 'templates' ] },
+				{ title: m.app_nav_users(), href: '/app/users', icon: UsersIcon, module: 'users', permission: { user: [ 'list' ] } },
+				{ title: m.app_nav_appearance(), href: '/app/settings/appearance', icon: PaletteIcon, module: 'appearance', permission: { settings: [ 'update' ] }, keywords: [ 'theme', 'colour' ] },
+				{ title: m.mail_title(), href: '/app/settings/mail', icon: MailIcon, module: 'mail', permission: { settings: [ 'update' ] }, keywords: [ 'email', 'smtp', 'templates' ] },
 				{ title: m.app_nav_settings(), href: '/app/settings', icon: SettingsIcon, permission: { settings: [ 'update' ] } }
 			]
 		}
-	] satisfies NavGroup[], ( permission ) => hasPermission( data.user.role, permission ) ) )
+	] satisfies NavGroup[], ( permission ) => hasPermission( data.user.role, permission ), data.modules ) )
 
 	let logoutForm = $state<HTMLFormElement>()
 
 	// One store for the bell and the inbox page, re-seeded when the layout data reloads.
+	// None when the notifications module is off ( the loader sent no first page ).
 	// svelte-ignore state_referenced_locally
-	const notifications = setNotifications( new NotificationStore( data.notifications ) )
+	const notifications = MODULES.notifications && data.notifications ? setNotifications( new NotificationStore( data.notifications ) ) : undefined
 
-	$effect( () => notifications.hydrate( data.notifications ) )
+	$effect( () => {
+		if ( data.notifications )
+			notifications?.hydrate( data.notifications )
+	} )
 
 	// <html> is never re-rendered: keep its appearance classes on the server's answer, which
 	// changes when an admin saves the workspace default or this person saves elsewhere.
@@ -70,8 +74,10 @@
 	onlogout={() => logoutForm?.requestSubmit()}
 >
 	{#snippet actions()}
-		<NotificationBell />
-		{#if data.appearance.setting.allowUserOverride}
+		{#if MODULES.notifications && notifications}
+			<NotificationBell />
+		{/if}
+		{#if MODULES.appearance && data.modules.includes( 'appearance' ) && data.appearance.setting.allowUserOverride}
 			<AppearancePicker setting={data.appearance.setting} override={data.appearance.override} onsave={saveAppearance} />
 		{/if}
 		<LocaleSwitcher size="sm" />

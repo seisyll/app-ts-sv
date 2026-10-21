@@ -6,6 +6,7 @@ import {
 	isPalette,
 	isRadius,
 	isStyle,
+	NO_OVERRIDE,
 	parseAppearance,
 	resolveAppearance,
 	serializeAppearance,
@@ -15,6 +16,7 @@ import {
 	type AppearanceState
 } from '$lib/appearance'
 import { currentTenant, db } from '$lib/server/db'
+import { moduleActive } from '$lib/server/modules'
 
 /* ―― » The appearance cookie is an SSR CACHE, never the truth: <html> needs its classes in
         the server-rendered response ( applied in the browser, every load would flash the
@@ -38,6 +40,10 @@ export function rememberAppearance( cookies : Cookies, resolved : Appearance ) :
 
 // The workspace default ( no row yet: the defaults ), one person's overrides, and the answer.
 export async function loadAppearance( userId : string ) : Promise<AppearanceState> {
+	// The module off: the defaults for everyone ( and the cookie heals to them ).
+	if ( !MODULES.appearance || !await moduleActive( 'appearance' ) )
+		return { setting: DEFAULT_SETTING, override: NO_OVERRIDE, resolved: resolveAppearance( DEFAULT_SETTING ) }
+
 	const [ row, user ] = await Promise.all( [
 		db.appearanceSetting.findFirst( { select: { palette: true, style: true, radius: true, allowUserOverride: true } } ),
 		db.user.findUnique( { where: { id: userId }, select: { appearancePalette: true, appearanceStyle: true, appearanceRadius: true } } )

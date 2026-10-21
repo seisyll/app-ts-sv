@@ -686,5 +686,16 @@
 	"demo_mail_text": "Teks",
 	"demo_mail_sent": "Terkirim lewat SMTP",
 	"demo_mail_kept": "Hanya kotak keluar",
-	"users_add_desc_invite": "Mereka masuk dengan email ini. Kosongkan kata sandi agar mereka mendapat email untuk memilih sendiri."
+	"users_add_desc_invite": "Mereka masuk dengan email ini. Kosongkan kata sandi agar mereka mendapat email untuk memilih sendiri.",
+	"module_site": "Situs publik",
+	"module_users": "Administrasi pengguna",
+	"module_appearance": "Tampilan",
+	"module_media": "Media",
+	"module_editor": "Teks kaya",
+	"module_notifications": "Notifikasi",
+	"module_mail": "Email",
+	"modules_title": "Modul",
+	"modules_desc": "Yang dikirim build ini (klien \"{client}\") dan yang aktif di ruang kerja ini.",
+	"modules_off_here": "Mati di ruang kerja ini",
+	"modules_absent": "Tidak ada di build ini"
 }

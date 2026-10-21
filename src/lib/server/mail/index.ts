@@ -3,14 +3,15 @@ import { BlockList, isIP } from 'node:net'
 import { symmetricDecrypt, symmetricEncrypt } from 'better-auth/crypto'
 import nodemailer from 'nodemailer'
 import { dev } from '$app/environment'
-import { getRequestEvent } from '$app/server'
 import { parseRichText } from '$lib/editor/document'
 import type { MailSettingsInput, MailTemplateInput } from '$lib/mail'
 import { m } from '$lib/paraglide/messages'
 import { getLocale } from '$lib/paraglide/runtime'
 import { currentTenant, db } from '$lib/server/db'
+import { moduleActive } from '$lib/server/modules'
 import type { MailSetting } from '$lib/server/db/generated/client'
 import { tenancy } from '$lib/server/tenant'
+import { appUrl } from '$lib/server/url'
 import { record } from './outbox'
 import { defaultMailContent, MAIL_TEMPLATES, renderMail, type MailContent, type MailTemplateKey } from './templates'
 
@@ -66,8 +67,12 @@ export async function saveMailSettings( input : MailSettingsInput ) : Promise<vo
 	await db.mailSetting.upsert( { where: { tenantId: ( await currentTenant() ).id }, create: data, update: data } )
 }
 
-// Can this workspace send mail? ( Always, in dev: the outbox takes it. )
+// Can this workspace send mail? Needs the module; then always in dev ( the outbox takes it ),
+// otherwise once a mail server is set up.
 export async function mailReady() : Promise<boolean> {
+	if ( !MODULES.mail || !await moduleActive( 'mail' ) )
+		return false
+
 	return dev || !!( await db.mailSetting.findFirst( { select: { id: true } } ) )
 }
 
@@ -102,25 +107,14 @@ export async function customisedMailTemplates() : Promise<Set<string>> {
 	return new Set( rows.map( ( row ) => row.key ) )
 }
 
-// Links in emails point at the site the request came to ( each tenant's own host when
-// shared ); outside a request ( scripts ), at BETTER_AUTH_URL.
-export function appUrl( path = '/' ) : string {
-	let origin : string
-
-	try {
-		origin = getRequestEvent().url.origin
-	} catch {
-		origin = process.env.BETTER_AUTH_URL ?? 'http://localhost:5173'
-	}
-
-	return new URL( path, origin ).href
-}
-
 /* ―― » Send one email from the catalog, worded the workspace's way. `name` and `workspace`
         are filled in for every email. Throws when the server refuses, or with
         MailNotConfiguredError — callers that must not fail ( notifications, password
         resets ) catch it. */
 export async function sendMail( { to, template, values = {} } : { to : MailRecipient, template : MailTemplateKey, values ?: Record<string, string> } ) : Promise<void> {
+	if ( !MODULES.mail || !await moduleActive( 'mail' ) )
+		throw new MailNotConfiguredError()
+
 	const [ setting, content, tenant ] = await Promise.all( [ db.mailSetting.findFirst(), MAIL_TEMPLATES[ template ].editable ? loadMailTemplate( template ) : null, currentTenant() ] )
 	const mail = renderMail( template, {
 		content: content ?? defaultMailContent( template ),
@@ -162,13 +156,22 @@ async function transport( setting : MailSetting ) {
 	} )
 }
 
-const PRIVATE = new BlockList()
+let privateRanges : BlockList | undefined
 
-for ( const [ net, prefix ] of [ [ '0.0.0.0', 8 ], [ '10.0.0.0', 8 ], [ '100.64.0.0', 10 ], [ '127.0.0.0', 8 ], [ '169.254.0.0', 16 ], [ '172.16.0.0', 12 ], [ '192.168.0.0', 16 ] ] as const )
-	PRIVATE.addSubnet( net, prefix, 'ipv4' )
+// Built on first use: nothing runs when this module is imported ( see config/modules.ts ).
+function isPrivate( address : string ) : boolean {
+	if ( !privateRanges ) {
+		privateRanges = new BlockList()
 
-for ( const [ net, prefix ] of [ [ '::', 128 ], [ '::1', 128 ], [ 'fc00::', 7 ], [ 'fe80::', 10 ] ] as const )
-	PRIVATE.addSubnet( net, prefix, 'ipv6' )
+		for ( const [ net, prefix ] of [ [ '0.0.0.0', 8 ], [ '10.0.0.0', 8 ], [ '100.64.0.0', 10 ], [ '127.0.0.0', 8 ], [ '169.254.0.0', 16 ], [ '172.16.0.0', 12 ], [ '192.168.0.0', 16 ] ] as const )
+			privateRanges.addSubnet( net, prefix, 'ipv4' )
+
+		for ( const [ net, prefix ] of [ [ '::', 128 ], [ '::1', 128 ], [ 'fc00::', 7 ], [ 'fe80::', 10 ] ] as const )
+			privateRanges.addSubnet( net, prefix, 'ipv6' )
+	}
+
+	return privateRanges.check( address, isIP( address ) === 6 ? 'ipv6' : 'ipv4' )
+}
 
 /* ―― » Shared tenancy: a workspace admin is not the server's admin, so their SMTP host must be
         a public address — or "send a test email" becomes a probe of the internal network.
@@ -180,7 +183,7 @@ export async function connectableHost( host : string ) : Promise<string> {
 
 	const address = ( await lookup( host ) ).address.replace( /^::ffff:/i, '' )
 
-	if ( PRIVATE.check( address, isIP( address ) === 6 ? 'ipv6' : 'ipv4' ) )
+	if ( isPrivate( address ) )
 		throw new Error( m.mail_host_private() )
 
 	return address

@@ -686,5 +686,16 @@
 	"demo_mail_text": "Text",
 	"demo_mail_sent": "Sent by SMTP",
 	"demo_mail_kept": "Outbox only",
-	"users_add_desc_invite": "They sign in with this email. Leave the password empty and they get an email to choose their own."
+	"users_add_desc_invite": "They sign in with this email. Leave the password empty and they get an email to choose their own.",
+	"module_site": "Public site",
+	"module_users": "User administration",
+	"module_appearance": "Appearance",
+	"module_media": "Media",
+	"module_editor": "Rich text",
+	"module_notifications": "Notifications",
+	"module_mail": "Mail",
+	"modules_title": "Modules",
+	"modules_desc": "What this build ships (client \"{client}\") and what's on for this workspace.",
+	"modules_off_here": "Off for this workspace",
+	"modules_absent": "Not in this build"
 }

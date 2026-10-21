@@ -7,7 +7,8 @@ import { APP } from '$lib/config'
 import { ac, DEFAULT_ROLE, roles } from '$lib/permissions'
 import { currentTenant, db, tenantTransaction } from '$lib/server/db'
 import type { PrismaClient } from '$lib/server/db/generated/client'
-import { appUrl, sendMail } from '$lib/server/mail'
+import { sendMail } from '$lib/server/mail/gate'
+import { appUrl } from '$lib/server/url'
 
 /* ―― » better-auth on the tenant-scoped database: users, sessions and accounts are rows
         of the request's tenant, so a session from one tenant does not exist in another
@@ -97,25 +98,26 @@ export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 			minPasswordLength            : 10,
 			// Only self-made accounts can be unverified: the seed's admin is verified, an admin
 			// vouches for the people they add, and an invite is accepted through its email.
-			requireEmailVerification     : signUpEnabled(),
+			// Without the mail module there's no way to verify, so nobody has to.
+			requireEmailVerification     : signUpEnabled() && MODULES.mail,
 			revokeSessionsOnPasswordReset: true,
 			// Our own page, not better-auth's redirect: it says up front when a link has expired.
 			// Never throws: the answer must not depend on whether the email has an account.
-			sendResetPassword            : ( { user, token } ) => sendResetEmail( user, token ).catch( ( caught ) => console.error( '[auth] reset email failed', caught ) ),
+			sendResetPassword            : MODULES.mail ? ( { user, token } ) => sendResetEmail( user, token ).catch( ( caught ) => console.error( '[auth] reset email failed', caught ) ) : undefined,
 			// Opening the link proves the address as well as an email verification would.
 			onPasswordReset              : async( { user } ) => {
 				if ( !user.emailVerified )
 					await db.user.update( { where: { id: user.id }, data: { emailVerified: true } } )
 			}
 		},
-		emailVerification: {
+		emailVerification: MODULES.mail ? {
 			sendOnSignUp               : true,
 			// A sign-in refused for an unverified email sends a fresh link.
 			sendOnSignIn               : true,
 			autoSignInAfterVerification: true,
 			sendVerificationEmail      : ( { user, url } ) => sendMail( { to: user, template: 'email.verify', values: { link: url } } )
 				.catch( ( caught ) => console.error( '[auth] verification email failed', caught ) )
-		},
+		} : undefined,
 		advanced: {
 			// Ids come from the database ( uuidv7() ).
 			database : { generateId: false },

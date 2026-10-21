@@ -2,21 +2,28 @@ import { SIDEBAR_COOKIE_NAME } from '$lib/components/ui/sidebar/constants'
 import { DEFAULT_ROLE } from '$lib/permissions'
 import { loadAppearance, rememberAppearance } from '$lib/server/appearance'
 import { requireUser } from '$lib/server/guards'
-import { listNotifications } from '$lib/server/notifications'
+import { activeModules } from '$lib/server/modules'
+import { firstPage } from '$lib/server/notifications/gate'
 import type { LayoutServerLoad } from './$types'
 
 // hooks.server.ts already turned away signed-out requests; this just reads the user.
 export const load : LayoutServerLoad = async( event ) => {
 	const { user } = await requireUser( event )
-	const [ tenant, appearance, notifications ] = await Promise.all( [ event.locals.tenant(), loadAppearance( user.id ), listNotifications( user.id ) ] )
+	const [ tenant, modules ] = await Promise.all( [ event.locals.tenant(), activeModules() ] )
+	const [ appearance, notifications ] = await Promise.all( [
+		loadAppearance( user.id ),
+		modules.includes( 'notifications' ) ? firstPage( user.id ) : null
+	] )
 
 	// The cookie is only a cache of this answer: heal it when it drifted ( another device,
 	// an admin changed the default ). Read at render time, so this response is right too.
 	rememberAppearance( event.cookies, appearance.resolved )
 
 	return {
+		// What this workspace has on ( $lib/modules ): the nav and shared pieces check it.
+		modules,
 		appearance,
-		// The bell's first page, so the badge is right on the first paint.
+		// The bell's first page, so the badge is right on the first paint. Null: no bell.
 		notifications,
 		user       : { name: user.name, email: user.email, image: user.image ?? undefined, role: user.role ?? DEFAULT_ROLE },
 		tenant     : { name: tenant.name },

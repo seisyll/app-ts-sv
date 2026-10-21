@@ -21,6 +21,12 @@ module; `DESIGN.md` holds the visual rules. Read the section for what you're tou
   tenant-scoped table calls `SELECT app_enable_tenant_rls( '<table>' )` in its migration.
   Write migrations with `prisma migrate diff` and review them; tests assert as the app role.
 
+- **Optional features are modules** ( `config/modules.ts`, README "Modules and clients" ).
+  Code that uses a module from outside it guards with the literal `MODULES.<id>` so a build
+  without it drops the code; core server code calls mail and notifications through their
+  `gate.ts`. A new optional feature gets a registry entry, its own routes listed there,
+  and `module` on its nav items.
+
 ## Conventions
 
 - **Every user-facing string is a message** ( `messages/en.json` and `messages/id.json`, both ),

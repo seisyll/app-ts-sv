@@ -1,6 +1,6 @@
 import { fromUrlParams, toPageQuery } from '$lib/components/data-table'
 import { requirePermission } from '$lib/server/guards'
-import { mailReady } from '$lib/server/mail'
+import { mailReady } from '$lib/server/mail/gate'
 import { listUsers } from '$lib/server/users'
 import type { PageServerLoad } from './$types'
 

@@ -1,6 +1,6 @@
 import { fail } from '@sveltejs/kit'
 import { requireUser } from '$lib/server/guards'
-import { mailReady } from '$lib/server/mail'
+import { mailReady } from '$lib/server/mail/gate'
 import { listPreferences, NOTIFICATION_TYPES, setPreferences } from '$lib/server/notifications'
 import type { Actions, PageServerLoad } from './$types'
 

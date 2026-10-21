@@ -7,7 +7,7 @@
 
 	let { data, children } = $props()
 
-	// The active theme ( THEME, see svelte.config.js ), styled under its .theme-<id> class.
+	// The active theme ( the client config's, see svelte.config.js ), styled under its .theme-<id> class.
 	const site = $derived( siteChrome( data ) )
 </script>
 

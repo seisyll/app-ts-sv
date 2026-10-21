@@ -7,6 +7,9 @@ model Tenant {
   // Shared tenancy: a custom domain; otherwise <slug>.APP_DOMAIN.
   domain    String?      @unique
   status    TenantStatus @default(active)
+  // Modules this workspace has switched off, of those the build ships ( config/modules.ts ).
+  // Empty: everything the build ships. Set with: bun run tenant:modules
+  modulesOff String[]    @default([]) @map("modules_off")
   createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz
 
   users         User[]

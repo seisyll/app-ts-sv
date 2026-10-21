@@ -6,7 +6,7 @@ import { auth, signUpEnabled } from '$lib/server/auth'
 import { authErrorMessage } from '$lib/server/auth-errors'
 import { validateForm } from '$lib/server/forms'
 import { safeRedirect } from '$lib/server/guards'
-import { mailReady } from '$lib/server/mail'
+import { mailReady } from '$lib/server/mail/gate'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load : PageServerLoad = async( event ) => {
@@ -17,8 +17,8 @@ export const load : PageServerLoad = async( event ) => {
 
 	return {
 		form     : await superValidate( valibot( loginSchema ) ),
-		// Sign-up sends a verification email, so it needs the workspace's mail too.
-		signUp   : signUpEnabled() && mail,
+		// With the mail module, sign-up sends a verification email, so it needs mail too.
+		signUp   : signUpEnabled() && ( !MODULES.mail || mail ),
 		forgot   : mail,
 		// Back from a verification link that had expired ( better-auth adds ?error= ).
 		linkError: event.url.searchParams.has( 'error' )

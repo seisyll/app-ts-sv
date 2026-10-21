@@ -3,7 +3,9 @@ import type { Prisma } from '$lib/server/db/generated/client'
 import type { RoleName } from '$lib/permissions'
 import type { NotificationItem, NotificationPage } from '$lib/notifications'
 import { db, tenantTransaction } from '$lib/server/db'
-import { appUrl, mailReady, sendMail } from '$lib/server/mail'
+import { mailReady, sendMail } from '$lib/server/mail/gate'
+import { moduleActive } from '$lib/server/modules'
+import { appUrl } from '$lib/server/url'
 import { isNotificationType, NOTIFICATION_TYPES, NOTIFICATIONS, renderNotification, type NotificationParams, type NotificationType } from './catalog'
 
 export { NOTIFICATION_TYPES, NOTIFICATIONS, type NotificationType } from './catalog'
@@ -23,7 +25,14 @@ type Audience = {
         never throws, so a notification failing can never fail the action that triggered
         it. It logs instead. The inbox is read by polling. */
 export async function notify<T extends NotificationType>( { type, params, to } : { type : T, params : NotificationParams<T>, to : Audience } ) : Promise<void> {
+	// Without the module ( this build, or this workspace ) there is nobody to tell.
+	if ( !MODULES.notifications )
+		return
+
 	try {
+		if ( !await moduleActive( 'notifications' ) )
+			return
+
 		const parsed = v.safeParse( NOTIFICATIONS[ type ].schema, params )
 
 		if ( !parsed.success ) {
@@ -60,7 +69,7 @@ export async function notify<T extends NotificationType>( { type, params, to } :
 		const inApp = visible.filter( ( user ) => preference.get( user.id )?.enabled ?? true )
 		const byEmail = visible.filter( ( user ) => preference.get( user.id )?.email ?? NOTIFICATIONS[ type ].email )
 
-		if ( byEmail.length )
+		if ( MODULES.mail && byEmail.length )
 			void emailNotification( type, parsed.output, byEmail )
 
 		if ( !inApp.length )

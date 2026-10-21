@@ -25,7 +25,8 @@ const adapter = new PrismaPg( {
 // Unscoped: control-plane reads ( tenants ) and the RLS checks. Tenant data goes through `db`.
 export const prisma = new PrismaClient( { adapter } )
 
-export type TenantRef = { id : string, slug : string, name : string }
+// modulesOff: see Tenant.modulesOff ( missing = none ).
+export type TenantRef = { id : string, slug : string, name : string, modulesOff ?: string[] }
 
 // The current scope's tenant. A resolver, so a request that never touches the database
 // never looks its tenant up ( the dev playground runs with no database at all ).

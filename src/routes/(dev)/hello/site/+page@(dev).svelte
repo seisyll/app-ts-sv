@@ -9,7 +9,7 @@
 	import * as plain from '$lib/themes/plain'
 	import { m } from '$lib/paraglide/messages'
 
-	// Every theme side by side, without restarting on another THEME. The list is also a
+	// Every theme side by side, without switching the client's theme and restarting. The list is also a
 	// type check: a theme that breaks the contract fails `bun run check` here.
 	const themes : ThemeModule[] = [ aurora, plain ]
 

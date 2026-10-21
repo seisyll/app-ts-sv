@@ -1,4 +1,5 @@
 import type { Component } from 'svelte'
+import type { ModuleId } from '$lib/modules'
 import type { Permission } from '$lib/permissions'
 
 // One sidebar entry. A leaf has `href` ( a full path, base included — it's compared with
@@ -11,6 +12,8 @@ export type NavItem = {
 	keywords ?   : string[]
 	// Shown only to users who have it ( filterNav ). The page must still guard itself.
 	permission ? : Permission
+	// Shown only while this module is active ( filterNav ).
+	module ?     : ModuleId
 	items ?      : NavItem[]
 }
 
@@ -52,8 +55,9 @@ export function navTrail( groups : NavGroup[], path : string ) : NavItem[] {
 }
 
 // Drop what `allowed` rejects, then any parent or group left empty.
-export function filterNav( groups : NavGroup[], allowed : ( permission : Permission ) => boolean ) : NavGroup[] {
-	const keep = ( item : NavItem ) => !item.permission || allowed( item.permission )
+// `active`: the workspace's modules ( data.modules ); left out, module tags aren't checked.
+export function filterNav( groups : NavGroup[], allowed : ( permission : Permission ) => boolean, active ?: readonly ModuleId[] ) : NavGroup[] {
+	const keep = ( item : NavItem ) => ( !item.permission || allowed( item.permission ) ) && ( !item.module || !active || active.includes( item.module ) )
 
 	return groups
 		.map( ( group ) => ( {

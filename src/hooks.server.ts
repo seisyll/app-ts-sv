@@ -7,6 +7,7 @@ import { appearanceClassOf } from '$lib/server/appearance'
 import { auth, type Session } from '$lib/server/auth'
 import { requireUser } from '$lib/server/guards'
 import { runWithTenant, type TenantRef } from '$lib/server/db'
+import { handleModules } from '$lib/server/modules'
 import { resolveTenant } from '$lib/server/tenant'
 // Localised valibot messages for server-side validation ( see src/lib/validation.ts ).
 import '$lib/validation'
@@ -75,4 +76,4 @@ const handleAppGuard : Handle = async( { event, resolve } ) => {
 	return resolve( event )
 }
 
-export const handle = sequence( handleHeaders, handleLocale, handleAppearance, handleTenant, handleAuth, handleAppGuard )
+export const handle = sequence( handleHeaders, handleLocale, handleAppearance, handleTenant, handleModules, handleAuth, handleAppGuard )

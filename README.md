@@ -31,7 +31,9 @@ runs `/impeccable init` once to write its `PRODUCT.md`. Refresh with `npx skilld
 ## Playground
 
 `src/routes/(dev)/` holds the playground and its mock API (`/api/hello`, fixed JSON, no
-database). Everything under it returns 404 outside `vite dev`.
+database). Everything under it returns 404 outside `vite dev` (production builds stub it
+out, see Modules and clients). A module's playground pages show only when the build ships
+it.
 
 | Page | Shows |
 |---|---|
@@ -49,16 +51,81 @@ database). Everything under it returns 404 outside `vite dev`.
 The palette button in the playground's header tries every palette, style and radius on every
 page here (it only paints; reload to go back).
 
+## Modules and clients
+
+Every optional feature is a **module**, and a **client config** picks the ones a build ships.
+This comes from the fundraiser app's extension system. It's the template's "detachable"
+rule: a module that's off isn't hidden, it isn't in the bundle at all.
+
+| Module | What |
+|---|---|
+| `site` | The public site, in the client's theme. Off: `/` sends people to `/app` |
+| `users` | User administration (`/app/users`) |
+| `appearance` | The palette / style / radius picker and settings. Off: everyone gets the defaults |
+| `media` | Uploads, the media library, the image field, the editor's image picker |
+| `editor` | Rich text (TipTap), its validation and its HTML / email renders |
+| `notifications` | The bell, the inbox, per-type preferences |
+| `mail` | Per-workspace SMTP, password reset, verification, invites, notification emails. Needs `editor` |
+
+Always there (core): auth, the dashboard shell, DataTable, forms, settings and the
+playground's core pages.
+
+```ts
+// config/clients/acme.ts → CLIENT=acme bun run dev / bun run build
+export default defineClient( { extends: core, modules: { users: true, media: true, mail: true, editor: true }, theme: 'plain' } )
+```
+
+- **The registry** (`config/modules.ts`) lists each module: its description, the routes it
+  owns (route ids such as `/app/media` or `/(auth)/reset-password`), what it `requires`, and
+  an optional `whenOff` redirect.
+- **Client configs** (`config/clients/<name>.ts`) build on presets (`config/presets`:
+  `full` has everything, `core` has nothing). Any module they don't mention is off.
+  - `CLIENT` picks the config; without it, `config/clients/default.ts` (everything) is
+    used.
+  - A config with an unknown module, a missing requirement or a theme that doesn't exist
+    fails the build, naming each problem.
+  - The dev server prints the client and its modules on start. Restart it after changing
+    `CLIENT` or a config.
+- **Off at build:**
+  - Every file under a module's routes is swapped for a 404 stub (or the `whenOff`
+    redirect), in dev too, so `CLIENT=x bun run dev` is exactly x's build. The playground
+    under `(dev)` is stubbed in every production build.
+  - In the source, `MODULES.<id>` is replaced by `true` or `false`, so
+    `if ( MODULES.media )` and `{#if MODULES.media}` drop the disabled branch and the
+    imports only it used.
+  - Server code outside a module reaches mail and notifications through their gates,
+    `$lib/server/mail/gate` and `$lib/server/notifications/gate`, which load the module
+    with a dynamic import behind the flag.
+  - A build without mail contains no nodemailer and no TipTap. `bun run build` with a
+    small client is the way to check.
+- **Off per workspace** (shared tenancy):
+  - `bun run tenant:modules acme -mail` switches a built module off for one tenant;
+    `+mail` turns it back on, and `all` turns everything the build ships back on. With no
+    arguments it lists every tenant.
+  - Its routes then answer 404 (`handleModules` in hooks). The `/app` layout passes the
+    active list as `data.modules`, which the nav (`NavItem.module`) and shared pieces check.
+  - Turning a module off also turns off any module that requires it.
+  - Changes land within a minute (the tenant cache).
+  - Settings shows each module as on, off for this workspace, or not in the build.
+- **Runtime checks:** `isBuilt( id )` (`$lib/modules`) answers for this build;
+  `activeModules()`, `moduleActive( id )` and `requireModule( id )`
+  (`$lib/server/modules`) answer for the current workspace. Only the literal
+  `MODULES.<id>` is replaced at build, so `MODULES[ id ]` is a runtime error.
+- **Adding a module:**
+  - Add a registry entry and a label in `moduleLabel`.
+  - Guard its entry points in shared code with `MODULES.<id>`. Give it a gate if core
+    server code calls it.
+  - Tag its nav items with `module`.
+- **Not built:** tiers and quotas (the fundraiser app's plans), and an operator UI for the
+  per-workspace switches.
+
 ## Public site and themes
 
 `/` is the public site: a landing page (hero, features, how it works, stats, testimonials,
 pricing, FAQ, call to action) with a header and footer. Its look is a **theme**, and only
-the active theme is built: `$theme` points at `src/lib/themes/<THEME>` (`svelte.config.js`),
-and the `(site)` routes import nothing else.
-
-```bash
-THEME=plain bun run dev     # or THEME=… in .env; restart after changing it
-```
+the active theme is built: the client config's `theme` (see Modules and clients; `aurora`
+by default) becomes the `$theme` alias (`svelte.config.js`), and the `(site)` routes import
+nothing else. A build without the `site` module has no public site at all.
 
 | Theme | Look |
 |---|---|
@@ -76,8 +143,9 @@ THEME=plain bun run dev     # or THEME=… in .env; restart after changing it
   `bun run check` fails if it breaks the contract.
 - **No database:** the public site works before `db:setup`, and on a shared deployment's
   bare domain.
-- **Detach:** delete `src/routes/(site)`, `src/lib/themes` and `/hello/site`, remove `$theme`
-  from `svelte.config.js` and the `site_*` messages. The `@fontsource-variable` packages
+- **Detach:** turn the `site` module off in the client config. To delete it for good,
+  remove `src/routes/(site)`, `src/lib/themes`, `/hello/site`, `$theme` in
+  `svelte.config.js` and the `site_*` messages. The `@fontsource-variable` packages
   other than Inter are aurora's.
 
 ## Appearance
@@ -99,7 +167,7 @@ people may override it; each person overrides any knob from the palette button i
 - **Adding a palette:** a row in `PALETTES`, then `bun run generate:palettes`. **Shipping fewer
   styles:** drop rows from `STYLES` and the matching `@import`s in `app.css`.
 - **Rules** for new palettes, styles and house styles (and for public themes): `DESIGN.md`.
-- **Detach:** keep one style (`STYLES = [ 'vega' ]` and its import), delete the picker, the
+- **Detach:** turn the `appearance` module off (everyone gets the defaults). To delete it for good: keep one style (`STYLES = [ 'vega' ]` and its import), delete the picker, the
   settings page, `/api/appearance` and the migration's table/columns; leave `style-vega` on
   `<html>`, since the components are unstyled without a style class.
 
@@ -132,7 +200,7 @@ fundraiser app's storage, grid and lightbox, with billing-app's rules for what g
   delete), `MediaDropzone`, `uploadMedia()`, `MediaFeed`.
 - **Not built:** per-workspace quotas (the fundraiser app's `StorageUsage` is the model),
   more image sizes, streaming uploads.
-- **Detach:** delete `src/lib/components/media`, `src/lib/server/media.ts`, `src/lib/media.ts`,
+- **Detach:** turn the `media` module off. To delete it for good: delete `src/lib/components/media`, `src/lib/server/media.ts`, `src/lib/media.ts`,
   `/app/media`, `/api/media`, `/media`, the migration and `sharp`.
 
 ## Rich text
@@ -162,7 +230,7 @@ const mail = renderEmailHTML( body, { baseUrl, values: { customer_name: 'Ada' } 
   A recipient has no session, so an image in an email must be a **public** file (see Media).
 - **Not built:** Markdown output, collaborative editing, tables, alt-text editing, keyboard
   resizing of images.
-- **Detach:** delete `src/lib/editor`, `src/lib/components/editor`, `/hello/editor` and the
+- **Detach:** turn the `editor` module off (mail needs it). To delete it for good: delete `src/lib/editor`, `src/lib/components/editor`, `/hello/editor` and the
   `@tiptap/*` and `svelte-tiptap` packages.
 
 ## Notifications
@@ -192,7 +260,7 @@ await notify( { type: 'user.joined', params: { name, email }, to: { roles: [ 'ad
   (`role.changed` on, `user.joined` off). Copies go out after the response, through the
   workspace's mail (see Mail).
 - **Not built:** push delivery, live push (SSE), a read-history view, cleanup of old rows.
-- **Detach:** delete `src/lib/server/notifications`, `src/lib/components/notifications`,
+- **Detach:** turn the `notifications` module off. To delete it for good: delete `src/lib/server/notifications`, `src/lib/components/notifications`,
   `src/lib/notifications.ts`, `/app/notifications`, `/app/account/notifications`,
   `/api/notifications`, the `notify()` calls and the migration.
 
@@ -243,7 +311,7 @@ await sendMail( { to: { email, name }, template: 'user.invite', values: { invite
     triggered them
   - images in email bodies, until media can be public
   - removing a workspace's mail settings from the UI
-- **Detach:**
+- **Detach:** turn the `mail` module off. To delete it for good:
   - delete `src/lib/server/mail`, `src/lib/mail.ts`, `/app/settings/mail`, `/hello/mail`,
     `/api/hello/mail`, `/forgot-password` and `/reset-password`, and the migration
   - remove the `sendMail` calls in `src/lib/server/auth.ts` (reset and verification),

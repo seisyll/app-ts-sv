@@ -5,7 +5,8 @@ import { m } from '$lib/paraglide/messages'
 import type { createAuth } from '$lib/server/auth'
 import { db } from '$lib/server/db'
 import { listArgs, type ListSpec } from '$lib/server/list'
-import { appUrl, sendMail } from '$lib/server/mail'
+import { sendMail } from '$lib/server/mail/gate'
+import { appUrl } from '$lib/server/url'
 import type { NewUser, UserChange, UserRow } from '$lib/users'
 
 // The current tenant's users ( RLS scopes `db` ), for the Users table.
@@ -80,7 +81,8 @@ export async function createUser( auth : Auth, headers : Headers, input : NewUse
 	const { password, ...rest } = input
 	const { user } = await auth.api.createUser( { body: { ...rest, ...( password ? { password, data: { emailVerified: true } } : {} ) }, headers } )
 
-	if ( password )
+	// Without the mail module the endpoint never gets here without a password.
+	if ( password || !MODULES.mail )
 		return
 
 	try {

@@ -73,7 +73,7 @@ export async function resolveTenant( url : URL ) : Promise<TenantRef> {
 		error( 404, 'Not found' )
 	}
 
-	const tenant = { id: row.id, slug: row.slug, name: row.name }
+	const tenant = { id: row.id, slug: row.slug, name: row.name, modulesOff: row.modulesOff }
 
 	cache.set( key, { tenant, expires: Date.now() + TTL_MS } )
 

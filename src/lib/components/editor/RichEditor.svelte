@@ -72,7 +72,8 @@
 		name,
 		label,
 		placeholder = m.editor_placeholder(),
-		images = true,
+		// The picker is the media library's: off without that module.
+		images = MODULES.media,
 		variables = [],
 		mediaEndpoint = '/api/media',
 		invalid = false,

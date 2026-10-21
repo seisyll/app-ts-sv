@@ -6,14 +6,14 @@ import { m } from '$lib/paraglide/messages'
 import { auth, signUpEnabled } from '$lib/server/auth'
 import { authErrorMessage, isAuthError } from '$lib/server/auth-errors'
 import { validateForm } from '$lib/server/forms'
-import { mailReady } from '$lib/server/mail'
-import { notify } from '$lib/server/notifications'
+import { mailReady } from '$lib/server/mail/gate'
+import { notify } from '$lib/server/notifications/gate'
 import type { Actions, PageServerLoad } from './$types'
 
-// Off unless AUTH_SIGNUP=true, and a new account verifies its email, so the workspace's
-// mail must be set up too. Otherwise this page doesn't exist.
+// Off unless AUTH_SIGNUP=true. With the mail module a new account verifies its email, so the
+// workspace's mail must be set up too. Otherwise this page doesn't exist.
 async function ensureOpen() : Promise<void> {
-	if ( !signUpEnabled() || !await mailReady() )
+	if ( !signUpEnabled() || ( MODULES.mail && !await mailReady() ) )
 		error( 404, 'Not found' )
 }
 
@@ -47,7 +47,8 @@ export const actions : Actions = {
 				return message( form, authErrorMessage( caught ), { status: 400 } )
 			}
 
-			redirect( 303, '/signup?sent' )
+			// Verifying first ( mail module ): no session yet. Otherwise they're signed in.
+			redirect( 303, MODULES.mail ? '/signup?sent' : '/app' )
 		} )
 	}
 }

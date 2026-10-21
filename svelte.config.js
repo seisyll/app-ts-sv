@@ -1,16 +1,12 @@
-import { readdirSync } from 'node:fs'
 import adapter from '@sveltejs/adapter-node'
-import { loadEnv } from 'vite'
 
-/* ―― » The public site's theme, one per build: `$theme` points at src/lib/themes/<THEME>,
-        so routes import the active theme only and the others never reach the bundle.
-        Set THEME in .env or the environment; restart the dev server after changing it. */
+/* ―― » The public site's theme, one per build: `$theme` points at src/lib/themes/<theme>,
+        so routes import the active theme only and the others never reach the bundle. The
+        client config picks it ( config/clients ); vite.config.ts passes it as APP_THEME and
+        has already checked it exists. Tools that read only this file ( svelte-check ) get
+        the default, which is enough for types: every theme has the same contract. */
 const THEMES_DIR = 'src/lib/themes'
-const themes = readdirSync( THEMES_DIR, { withFileTypes: true } ).filter( ( entry ) => entry.isDirectory() ).map( ( entry ) => entry.name )
-const theme = process.env.THEME || loadEnv( process.env.NODE_ENV ?? 'development', process.cwd(), 'THEME' ).THEME || 'aurora'
-
-if ( !themes.includes( theme ) )
-	throw new Error( `THEME=${ theme } is not a folder in ${ THEMES_DIR } ( have: ${ themes.join( ', ' ) } ).` )
+const theme = process.env.APP_THEME || 'aurora'
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -20,7 +16,11 @@ const config = {
 	},
 	kit: {
 		adapter: adapter(),
-		alias  : { $theme: `${ THEMES_DIR }/${ theme }` }
+		alias  : {
+			$theme : `${ THEMES_DIR }/${ theme }`,
+			// The module registry and client configs, shared with vite.config.ts.
+			$config: 'config'
+		}
 	}
 }
 

@@ -192,7 +192,7 @@ describe( 'mail', () => {
 		expect( await inA( () => mail.loadMailTemplate( 'password.reset' ) ) ).toBeNull()
 	} )
 
-	it( 'links to BETTER_AUTH_URL outside a request', () => {
-		expect( mail.appUrl( '/reset-password?token=x' ) ).toBe( 'http://localhost:5173/reset-password?token=x' )
+	it( 'links to BETTER_AUTH_URL outside a request', async() => {
+		expect( ( await import( '$lib/server/url' ) ).appUrl( '/reset-password?token=x' ) ).toBe( 'http://localhost:5173/reset-password?token=x' )
 	} )
 } )
