@@ -65,6 +65,11 @@ export const MODULES_REGISTRY = {
 		routes     : [ '/(auth)/login/social', '/(dev)/hello/social' ],
 		whenOff    : '/login'
 	},
+	help: {
+		description: 'The help centre: articles in Markdown, listed at /app/help and opened over any page',
+		routes     : [ '/app/help', '/api/help', '/(dev)/hello/help' ],
+		whenOff    : '/app'
+	},
 	mail: {
 		description: 'The workspace\'s SMTP: password reset, email verification, invites, notification emails',
 		routes     : [ '/app/settings/mail', '/(auth)/forgot-password', '/(auth)/reset-password', '/(dev)/hello/mail', '/(dev)/api/hello/mail' ],

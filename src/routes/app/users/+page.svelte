@@ -1,6 +1,7 @@
 <script lang="ts">
 	import TrashIcon from '@lucide/svelte/icons/trash-2'
 	import { DataTable, runBulk, TableSource, type BulkAction } from '$lib/components/data-table'
+	import { HelpLink } from '$lib/components/help'
 	import { http } from '$lib/http'
 	import { m } from '$lib/paraglide/messages'
 	import type { UserRow } from '$lib/users'
@@ -44,6 +45,7 @@
 	<div class="flex flex-col gap-1">
 		<h1 class="text-xl font-semibold tracking-tight">{m.app_nav_users()}</h1>
 		<p class="text-muted-foreground text-sm">{m.users_desc()}</p>
+		<HelpLink doc="invite-people" />
 	</div>
 
 	<DataTable

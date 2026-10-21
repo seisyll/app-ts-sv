@@ -1039,5 +1039,19 @@
 	"audit_user_avatar_remove": "{actor} removed {target}'s picture",
 	"audit_account_avatar": "{actor} changed their picture",
 	"audit_account_avatar_remove": "{actor} removed their picture",
-	"demo_avatar_desc": "AvatarField with the crop dialog. Nothing is uploaded here: the cropped square shows below."
+	"demo_avatar_desc": "AvatarField with the crop dialog. Nothing is uploaded here: the cropped square shows below.",
+	"help_title": "Help",
+	"help_desc": "How the workspace works, one article at a time. Any article opens over the page you're on.",
+	"help_link": "How does this work?",
+	"help_search": "Search help",
+	"help_none": "Nothing here",
+	"help_none_search": "No article mentions that. Try other words.",
+	"help_none_desc": "There are no articles for what this workspace has on.",
+	"help_unavailable": "Article unavailable",
+	"help_category_people": "People",
+	"help_category_settings": "Settings",
+	"help_category_security": "Security",
+	"module_help": "Help centre",
+	"demo_help_desc": "HelpLink for every article, and the sheet it opens ( ?help= ). The articles come from /api/help, so sign in first.",
+	"demo_help_custom": "Your own words"
 }

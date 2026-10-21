@@ -14,6 +14,7 @@
 	import { Input } from '$lib/components/ui/input'
 	import * as Select from '$lib/components/ui/select'
 	import { Spinner } from '$lib/components/ui/spinner'
+	import { HelpLink } from '$lib/components/help'
 	import { MAIL_SECURITY, mailSettingsSchema, SECURITY_PORT, securityLabel, type MailSecurity } from '$lib/mail'
 	import { m } from '$lib/paraglide/messages'
 
@@ -51,6 +52,7 @@
 <div class="flex flex-col gap-1">
 	<h1 class="text-2xl font-semibold tracking-tight">{m.mail_title()}</h1>
 	<p class="text-sm text-muted-foreground">{m.mail_desc()}</p>
+	<HelpLink doc="email-setup" />
 </div>
 
 <div class="flex max-w-3xl flex-col gap-6 pb-24">

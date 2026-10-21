@@ -13,6 +13,7 @@
 	import { Input } from '$lib/components/ui/input'
 	import { Switch } from '$lib/components/ui/switch'
 	import { SaveBar } from '$lib/components/save-bar'
+	import { HelpLink } from '$lib/components/help'
 	import { m } from '$lib/paraglide/messages'
 	import { cn } from '$lib/utils'
 
@@ -69,6 +70,7 @@
 <div class="flex flex-col gap-1">
 	<h1 class="text-2xl font-semibold tracking-tight">{m.captcha_title()}</h1>
 	<p class="text-sm text-muted-foreground">{m.captcha_desc()}</p>
+	<HelpLink doc="sign-in-protection" />
 </div>
 
 <!-- pb-24 keeps the last card clear of the SaveBar. -->

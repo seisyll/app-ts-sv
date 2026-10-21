@@ -2,6 +2,7 @@
 	import BellIcon from '@lucide/svelte/icons/bell'
 	import HouseIcon from '@lucide/svelte/icons/house'
 	import ImagesIcon from '@lucide/svelte/icons/images'
+	import LifeBuoyIcon from '@lucide/svelte/icons/life-buoy'
 	import MailIcon from '@lucide/svelte/icons/mail'
 	import PaletteIcon from '@lucide/svelte/icons/palette'
 	import GlobeIcon from '@lucide/svelte/icons/globe'
@@ -15,6 +16,7 @@
 	import { paintAppearance } from '$lib/appearance'
 	import { AppearancePicker, AppShell, filterNav, LocaleSwitcher, ThemeToggle, type NavGroup } from '$lib/layout'
 	import { NotificationBell, NotificationStore, setNotifications } from '$lib/components/notifications'
+	import { HelpSheet } from '$lib/components/help'
 	import { mutate } from '$lib/mutate'
 	import { m } from '$lib/paraglide/messages'
 	import { hasPermission } from '$lib/permissions'
@@ -34,7 +36,8 @@
 			items: [
 				{ title: m.app_nav_profile(), href: '/app/account', icon: UserIcon },
 				{ title: m.app_nav_security(), href: '/app/account/security', icon: ShieldIcon, keywords: [ 'password' ] },
-				{ title: m.app_nav_notifications(), href: '/app/account/notifications', icon: BellIcon, module: 'notifications', keywords: [ 'preferences' ] }
+				{ title: m.app_nav_notifications(), href: '/app/account/notifications', icon: BellIcon, module: 'notifications', keywords: [ 'preferences' ] },
+				{ title: m.help_title(), href: '/app/help', icon: LifeBuoyIcon, module: 'help', keywords: [ 'docs', 'guide', 'how to', 'support' ] }
 			]
 		},
 		{
@@ -94,6 +97,11 @@
 
 	{@render children()}
 </AppShell>
+
+<!-- The help article ?help=<id> names, over any page. -->
+{#if MODULES.help}
+	<HelpSheet />
+{/if}
 
 <!-- Sign-out is a POST ( see /logout ). -->
 <form method="POST" action="/logout" bind:this={logoutForm} hidden></form>

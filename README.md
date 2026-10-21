@@ -58,6 +58,7 @@ it.
 | `/hello/notifications` | `NotificationBell`, `NotificationList` and the all-clear moment against a mock inbox |
 | `/hello/mail` | The dev outbox: every email the app sent, as HTML and text, plus a sample of each email |
 | `/hello/site` | Every public-site theme, switchable, with sign-up, a logo and a workspace's footer details on or off |
+| `/hello/help` | `HelpLink` for every article, and the sheet it opens |
 | `/hello/seo` | `<Seo>`: the tags it writes and a link preview with the theme's share image |
 
 The palette button in the playground's header tries every palette, style and radius on every
@@ -704,6 +705,23 @@ the caller's permission again. Your own row has no actions, and the endpoints re
   `src/lib/server/list.ts` turns the DataTable's query into Prisma
   `{ where, orderBy, skip, take }`. The `spec` allow-lists the search, facet and sort fields.
   Date ranges are calendar days in `APP.timeZone`.
+
+## Help centre
+
+Articles about the app, for the people using it (module `help`, from the fundraiser app's
+Pusat Bantuan): `/app/help` lists them by category with a search, and any of them opens in a
+side sheet over whatever page is open.
+
+- **Writing one:** `src/lib/help/content/<locale>/<id>.md` — first line `# Title`, then
+  Markdown; a language without the file falls back to English. Add its id, category and
+  (optional) `module` to `HELP_ARTICLES` in `src/lib/help/index.ts`: an article about a
+  module is hidden where that module is off. Rendered on the server (`marked`), so pages
+  carry only the list.
+- **Linking to one:** `<HelpLink doc="email-setup" />` beside the thing it explains (it hides
+  itself when the article isn't available), or any `/app` URL with `?help=<id>` — the sheet's
+  only state is that parameter, so support can send links that open an article.
+- **Starters:** inviting people, setting up email, sign-in protection — linked from Users,
+  Settings → Mail and Settings → Sign-in protection. `/hello/help` shows every link.
 
 ## Scheduled jobs
 

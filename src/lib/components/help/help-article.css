@@ -1,0 +1,62 @@
+/* ―― » A help article's Markdown, as HTML ( src/lib/server/help.ts ): readable type on the
+        app's tokens, in whatever appearance style is on. */
+.help-article {
+	font-size: var(--text-sm);
+	line-height: 1.65;
+	color: var(--foreground);
+}
+
+.help-article > * + * {
+	margin-top: 0.85em;
+}
+
+.help-article h2 {
+	margin-top: 1.6em;
+	font-size: var(--text-base);
+	font-weight: 600;
+}
+
+.help-article h3 {
+	margin-top: 1.3em;
+	font-weight: 600;
+}
+
+.help-article ul,
+.help-article ol {
+	padding-inline-start: 1.25em;
+}
+
+.help-article ul {
+	list-style: disc;
+}
+
+.help-article ol {
+	list-style: decimal;
+}
+
+.help-article li + li {
+	margin-top: 0.35em;
+}
+
+.help-article a {
+	color: var(--primary);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.help-article code {
+	border-radius: var(--radius-sm);
+	background: var(--muted);
+	padding: 0.1em 0.35em;
+	font-size: 0.9em;
+}
+
+.help-article strong {
+	font-weight: 600;
+}
+
+.help-article blockquote {
+	border-inline-start: 2px solid var(--border);
+	padding-inline-start: 1em;
+	color: var(--muted-foreground);
+}

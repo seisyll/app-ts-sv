@@ -1039,5 +1039,19 @@
 	"audit_user_avatar_remove": "{actor} menghapus foto {target}",
 	"audit_account_avatar": "{actor} mengganti fotonya",
 	"audit_account_avatar_remove": "{actor} menghapus fotonya",
-	"demo_avatar_desc": "AvatarField dengan dialog potong. Tidak ada yang diunggah di sini: hasil potongan tampil di bawah."
+	"demo_avatar_desc": "AvatarField dengan dialog potong. Tidak ada yang diunggah di sini: hasil potongan tampil di bawah.",
+	"help_title": "Bantuan",
+	"help_desc": "Cara kerja ruang kerja, satu artikel setiap kali. Artikel mana pun terbuka di atas halaman yang sedang Anda buka.",
+	"help_link": "Bagaimana cara kerjanya?",
+	"help_search": "Cari bantuan",
+	"help_none": "Tidak ada apa-apa",
+	"help_none_search": "Tidak ada artikel yang menyebutnya. Coba kata lain.",
+	"help_none_desc": "Tidak ada artikel untuk yang aktif di ruang kerja ini.",
+	"help_unavailable": "Artikel tidak tersedia",
+	"help_category_people": "Orang",
+	"help_category_settings": "Pengaturan",
+	"help_category_security": "Keamanan",
+	"module_help": "Pusat bantuan",
+	"demo_help_desc": "HelpLink untuk setiap artikel, dan lembar yang dibukanya ( ?help= ). Artikel diambil dari /api/help, jadi masuk dulu.",
+	"demo_help_custom": "Kata-kata Anda sendiri"
 }
