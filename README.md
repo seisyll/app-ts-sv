@@ -261,7 +261,8 @@ await sendMail( { to: { email, name }, template: 'user.invite', values: { invite
     notification emails go out after the response
   - each user's own language: notification emails use the language of the request that
     triggered them
-  - images in email bodies, until media can be public
+  - images in email bodies: media can be public now (see Media), but the mail editor doesn't
+    offer images yet
   - removing a workspace's mail settings from the UI
 - **Detach:**
   - delete `src/lib/server/mail`, `src/lib/mail.ts`, `/app/settings/mail`, `/hello/mail`,
