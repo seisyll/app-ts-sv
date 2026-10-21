@@ -78,7 +78,7 @@
 		enableSelection = false,
 		bulkActions = [],
 		exportTitle,
-		exportFormats = [ 'csv', 'xlsx' ],
+		exportFormats = [ 'csv', 'xlsx', 'pdf' ],
 		emptyMessage = m.table_empty(),
 		toolbarActions,
 		onQuery,
@@ -471,7 +471,7 @@
 		return meta?.title ?? ( typeof header === 'string' && header ? header : column.id )
 	}
 
-	const exportLabels : Record<ExportFormat, string> = { csv: 'CSV', xlsx: 'Excel (.xlsx)', json: 'JSON' }
+	const exportLabels : Record<ExportFormat, string> = { csv: 'CSV', xlsx: 'Excel (.xlsx)', pdf: 'PDF' }
 </script>
 
 <div class="flex w-full flex-col gap-4">
@@ -528,7 +528,8 @@
 										<DropdownMenu.Item>
 											{#snippet child( { props } )}
 												<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- an endpoint file download, not a route -->
-												<a {...props} href={source.exportUrl( format )} download>{exportLabels[ format ]}</a>
+												<!-- A file downloads; the PDF is a page to print, in its own tab. -->
+												<a {...props} href={source.exportUrl( format )} download={format === 'pdf' ? undefined : ''} target={format === 'pdf' ? '_blank' : undefined}>{exportLabels[ format ]}</a>
 											{/snippet}
 										</DropdownMenu.Item>
 									{/each}

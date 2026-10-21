@@ -93,6 +93,7 @@
 		"nodemailer": "^10.1.7",
 		"pg": "^8.22.0",
 		"sharp": "^0.35.3",
-		"svelte-tiptap": "^3.0.1"
+		"svelte-tiptap": "^3.0.1",
+		"write-excel-file": "^4.1.1"
 	}
 }

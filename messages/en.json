@@ -858,5 +858,13 @@
 	"demo_dash_plans": "Plans",
 	"demo_dash_free": "Free",
 	"demo_dash_pro": "Pro",
-	"demo_dash_pro_hint": "Paying"
+	"demo_dash_pro_hint": "Paying",
+	"print_rows": "{count} rows",
+	"print_printed": "printed {date}",
+	"print_button": "Print or save as PDF",
+	"print_bad_source": "There's nothing to print at that address.",
+	"print_failed": "The list couldn't be loaded for printing.",
+	"print_filters": "Filters",
+	"print_all_rows": "none, every row",
+	"print_search": "Search"
 }

@@ -148,6 +148,15 @@ describe( 'TableSource', () => {
 		expect( url.searchParams.get( 'skip' ) ).toBe( '0' )
 		expect( url.searchParams.get( 'search' ) ).toBe( 'ada' )
 		expect( url.searchParams.get( 'export' ) ).toBe( 'csv' )
+
+		// A PDF is the print page, reading the same rows as JSON.
+		const print = new URL( source.exportUrl( 'pdf' ), 'http://localhost' )
+		const src = new URL( print.searchParams.get( 'src' )!, 'http://localhost' )
+
+		expect( print.pathname ).toBe( '/app/print' )
+		expect( src.pathname ).toBe( '/api/x' )
+		expect( src.searchParams.get( 'export' ) ).toBe( 'json' )
+		expect( src.searchParams.get( 'search' ) ).toBe( 'ada' )
 		source.destroy()
 	} )
 } )

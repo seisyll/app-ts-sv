@@ -398,6 +398,16 @@ dashboard pieces in `src/lib/components/dashboard`:
   The load must read the same query so the server render matches:
   `listUsers( toPageQuery( fromUrlParams( url.searchParams ) ) )` (see `/app/users`).
 - A column with a string `header` gets a sort button; `enableSorting: false` opts out.
+- **Export** (`exportTitle`, server mode): CSV, Excel and PDF of every row matching the current
+  search, facets and sort. The endpoint answers `?export=csv|xlsx|json` with
+  `exportResponse( format, title, columns, ( await list( exportAll( query ) ) ).rows, { filters } )`
+  (`src/lib/server/export.ts`, see `/api/users`): CSV with a BOM and CRLF that Excel opens
+  cleanly, and a leading quote on any cell a spreadsheet would run as a formula; `.xlsx` with
+  real numbers and dates; at most 50,000 rows. **PDF** is `/app/print?src=…`, which reads the
+  list as JSON through the visitor's own session (only `/api/` lists of this app, never
+  `/api/auth`) and prints a branded report — logo, title, the filters in words
+  (`describeQuery`), row count, date — light on paper whatever the theme. `?preview` skips the
+  print dialog.
 - Helpers: `selectColumn()`, `rowNumberColumn()`, `facetedFilter`, `dateRangeFilter`,
   `textCell()` (escapes HTML), `runBulk()` for bulk actions.
 

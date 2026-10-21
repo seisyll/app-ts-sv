@@ -17,7 +17,8 @@ export type TableSourceOptions<T, S> = {
 	fetch ?         : typeof fetch
 }
 
-export type ExportFormat = 'csv' | 'xlsx' | 'json'
+// What the Export menu offers. PDF is the print page ( /app/print ) reading the rows as JSON.
+export type ExportFormat = 'csv' | 'xlsx' | 'pdf'
 
 const DEBOUNCE_MS = 300
 
@@ -104,7 +105,9 @@ export class TableSource<T, S = undefined> {
 	}
 
 	// The current query as a file: every matching row ( paging dropped ), same filters.
-	exportUrl = ( format : ExportFormat ) : string => this.#url( this.#query, false, { export: format } )
+	exportUrl = ( format : ExportFormat ) : string => ( format === 'pdf'
+		? `/app/print?src=${ encodeURIComponent( this.#url( this.#query, false, { export: 'json' } ) ) }`
+		: this.#url( this.#query, false, { export: format } ) )
 
 	#url( query : TableQuery, paged : boolean, extra : Record<string, string> = {} ) : string {
 		const params = toSearchParams( toPageQuery( query, paged ) )

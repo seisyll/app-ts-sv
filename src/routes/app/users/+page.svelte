@@ -54,6 +54,7 @@
 		dateRange={{ columnId: 'createdAt' }}
 		enableSelection
 		{bulkActions}
+		exportTitle={m.app_nav_users()}
 		syncUrl
 	>
 		{#snippet toolbarActions()}

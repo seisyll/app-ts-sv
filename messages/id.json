@@ -858,5 +858,13 @@
 	"demo_dash_plans": "Paket",
 	"demo_dash_free": "Gratis",
 	"demo_dash_pro": "Pro",
-	"demo_dash_pro_hint": "Berbayar"
+	"demo_dash_pro_hint": "Berbayar",
+	"print_rows": "{count} baris",
+	"print_printed": "dicetak {date}",
+	"print_button": "Cetak atau simpan sebagai PDF",
+	"print_bad_source": "Tidak ada yang bisa dicetak dari alamat itu.",
+	"print_failed": "Daftar tidak bisa dimuat untuk dicetak.",
+	"print_filters": "Filter",
+	"print_all_rows": "tidak ada, semua baris",
+	"print_search": "Cari"
 }
