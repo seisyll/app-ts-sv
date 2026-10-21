@@ -2,6 +2,8 @@
 	import MailCheckIcon from '@lucide/svelte/icons/mail-check'
 	import { superForm } from 'sveltekit-superforms'
 	import { valibot } from 'sveltekit-superforms/adapters'
+	import { page } from '$app/state'
+	import { CaptchaWidget } from '$lib/components/captcha'
 	import { Alert, AlertDescription } from '$lib/components/ui/alert'
 	import { Button } from '$lib/components/ui/button'
 	import * as Card from '$lib/components/ui/card'
@@ -13,8 +15,19 @@
 
 	let { data } = $props()
 
+	let widget = $state<CaptchaWidget>()
+
 	// svelte-ignore state_referenced_locally
-	const form = superForm( data.form, { validators: valibot( forgotSchema ), resetForm: false } )
+	const form = superForm( data.form, {
+		validators: valibot( forgotSchema ),
+		resetForm : false,
+		// The captcha's answer rides along when it's shown; it counts once, so ask anew after.
+		onSubmit  : async( { formData } ) => {
+			if ( widget )
+				formData.set( 'captcha', await widget.getToken() ?? '' )
+		},
+		onResult  : () => widget?.reset()
+	} )
 	const { form: values, errors, message, submitting, enhance } = form
 	const shown = ( messages ?: string[] ) => messages?.map( ( text ) => ( { message: text } ) )
 </script>
@@ -32,8 +45,9 @@
 		<form method="POST" use:enhance novalidate>
 			<Field.Group>
 				{#if $message}
-					<Alert>
-						<MailCheckIcon />
+					<!-- Sent, or refused before sending ( the captcha, too many requests ). -->
+					<Alert variant={page.status >= 400 ? 'destructive' : 'default'}>
+						{#if page.status < 400}<MailCheckIcon />{/if}
 						<AlertDescription>{$message}</AlertDescription>
 					</Alert>
 				{/if}
@@ -43,6 +57,10 @@
 					<Input id="email" name="email" type="email" autocomplete="username" bind:value={$values.email} aria-invalid={$errors.email ? true : undefined} />
 					<Field.Error errors={shown( $errors.email )} />
 				</Field.Field>
+
+				{#if MODULES.captcha && data.captcha}
+					<CaptchaWidget bind:this={widget} provider={data.captcha.provider} siteKey={data.captcha.siteKey} action="forgot" />
+				{/if}
 
 				<Button type="submit" class="w-full" disabled={$submitting}>
 					{#if $submitting}

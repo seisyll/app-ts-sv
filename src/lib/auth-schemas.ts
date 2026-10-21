@@ -7,14 +7,18 @@ export const name = v.pipe( v.string(), v.trim(), v.nonEmpty(), v.maxLength( 60 
 // Matches emailAndPassword.minPasswordLength in $lib/server/auth.
 export const newPassword = v.pipe( v.string(), v.minLength( 10 ), v.maxLength( 128 ) )
 
+// The captcha's answer, when the page shows one ( set on submit, see CaptchaWidget ).
+const captcha = v.optional( v.string(), '' )
+
 export const loginSchema = v.object( {
 	email,
-	password: v.pipe( v.string(), v.nonEmpty() )
+	password: v.pipe( v.string(), v.nonEmpty() ),
+	captcha
 } )
 
-export const signupSchema = v.object( { name, email, password: newPassword } )
+export const signupSchema = v.object( { name, email, password: newPassword, captcha } )
 
-export const forgotSchema = v.object( { email } )
+export const forgotSchema = v.object( { email, captcha } )
 
 // Choosing a password from an emailed link: a reset, or accepting an invite.
 export const resetSchema = v.pipe(

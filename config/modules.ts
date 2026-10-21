@@ -48,6 +48,10 @@ export const MODULES_REGISTRY = {
 		description: 'The bell, the inbox and per-type preferences',
 		routes     : [ '/app/notifications', '/app/account/notifications', '/api/notifications', '/(dev)/hello/notifications', '/(dev)/api/hello/notifications' ]
 	},
+	captcha: {
+		description: 'A captcha on sign-in ( after failed attempts, or always ), sign-up and forgot-password, set per workspace',
+		routes     : [ '/app/settings/security', '/(dev)/hello/captcha' ]
+	},
 	mail: {
 		description: 'The workspace\'s SMTP: password reset, email verification, invites, notification emails',
 		routes     : [ '/app/settings/mail', '/(auth)/forgot-password', '/(auth)/reset-password', '/(dev)/hello/mail', '/(dev)/api/hello/mail' ],

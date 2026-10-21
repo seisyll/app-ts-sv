@@ -6,6 +6,7 @@
 	import PaletteIcon from '@lucide/svelte/icons/palette'
 	import SettingsIcon from '@lucide/svelte/icons/settings'
 	import ShieldIcon from '@lucide/svelte/icons/shield'
+	import ShieldCheckIcon from '@lucide/svelte/icons/shield-check'
 	import UserIcon from '@lucide/svelte/icons/user'
 	import UsersIcon from '@lucide/svelte/icons/users'
 	import { paintAppearance } from '$lib/appearance'
@@ -39,6 +40,7 @@
 				{ title: m.app_nav_users(), href: '/app/users', icon: UsersIcon, module: 'users', permission: { user: [ 'list' ] } },
 				{ title: m.app_nav_appearance(), href: '/app/settings/appearance', icon: PaletteIcon, module: 'appearance', permission: { settings: [ 'update' ] }, keywords: [ 'theme', 'colour' ] },
 				{ title: m.mail_title(), href: '/app/settings/mail', icon: MailIcon, module: 'mail', permission: { settings: [ 'update' ] }, keywords: [ 'email', 'smtp', 'templates' ] },
+				{ title: m.captcha_nav(), href: '/app/settings/security', icon: ShieldCheckIcon, module: 'captcha', permission: { settings: [ 'update' ] }, keywords: [ 'captcha', 'turnstile', 'recaptcha', 'hcaptcha', 'sign-in' ] },
 				{ title: m.app_nav_settings(), href: '/app/settings', icon: SettingsIcon, permission: { settings: [ 'update' ] } }
 			]
 		}

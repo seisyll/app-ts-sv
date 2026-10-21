@@ -8,6 +8,7 @@ import { ac, DEFAULT_ROLE, roles } from '$lib/permissions'
 import { currentTenant, db, tenantTransaction } from '$lib/server/db'
 import type { PrismaClient } from '$lib/server/db/generated/client'
 import { sendMail } from '$lib/server/mail/gate'
+import { afterAuth, beforeAuth, CLIENT_IP } from '$lib/server/sign-in-guard'
 import { appUrl } from '$lib/server/url'
 
 /* ―― » better-auth on the tenant-scoped database: users, sessions and accounts are rows
@@ -121,11 +122,17 @@ export function createAuth( { cookies = true } : { cookies ?: boolean } = {} ) {
 		advanced: {
 			// Ids come from the database ( uuidv7() ).
 			database : { generateId: false },
-			// Behind a proxy that OVERWRITES x-forwarded-for ( see the Caddy config ), this
-			// is the real client IP for the rate limiter. Otherwise it is spoofable.
-			ipAddress: { ipAddressHeaders: [ 'x-forwarded-for' ] }
+			// The visitor's address as SvelteKit sees it ( event.getClientAddress(): set
+			// ADDRESS_HEADER / XFF_DEPTH behind a proxy ), put there by this server only
+			// ( hooks.server.ts, authHeaders ) — for the rate limiter, the sign-in throttle
+			// and each session's recorded address.
+			ipAddress: { ipAddressHeaders: [ CLIENT_IP ] }
 		},
-		// Per-IP budgets, stored per tenant. On in production only ( better-auth's default ).
+		// Sign-in throttle and captcha ( src/lib/server/sign-in-guard.ts ). Hooks run for the
+		// form actions' auth.api calls as well as /api/auth/*.
+		hooks: { before: beforeAuth, after: afterAuth },
+		// Per-IP budgets on /api/auth/*, stored per tenant. On in production only ( better-auth's
+		// default ). Form actions call auth.api directly and skip it: the sign-in guard covers them.
 		rateLimit: {
 			storage    : 'database',
 			customRules: {

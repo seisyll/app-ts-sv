@@ -1,11 +1,14 @@
 import { error } from '@sveltejs/kit'
+import { APIError } from 'better-auth/api'
 import { message, superValidate } from 'sveltekit-superforms'
 import { valibot } from 'sveltekit-superforms/adapters'
 import { forgotSchema } from '$lib/auth-schemas'
 import { m } from '$lib/paraglide/messages'
 import { auth } from '$lib/server/auth'
 import { validateForm } from '$lib/server/forms'
+import { authErrorMessage } from '$lib/server/auth-errors'
 import { mailReady } from '$lib/server/mail'
+import { authHeaders, captchaWidget } from '$lib/server/sign-in-guard'
 import type { Actions, PageServerLoad } from './$types'
 
 // Only when the workspace can send the link; otherwise this page doesn't exist.
@@ -17,7 +20,7 @@ async function ensureMail() : Promise<void> {
 export const load : PageServerLoad = async() => {
 	await ensureMail()
 
-	return { form: await superValidate( valibot( forgotSchema ) ) }
+	return { form: await superValidate( valibot( forgotSchema ) ), captcha: await captchaWidget() }
 }
 
 export const actions : Actions = {
@@ -25,9 +28,18 @@ export const actions : Actions = {
 		await ensureMail()
 
 		return validateForm( event, forgotSchema, async( form ) => {
-			// The same answer whether or not the email has an account here.
-			await auth().api.requestPasswordReset( { body: { email: form.data.email }, headers: event.request.headers } )
-				.catch( ( caught ) => console.error( '[auth] reset request failed', caught ) )
+			try {
+				await auth().api.requestPasswordReset( { body: { email: form.data.email }, headers: authHeaders( event, form.data.captcha ) } )
+			} catch ( caught ) {
+				form.data.captcha = ''
+
+				// Refused by the sign-in guard ( the captcha, too many requests ): say so. Anything
+				// else gets the same answer as success, whether or not the email has an account.
+				if ( caught instanceof APIError && ( caught.statusCode === 403 || caught.statusCode === 429 ) )
+					return message( form, authErrorMessage( caught ), { status: 400 } )
+
+				console.error( '[auth] reset request failed', caught )
+			}
 
 			return message( form, m.auth_forgot_sent() )
 		} )

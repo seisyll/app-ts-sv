@@ -8,6 +8,7 @@ import { authErrorMessage, isAuthError } from '$lib/server/auth-errors'
 import { validateForm } from '$lib/server/forms'
 import { mailReady } from '$lib/server/mail/gate'
 import { notify } from '$lib/server/notifications/gate'
+import { authHeaders, captchaWidget } from '$lib/server/sign-in-guard'
 import type { Actions, PageServerLoad } from './$types'
 
 // Off unless AUTH_SIGNUP=true. With the mail module a new account verifies its email, so the
@@ -24,7 +25,7 @@ export const load : PageServerLoad = async( event ) => {
 		redirect( 303, '/app' )
 
 	// ?sent: signed up, now check your inbox.
-	return { form: await superValidate( valibot( signupSchema ) ), sent: event.url.searchParams.has( 'sent' ) }
+	return { form: await superValidate( valibot( signupSchema ) ), sent: event.url.searchParams.has( 'sent' ), captcha: await captchaWidget() }
 }
 
 export const actions : Actions = {
@@ -35,11 +36,13 @@ export const actions : Actions = {
 			try {
 				// Creates the account and emails a verification link, which signs them in and
 				// lands on /login ( → /app ). No session until then.
-				const { user } = await auth().api.signUpEmail( { body: { ...form.data, callbackURL: '/login' }, headers: event.request.headers } )
+				const { captcha, ...body } = form.data
+				const { user } = await auth().api.signUpEmail( { body: { ...body, callbackURL: '/login' }, headers: authHeaders( event, captcha ) } )
 
 				await notify( { type: 'user.joined', params: { name: user.name, email: user.email }, to: { roles: [ 'admin' ], except: [ user.id ] } } )
 			} catch ( caught ) {
 				form.data.password = ''
+				form.data.captcha = ''
 
 				if ( isAuthError( caught, 'USER_ALREADY_EXISTS' ) || isAuthError( caught, 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL' ) )
 					return setError( form, 'email', m.auth_email_taken() )

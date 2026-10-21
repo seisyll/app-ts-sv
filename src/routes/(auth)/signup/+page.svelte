@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms'
+	import { CaptchaWidget } from '$lib/components/captcha'
 	import { valibot } from 'sveltekit-superforms/adapters'
 	import { Alert, AlertDescription } from '$lib/components/ui/alert'
 	import { Button } from '$lib/components/ui/button'
@@ -12,8 +13,18 @@
 
 	let { data } = $props()
 
+	let widget = $state<CaptchaWidget>()
+
 	// svelte-ignore state_referenced_locally
-	const form = superForm( data.form, { validators: valibot( signupSchema ) } )
+	const form = superForm( data.form, {
+		validators: valibot( signupSchema ),
+		// The captcha's answer rides along when it's shown; it counts once, so ask anew after.
+		onSubmit  : async( { formData } ) => {
+			if ( widget )
+				formData.set( 'captcha', await widget.getToken() ?? '' )
+		},
+		onResult  : () => widget?.reset()
+	} )
 	const { form: values, errors, message, submitting, enhance } = form
 	const shown = ( messages ?: string[] ) => messages?.map( ( text ) => ( { message: text } ) )
 </script>
@@ -65,6 +76,10 @@
 						<Field.Description>{m.auth_password_hint()}</Field.Description>
 						<Field.Error errors={shown( $errors.password )} />
 					</Field.Field>
+
+					{#if MODULES.captcha && data.captcha}
+						<CaptchaWidget bind:this={widget} provider={data.captcha.provider} siteKey={data.captcha.siteKey} action="signup" />
+					{/if}
 
 					<Button type="submit" class="w-full" disabled={$submitting}>
 						{#if $submitting}

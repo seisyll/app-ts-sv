@@ -1,0 +1,20 @@
+// A workspace's captcha ( src/lib/server/captcha.ts ), set on /app/settings/security. One row
+// per tenant; no row means none. The secret is encrypted with BETTER_AUTH_SECRET and never
+// leaves the server.
+model CaptchaSetting {
+  id           String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId     String   @unique @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  enabled      Boolean  @default(false)
+  // turnstile | recaptcha | hcaptcha ( CAPTCHA_PROVIDERS in src/lib/captcha.ts )
+  provider     String   @default("turnstile")
+  siteKey      String   @default("") @map("site_key")
+  secret       String?
+  // adaptive: after `triggerAfter` failed sign-ins for the email or address; always: every time.
+  mode         String   @default("adaptive")
+  triggerAfter Int      @default(3) @map("trigger_after")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("captcha_settings")
+}

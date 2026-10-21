@@ -43,6 +43,7 @@ it.
 | `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
 | `/hello/brand` | `BrandMark` with and without a logo, `FaviconPreview`, the sign-in header |
+| `/hello/captcha` | `CaptchaWidget` with Turnstile's and hCaptcha's test keys |
 | `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox` (with the public switch), `MediaDropzone` against a mock library |
 | `/hello/editor` | `RichEditor` with images and template variables; the server's validation and its HTML and email renders |
 | `/hello/notifications` | `NotificationBell`, `NotificationList` and the all-clear moment against a mock inbox |
@@ -463,6 +464,36 @@ from one tenant doesn't exist in another; the same email can sign up separately 
   hide it from users without it (the page still guards itself).
 - **Env:** `BETTER_AUTH_SECRET` (≥ 32 chars), `BETTER_AUTH_URL` (single tenancy; shared
   derives it per request), `AUTH_SIGNUP`.
+
+### Sign-in protection (`/app/settings/security`)
+
+The fundraiser app's three layers, in `src/lib/server/sign-in-guard.ts` as better-auth hooks —
+so they cover the form actions (which call `auth.api` directly and never meet better-auth's
+own limiter) as well as `/api/auth/*`:
+
+1. **better-auth's rate limit**, per address, on `/api/auth/*` in production.
+2. **The throttle**, in Redis (see Redis), per email and per address over 15 minutes: from 3
+   failed sign-ins each attempt waits longer (0.5 s steps, at most 5 s); at 10 the email is
+   refused (`429`, saying for how long) until the window ends — or asks for the captcha
+   instead when one is on, so nobody can lock someone else out for good. An address that
+   failed 30 times, across any emails, is treated the same. A success clears the email's
+   count. Sign-up and forgot-password get a per-address budget (5 and 3 a minute). No
+   Redis: no throttle.
+3. **The captcha** (module `captcha`), set per workspace: Cloudflare Turnstile, Google
+   reCAPTCHA v3 or hCaptcha, on sign-in after N failures for the email or address (or
+   always), and on sign-up and forgot-password whenever it's on. The secret is encrypted
+   with `BETTER_AUTH_SECRET`; the preview's **Test** checks the saved keys against the
+   provider from this domain. Half-set (no secret) means off, never locked out. The
+   answer travels as `x-captcha-response` (forms post it as `captcha`).
+
+- **The visitor's address** is `event.getClientAddress()`, put in `x-client-ip` by this
+  server only (a client's own is overwritten). Behind a proxy set adapter-node's
+  `ADDRESS_HEADER` / `XFF_DEPTH`, or every visitor shares the proxy's address.
+- **Wrong credentials count; nothing else does** (unverified, banned, a refused captcha).
+- **Detach:** turn the `captcha` module off, or delete `src/lib/captcha.ts`,
+  `src/lib/server/captcha.ts`, `src/lib/components/captcha`, `/app/settings/security`,
+  `/hello/captcha` and the migration. The throttle goes with `src/lib/server/sign-in-guard.ts`
+  and its two hooks in `src/lib/server/auth.ts`.
 
 ### Users (`/app/users`)
 

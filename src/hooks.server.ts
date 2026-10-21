@@ -8,6 +8,7 @@ import { auth, type Session } from '$lib/server/auth'
 import { requireUser } from '$lib/server/guards'
 import { runWithTenant, type TenantRef } from '$lib/server/db'
 import { handleModules } from '$lib/server/modules'
+import { CLIENT_IP } from '$lib/server/sign-in-guard'
 import { resolveTenant } from '$lib/server/tenant'
 // Localised valibot messages for server-side validation ( see src/lib/validation.ts ).
 import '$lib/validation'
@@ -60,8 +61,13 @@ const handleAuth : Handle = ( { event, resolve } ) => {
 
 	event.locals.session = () => ( pending ??= auth().api.getSession( { headers: event.request.headers } ) )
 
-	if ( event.url.pathname.startsWith( '/api/auth/' ) )
+	if ( event.url.pathname.startsWith( '/api/auth/' ) ) {
+		// The visitor's address for better-auth's limiter and the sign-in guard: ours, never a
+		// header the client sent ( see CLIENT_IP ).
+		event.request.headers.set( CLIENT_IP, event.getClientAddress() )
+
 		return svelteKitHandler( { event, resolve, auth: auth(), building } )
+	}
 
 	return resolve( event )
 }

@@ -26,5 +26,6 @@ export const moduleLabel = ( id : ModuleId ) : string => ( {
 	media        : m.module_media(),
 	editor       : m.module_editor(),
 	notifications: m.module_notifications(),
+	captcha      : m.module_captcha(),
 	mail         : m.module_mail()
 } )[ id ]

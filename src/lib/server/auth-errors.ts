@@ -11,14 +11,15 @@ export function authErrorMessage( error : unknown ) : string {
 	if ( error.statusCode === 401 )
 		return m.auth_invalid_credentials()
 
+	// The sign-in guard's lock says how long; better-auth's own limiter doesn't.
 	if ( error.statusCode === 429 )
-		return m.auth_too_many()
+		return error.body?.code === 'SIGN_IN_LOCKED' ? error.message : m.auth_too_many()
 
 	// A fresh link is already on its way ( emailVerification.sendOnSignIn ).
 	if ( error.body?.code === 'EMAIL_NOT_VERIFIED' )
 		return m.auth_verify_first()
 
-	// 403: banned — better-auth's own message says so.
+	// 403: banned, or the captcha missing or failed — each message says which.
 	return error.message || m.http_failed()
 }
 

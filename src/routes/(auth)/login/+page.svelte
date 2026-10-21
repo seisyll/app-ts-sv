@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms'
 	import { valibot } from 'sveltekit-superforms/adapters'
+	import { page } from '$app/state'
+	import { CaptchaWidget } from '$lib/components/captcha'
 	import { Alert, AlertDescription } from '$lib/components/ui/alert'
 	import { Button } from '$lib/components/ui/button'
 	import * as Card from '$lib/components/ui/card'
@@ -12,8 +14,20 @@
 
 	let { data } = $props()
 
+	let widget = $state<CaptchaWidget>()
+
 	// svelte-ignore state_referenced_locally
-	const form = superForm( data.form, { validators: valibot( loginSchema ) } )
+	const form = superForm( data.form, {
+		validators: valibot( loginSchema ),
+		// The captcha's answer rides along when it's shown; it counts once, so ask anew after.
+		onSubmit  : async( { formData } ) => {
+			if ( widget )
+				formData.set( 'captcha', await widget.getToken() ?? '' )
+		},
+		onResult  : () => widget?.reset()
+	} )
+	// After a failed attempt the action says whether the next one needs it.
+	const captcha = $derived( ( page.form as { captcha ?: typeof data.captcha } | null )?.captcha ?? data.captcha )
 	const { form: values, errors, message, submitting, enhance } = form
 	const shown = ( messages ?: string[] ) => messages?.map( ( text ) => ( { message: text } ) )
 </script>
@@ -56,6 +70,10 @@
 					<Input id="password" name="password" type="password" autocomplete="current-password" bind:value={$values.password} aria-invalid={$errors.password ? true : undefined} />
 					<Field.Error errors={shown( $errors.password )} />
 				</Field.Field>
+
+				{#if MODULES.captcha && captcha}
+					<CaptchaWidget bind:this={widget} provider={captcha.provider} siteKey={captcha.siteKey} action="login" />
+				{/if}
 
 				<Button type="submit" class="w-full" disabled={$submitting}>
 					{#if $submitting}

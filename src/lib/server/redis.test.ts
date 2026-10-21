@@ -13,10 +13,11 @@ describe( 'redis, unset', () => {
 		await expect( clear( 'k' ) ).resolves.toBeUndefined()
 		expect( await rateLimit( 'k', 0, 1_000 ) ).toEqual( { allowed: true, retryAfterMs: 0 } )
 		vi.unstubAllEnvs()
-	} )
+	}, 30_000 )
 } )
 
-// Against a real server when there is one ( docker-compose.dev.yml ).
+// Against a real server when there is one ( docker-compose.dev.yml ). Both tests import the
+// module cold ( it pulls in the database client ), slow while other files run: long timeouts.
 describe.runIf( process.env.REDIS_URL )( 'redis, live', () => {
 	const key = `test:${ crypto.randomUUID() }`
 	let module : typeof import( './redis' )
@@ -41,5 +42,5 @@ describe.runIf( process.env.REDIS_URL )( 'redis, live', () => {
 
 		await module.clear( key )
 		expect( await module.peek( key ) ).toEqual( { count: 0, ttlMs: 0 } )
-	} )
+	}, 30_000 )
 } )

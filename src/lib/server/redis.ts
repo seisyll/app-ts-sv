@@ -42,6 +42,9 @@ const online = () => {
 	return instance?.status === 'ready' ? instance : null
 }
 
+// Connected right now ( for a status line; the helpers check for themselves ).
+export const redisReady = () : boolean => online() !== null
+
 // Keys of the current workspace: one tenant's counters never touch another's.
 export const tenantKey = async( ...parts : string[] ) => `t:${ ( await currentTenant() ).id }:${ parts.join( ':' ) }`
 

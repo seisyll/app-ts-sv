@@ -25,6 +25,7 @@ model Tenant {
   notificationPreferences NotificationPreference[]
 
   mailSetting   MailSetting?
+  captcha       CaptchaSetting?
   mailTemplates MailTemplate[]
 
   @@map("tenants")
