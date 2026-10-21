@@ -771,7 +771,9 @@ failed' )` — `err` keeps its stack.
   to `/csp`, which logs one line each — a policy too tight for a new feature shows up there.
   A new third party goes in the directive it needs, under its module's guard. An inline
   script of your own must carry `nonce="%sveltekit.nonce%"`, which only `src/app.html` can:
-  that's why mode-watcher's pre-paint snippet lives there (`src/lib/csp.test.ts`).
+  that's why mode-watcher's pre-paint snippet lives there. The one inline handler allowed is
+  Svelte's own `this.__e=event` (its server render captures an image's early load with it),
+  by hash with `'unsafe-hashes'`; `src/lib/csp.test.ts` checks both.
 - **Headers** (`hooks.server.ts`): `nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`,
   a `Permissions-Policy` that turns off camera, microphone, location and payment, and in
   production over HTTPS `Strict-Transport-Security` for a year (no preload — your call).

@@ -1,6 +1,10 @@
+import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { createInitialModeExpression } from 'mode-watcher'
+import { render } from 'svelte/server'
 import { describe, expect, it } from 'vitest'
+import { SVELTE_EVENT_CAPTURE } from '../../svelte.config.js'
+import Capture from './test/fixtures/EventCapture.svelte'
 
 /* ―― » The content security policy allows no inline script without SvelteKit's nonce, so
         mode-watcher's pre-paint snippet is our copy in app.html ( a component can't reach
@@ -17,5 +21,12 @@ describe( 'content security policy', () => {
 		expect( theirs ).toContain( 'modeStorageKey = "mode-watcher-mode"' )
 		expect( theirs ).toContain( 'darkClassNames = ["dark"]' )
 		expect( html ).toContain( 'localStorage.getItem( \'mode-watcher-mode\' )' )
+	} )
+
+	it( 'allows the one inline handler Svelte’s server render writes, by its hash', () => {
+		const handlers = new Set( [ ...render( Capture ).body.matchAll( /\son(?:load|error)="([^"]*)"/g ) ].map( ( match ) => match[ 1 ] ) )
+
+		expect( [ ...handlers ] ).toHaveLength( 1 )
+		expect( `sha256-${ createHash( 'sha256' ).update( [ ...handlers ][ 0 ] ).digest( 'base64' ) }` ).toBe( SVELTE_EVENT_CAPTURE )
 	} )
 } )

@@ -15,10 +15,20 @@ const theme = process.env.APP_THEME || 'aurora'
         image: rich text may show one. Violations are reported to /csp.
         APP_MODULES comes from vite.config.ts; tools that read only this file get every
         module, the loosest policy, which is enough for them. */
+/** @typedef {NonNullable<NonNullable<NonNullable<NonNullable<import('@sveltejs/kit').Config['kit']>['csp']>['directives']>['connect-src']>} Sources */
+/** @param {string} id */
 const built = ( id ) => process.env.APP_MODULES === undefined || process.env.APP_MODULES.split( ',' ).includes( id )
 // The captcha providers' script, widget frame and verification calls ( $lib/captcha.ts ).
+/** @type {Sources} */
 const CAPTCHA = built( 'captcha' ) ? [ 'https://challenges.cloudflare.com', 'https://www.google.com', 'https://www.gstatic.com', 'https://recaptcha.google.com', 'https://js.hcaptcha.com', 'https://*.hcaptcha.com', 'https://hcaptcha.com' ] : []
+// Svelte's server render puts onload / onerror="this.__e=event" on elements that listen for
+// those events, so one that fires before hydration isn't lost ( an avatar's image ). Allowed
+// by its hash alone — 'unsafe-hashes' admits no other inline handler; src/lib/csp.test.ts
+// checks the hash.
+/** @type {Sources[number]} */
+export const SVELTE_EVENT_CAPTURE = 'sha256-7dQwUgLau1NFCCGjfn9FsYptB6ZtWxJin6VohGIu20I='
 // Sign-in forms post here and are sent on to the provider, and Apple posts its answer back.
+/** @type {Sources} */
 const SOCIAL = built( 'social' ) ? [ 'https://accounts.google.com', 'https://appleid.apple.com' ] : []
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -40,7 +50,7 @@ const config = {
 			mode      : 'auto',
 			directives: {
 				'default-src'    : [ 'self' ],
-				'script-src'     : [ 'self', ...CAPTCHA ],
+				'script-src'     : [ 'self', 'unsafe-hashes', SVELTE_EVENT_CAPTURE, ...CAPTCHA ],
 				'style-src'      : [ 'self', 'unsafe-inline' ],
 				'img-src'        : [ 'self', 'data:', 'blob:', 'https:' ],
 				'font-src'       : [ 'self', 'data:' ],
