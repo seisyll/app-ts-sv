@@ -18,7 +18,9 @@ bun run check
 | Error page (plain, every route) | `src/routes/+error.svelte`; `src/error.html` when even that can't render |
 
 The locale is resolved per request from the `PARAGLIDE_LOCALE` cookie, then `baseLocale`
-(see `strategy` in `vite.config.ts`). Formatting helpers live in `src/lib/format.ts`.
+(see `strategy` in `vite.config.ts`). Formatting helpers live in `src/lib/format.ts`:
+`money`, `date`, `initials`, `slugify`, and `maskEmail` / `maskPhone` / `maskName` for
+personal details on a public page — mask in the load function, not in the browser.
 
 ## Agent skills
 
@@ -461,6 +463,11 @@ await audit( event, { action: 'captcha.settings', changes: changesBetween( befor
 | Saves to a JSON endpoint | `apiForm( schema, { submit } )` (`src/lib/forms.ts`) | `await readJson( request, schema )` — 400 with field errors, shown under the fields |
 | `<form>` action (works without JS) | `superForm( data.form, { validators: valibot( schema ) } )` | `validateForm( event, schema, save )` (`src/lib/server/forms.ts`) |
 
+Numbers that arrive as text — a query string, FormData read by hand, a client that quotes
+its numbers — go through `numberish()` / `integerish()` (`src/lib/validation.ts`): a number
+or a string holding one, never the `true` or `''` that `Number()` turns into 1 and 0.
+`blankOr( schema )` reads an emptied box as left out. Superforms coerces its own fields.
+
 **Picking a record** from a list that can be long: `RemotePicker` searches any paged list
 endpoint (the DataTable contract: `?search=&take=`) as the person types — never a `<select>`
 over a first page that silently leaves the rest out — and says how many more there are.
@@ -515,8 +522,14 @@ bun run db:reset       # wipe and set up again
   create the migration with `bunx prisma migrate dev --create-only --name <name>`, and
   append `SELECT app_enable_tenant_rls( '<table>' );` to it. `src/lib/server/db/rls.test.ts`
   fails until every table with a `tenant_id` is isolated.
+- **Refused writes** (`src/lib/server/db/errors.ts`): `isUniqueViolation` (taken in this
+  workspace, 409), `isForeignKeyViolation` (a parent that isn't there, or another
+  workspace's, 400), `isRestrictViolation` (a delete the row's children refuse, 409) — catch
+  the constraint instead of checking first. `withUniqueRetry( () => tenantTransaction( … ) )`
+  runs a write again when it lost a race for a generated value, such as the next number.
 - **Tests** run on PGlite (Postgres in-process, `src/lib/test/database.ts`): the real
-  migrations, no Docker.
+  migrations, no Docker. It serves one connection, and a failed statement closes it: a test
+  that expects a refused write gives it a database of its own.
 
 ## Redis
 

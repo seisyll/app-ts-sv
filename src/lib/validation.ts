@@ -41,3 +41,24 @@ export function fieldErrors( issues : readonly v.BaseIssue<unknown>[] ) : Record
 
 	return errors
 }
+
+/* ―― » Numbers that arrive as text ( billing-app's coercion helpers ): a query string, a
+        FormData field read by hand, a JSON client that quotes its numbers. v.number() refuses
+        "12", and Number() accepts far too much — Number( true ) is 1, Number( '' ) and
+        Number( null ) are 0 — so a boolean or an empty box would quietly become a quantity.
+        These take a number or a string holding one, and nothing else. Range checks chain at
+        the call site: v.pipe( integerish(), v.minValue( 0 ) ). ( Superforms coerces form
+        fields itself; a plain v.number() is right there. ) */
+type Message = string | ( () => string )
+
+const numeric = ( value : number | string ) => ( typeof value === 'number' || value.trim() !== '' ) && Number.isFinite( Number( value ) )
+
+export const numberish = ( message ?: Message ) => v.pipe( v.union( [ v.number(), v.string() ], message ), v.check( numeric, message ), v.toNumber() )
+
+export const integerish = ( message ?: Message ) => v.pipe( numberish( message ), v.integer( message ) )
+
+/* ―― » A box someone emptied is an omission. It sends '', and v.optional() only stands in for
+        undefined — so clearing an optional number made the whole form unsaveable. '' becomes
+        undefined; null does NOT, because a null comes from a caller, not from a person
+        clearing a box, and it is exactly the 0 the helpers above refuse. */
+export const blankOr = <S extends v.GenericSchema>( schema : S ) => v.optional( v.union( [ v.pipe( v.literal( '' ), v.transform( () => undefined ) ), schema ] ) )

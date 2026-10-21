@@ -22,3 +22,37 @@ export const initials = ( name : string ) => name
 // Each language named in its own language ( "English", "Indonesia" ), no hardcoded labels.
 export const languageName = ( locale : string ) =>
 	new Intl.DisplayNames( [ locale ], { type: 'language' } ).of( locale ) ?? locale
+
+// A URL-safe slug: "Café Déjà Vu!" → "cafe-deja-vu". NFKD splits an accent off its letter, so
+// the accent is dropped and the letter kept.
+export const slugify = ( text : string ) => text
+	.normalize( 'NFKD' )
+	.replace( /\p{M}/gu, '' )
+	.toLowerCase()
+	.replace( /[^a-z0-9]+/g, '-' )
+	.replace( /^-|-$/g, '' )
+
+/* ―― » Personal details shown where they shouldn't be read in full ( the fundraiser app's
+        Mask.ts ): a public receipt page, a support view. Mask on the SERVER, before the value
+        leaves the load function — masked in the browser, the whole value still sits in the
+        page data. The run is a fixed four dots, so it never tells how much it hides. */
+const HIDDEN = '•'.repeat( 4 )
+
+// '081234567890' → '••••890'
+export const maskPhone = ( phone : string | null | undefined ) => ( phone?.trim() ? HIDDEN + phone.trim().slice( -3 ) : '' )
+
+// 'john.doe@mail.com' → 'j••••@mail.com'
+export const maskEmail = ( email : string | null | undefined ) => {
+	const value = email?.trim() ?? ''
+	const at = value.lastIndexOf( '@' )
+
+	return !value ? '' : value.slice( 0, 1 ) + HIDDEN + ( at < 0 ? '' : value.slice( at ) )
+}
+
+// 'Budi Santoso' → 'B•••• S••••'
+export const maskName = ( name : string | null | undefined ) => ( name ?? '' )
+	.trim()
+	.split( /\s+/ )
+	.filter( Boolean )
+	.map( ( word ) => Array.from( word )[ 0 ] + HIDDEN )
+	.join( ' ' )
