@@ -8,18 +8,21 @@ import { adminAc, defaultStatements } from 'better-auth/plugins/admin/access'
           export const statements = { ...defaultStatements, invoice: [ 'create', 'list' ] } */
 export const statements = {
 	...defaultStatements,
-	settings: [ 'read', 'update' ]
+	settings: [ 'read', 'update' ],
+	media   : [ 'list', 'create', 'delete' ]
 } as const
 
 export const ac = createAccessControl( statements )
 
 export const member = ac.newRole( {
-	settings: [ 'read' ]
+	settings: [ 'read' ],
+	media   : [ 'list', 'create' ]
 } )
 
 export const admin = ac.newRole( {
 	...adminAc.statements,
-	settings: [ 'read', 'update' ]
+	settings: [ 'read', 'update' ],
+	media   : [ 'list', 'create', 'delete' ]
 } )
 
 export const roles = { admin, member } as const

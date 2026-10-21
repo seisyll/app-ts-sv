@@ -1,5 +1,6 @@
 <script lang="ts">
 	import HouseIcon from '@lucide/svelte/icons/house'
+	import ImagesIcon from '@lucide/svelte/icons/images'
 	import PaletteIcon from '@lucide/svelte/icons/palette'
 	import SettingsIcon from '@lucide/svelte/icons/settings'
 	import ShieldIcon from '@lucide/svelte/icons/shield'
@@ -15,7 +16,12 @@
 
 	// `permission` hides an item from users without it; each page still guards itself.
 	const nav = $derived( filterNav( [
-		{ items: [ { title: m.app_nav_home(), href: '/app', icon: HouseIcon } ] },
+		{
+			items: [
+				{ title: m.app_nav_home(), href: '/app', icon: HouseIcon },
+				{ title: m.app_nav_media(), href: '/app/media', icon: ImagesIcon, permission: { media: [ 'list' ] }, keywords: [ 'images', 'files', 'upload' ] }
+			]
+		},
 		{
 			label: m.app_nav_account(),
 			items: [

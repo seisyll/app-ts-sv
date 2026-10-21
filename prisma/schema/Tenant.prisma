@@ -15,6 +15,7 @@ model Tenant {
   verifications Verification[]
   rateLimits    RateLimit[]
   appearance    AppearanceSetting?
+  media         Media[]
 
   @@map("tenants")
 }

@@ -31,6 +31,7 @@ database). Everything under it returns 404 outside `vite dev`.
 | `/hello/data-table` | `DataTable` (`src/lib/components/data-table`): in memory and server-paged against a mock endpoint |
 | `/hello/forms` | `apiForm` + SaveBar against a mock endpoint, and a form action that works without JS |
 | `/hello/shell` | `AppShell` (`src/lib/layout`): sidebar, breadcrumb, command palette (Ctrl/⌘+/), user menu, `NavProgress` |
+| `/hello/media` | `MediaField` + library picker, `MediaGrid` (masonry / grid / list), `MediaLightbox`, `MediaDropzone` against a mock library |
 | `/hello/site` | Every public-site theme, switchable, with sign-up on or off |
 
 The palette button in the playground's header tries every palette, style and radius on every
@@ -89,6 +90,33 @@ people may override it; each person overrides any knob from the palette button i
 - **Detach:** keep one style (`STYLES = [ 'vega' ]` and its import), delete the picker, the
   settings page, `/api/appearance` and the migration's table/columns; leave `style-vega` on
   `<html>`, since the components are unstyled without a style class.
+
+## Media
+
+Uploads of images and PDFs, a library at `/app/media`, and an image field for forms. The
+fundraiser app's storage, grid and lightbox, with billing-app's rules for what gets stored.
+
+- **On disk:** `UPLOAD_ROOT/<tenant>/<yyyy>/<mm>/<id>[-thumb].<ext>`, named by the `media` row's
+  id (under RLS) — no client input ever reaches a path. In Docker, mount `UPLOAD_ROOT` as a
+  writable volume. Back it up with the database: a row without its file shows as missing.
+- **What is accepted** is decided by the bytes, not the name or Content-Type: PNG, JPEG, WebP,
+  GIF, AVIF and PDF by their magic numbers. SVG and HTML can't match, so an upload can't carry
+  script. 10 MB per file (`MAX_BYTES` in `src/lib/media.ts`); set `BODY_SIZE_LIMIT` above it.
+- **Images** are shrunk in the browser first when large (and JPEGs re-encoded, so EXIF/GPS
+  never leaves the device), then the server re-does it as the guarantee: sharp turns them
+  upright, strips metadata, stores WebP at most 2560px plus a 480px thumbnail (an animated GIF
+  keeps its first frame). **PDFs** are stored as sent and always downloaded.
+- **Serving:** `/media/<id>` and `/media/<id>/thumb`, to signed-in members of the workspace
+  only (`media: [ 'list' ]`); private, immutable caching; a `sandbox` CSP; `nosniff` on every
+  response.
+- **Permissions:** members list and upload, admins also delete (`src/lib/permissions.ts`).
+- **Components** (`src/lib/components/media`): `MediaField` (value = media id; `name` posts it
+  with a form), `MediaPicker`, `MediaGrid`, `MediaLightbox` (zoom, pan, pinch, swipe, details,
+  delete), `MediaDropzone`, `uploadMedia()`, `MediaFeed`.
+- **Not built:** per-workspace quotas (the fundraiser app's `StorageUsage` is the model),
+  public media, more image sizes, streaming uploads.
+- **Detach:** delete `src/lib/components/media`, `src/lib/server/media.ts`, `src/lib/media.ts`,
+  `/app/media`, `/api/media`, `/media`, the migration and `sharp`.
 
 ## DataTable
 

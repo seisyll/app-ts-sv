@@ -33,3 +33,6 @@ __screenshots__
 
 # Prisma client ( bun run db:generate )
 /src/lib/server/db/generated
+
+# Uploads ( UPLOAD_ROOT )
+/uploads

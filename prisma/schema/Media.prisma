@@ -1,0 +1,30 @@
+// Uploaded files ( src/lib/server/media.ts ). The bytes live on disk under UPLOAD_ROOT,
+// named by this row's id — never by anything a client sent — and served only through
+// /media/<id>, which reads this row first, so RLS decides who can fetch a file.
+model Media {
+  id         String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId   String    @default(dbgenerated("app_current_tenant()")) @map("tenant_id") @db.Uuid
+  kind       MediaKind
+  // The uploaded file's name, for display and downloads. Never a path.
+  name       String
+  // What is stored, decided by the server: image/webp for images, the sniffed type otherwise.
+  mime       String
+  size       Int
+  width      Int?
+  height     Int?
+  uploaderId String?   @map("uploader_id") @db.Uuid
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  uploader User?  @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, kind, createdAt])
+  @@map("media")
+}
+
+enum MediaKind {
+  image
+  document
+
+  @@map("media_kind")
+}

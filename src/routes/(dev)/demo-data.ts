@@ -1,3 +1,5 @@
+import type { MediaRow } from '$lib/media'
+
 // Deterministic fake customers for the playground ( no faker: same rows every run ).
 export type Customer = {
 	id        : string
@@ -34,3 +36,25 @@ export const CUSTOMERS : Customer[] = Array.from( { length: 137 }, ( _, index ) 
 		createdAt: new Date( START + index * 61 * HOUR ).toISOString()
 	}
 } )
+
+// Mock media rows for the playground's media pages: generated pictures, nothing stored.
+const SHAPES = [ [ 1600, 1200 ], [ 1200, 1800 ], [ 1920, 1080 ], [ 1000, 1000 ], [ 900, 1400 ], [ 2000, 900 ] ]
+const NAMES = [ 'Harbour', 'Lighthouse', 'Market', 'Orchard', 'Canyon', 'Glacier', 'Terrace', 'Delta', 'Summit', 'Lagoon', 'Prairie', 'Dunes' ]
+
+export const mockMedia = ( n : number, name = `${ NAMES[ n % NAMES.length ] }.jpg` ) : MediaRow => {
+	const [ width, height ] = SHAPES[ n % SHAPES.length ]
+
+	return {
+		id       : `00000000-0000-7000-8000-${ String( n ).padStart( 12, '0' ) }`,
+		kind     : 'image',
+		name,
+		mime     : 'image/svg+xml',
+		size     : 40_000 + n * 1_337,
+		width,
+		height,
+		createdAt: new Date( Date.UTC( 2026, 9, 21 - n ) ).toISOString(),
+		uploader : 'Ada Lovelace',
+		url      : `/api/hello/media/${ n }`,
+		thumbUrl : `/api/hello/media/${ n }`
+	}
+}

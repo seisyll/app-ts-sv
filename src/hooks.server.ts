@@ -28,6 +28,19 @@ const handleAppearance : Handle = ( { event, resolve } ) => resolve( event, {
 	transformPageChunk: ( { html } ) => html.replace( '%app.appearance%', appearanceClassOf( event.cookies ) )
 } )
 
+// Browsers must not guess a response's type: an upload served as image/webp stays one.
+const handleHeaders : Handle = async( { event, resolve } ) => {
+	const response = await resolve( event )
+
+	try {
+		response.headers.set( 'x-content-type-options', 'nosniff' )
+	} catch {
+		// Immutable headers ( a response passed through from fetch ): leave them as they are.
+	}
+
+	return response
+}
+
 // Puts the request's tenant in scope for `db`. Looked up on first use and then reused, so
 // a request that never touches the database ( the playground ) never needs one.
 const handleTenant : Handle = ( { event, resolve } ) => {
@@ -62,4 +75,4 @@ const handleAppGuard : Handle = async( { event, resolve } ) => {
 	return resolve( event )
 }
 
-export const handle = sequence( handleLocale, handleAppearance, handleTenant, handleAuth, handleAppGuard )
+export const handle = sequence( handleHeaders, handleLocale, handleAppearance, handleTenant, handleAuth, handleAppGuard )
