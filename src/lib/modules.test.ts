@@ -1,9 +1,10 @@
+import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { definePreset } from '$config/define'
 import { MODULE_IDS, moduleDefinition, routeOwner, withRequirements, type ModuleId } from '$config/modules'
 import { full } from '$config/presets/full'
 import { resolveClient } from '$config/resolve'
-import { routeStub } from '$config/vite'
+import { modules, routeStub } from '$config/vite'
 import { runWithTenant, type TenantRef } from '$lib/server/db'
 
 const THEMES = [ 'aurora', 'plain' ]
@@ -14,7 +15,7 @@ describe( 'the registry', () => {
 			expect( MODULE_IDS ).toEqual( expect.arrayContaining( [ ...moduleDefinition( id ).requires ?? [] ] ) )
 	} )
 
-	it( 'gives every route to one module at most', () => {
+	it( 'lists every route once', () => {
 		const routes = MODULE_IDS.flatMap( ( id ) => moduleDefinition( id ).routes )
 
 		expect( new Set( routes ).size ).toBe( routes.length )
@@ -70,6 +71,16 @@ describe( 'routeStub', () => {
 
 	it( 'sends people to whenOff instead', () => {
 		expect( routeStub( '/x/src/routes/(site)/+layout.server.ts', '/app' ) ).toContain( 'redirect( 307, "/app" )' )
+	} )
+
+	// The site's pages are the editor's too: a site-only build must carry no TipTap.
+	it( 'stubs a route inside another module\'s unless the build has both', () => {
+		const load = ( on : Partial<Record<ModuleId, boolean>>, file : string ) =>
+			( modules( resolveClient( 'acme', { modules: on }, THEMES ) ).load as unknown as ( id : string ) => string | undefined )( path.resolve( 'src/routes', file ) )
+
+		expect( load( { site: true }, '(site)/[page=site_page]/+page.server.ts' ) ).toContain( 'error( 404 )' )
+		expect( load( { site: true }, '(site)/+layout.server.ts' ) ).toBeUndefined()
+		expect( load( { site: true, editor: true }, '(site)/[page=site_page]/+page.server.ts' ) ).toBeUndefined()
 	} )
 } )
 
