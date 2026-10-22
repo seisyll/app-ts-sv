@@ -21,11 +21,13 @@ export const SVELTE_EVENT_CAPTURE : Sources[ number ] = 'sha256-7dQwUgLau1NFCCGj
         talks to. Styles allow inline: Svelte's transitions and the components' style
         attributes need it, and a stylesheet can't run code. Any https image: rich text may
         show one. Violations are reported to /csp. */
-export function kitOptions( client : ResolvedClient ) : Config {
+export function kitOptions( client : ResolvedClient, { dev = false } = {} ) : Config {
 	// The captcha providers' script, widget frame and verification calls ( #lib/captcha.ts ).
 	const captcha : Sources = client.modules.captcha ? [ 'https://challenges.cloudflare.com', 'https://www.google.com', 'https://www.gstatic.com', 'https://recaptcha.google.com', 'https://js.hcaptcha.com', 'https://*.hcaptcha.com', 'https://hcaptcha.com' ] : []
 	// Sign-in forms post here and are sent on to the provider, and Apple posts its answer back.
 	const social : Sources = client.modules.social ? [ 'https://accounts.google.com', 'https://appleid.apple.com' ] : []
+	// impeccable's live mode loads its picker from this helper; `vite dev` only, never a build.
+	const impeccable : Sources = dev ? [ 'http://localhost:8400' ] : []
 
 	return {
 		compilerOptions,
@@ -36,11 +38,11 @@ export function kitOptions( client : ResolvedClient ) : Config {
 			mode      : 'auto',
 			directives: {
 				'default-src'    : [ 'self' ],
-				'script-src'     : [ 'self', 'unsafe-hashes', SVELTE_EVENT_CAPTURE, ...captcha ],
+				'script-src'     : [ 'self', 'unsafe-hashes', SVELTE_EVENT_CAPTURE, ...captcha, ...impeccable ],
 				'style-src'      : [ 'self', 'unsafe-inline' ],
 				'img-src'        : [ 'self', 'data:', 'blob:', 'https:' ],
 				'font-src'       : [ 'self', 'data:' ],
-				'connect-src'    : [ 'self', ...captcha ],
+				'connect-src'    : [ 'self', ...captcha, ...impeccable ],
 				'frame-src'      : [ 'self', ...captcha ],
 				'form-action'    : [ 'self', ...social ],
 				'frame-ancestors': [ 'none' ],

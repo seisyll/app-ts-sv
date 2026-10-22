@@ -83,7 +83,7 @@ const config : UserConfig = {
 	}
 }
 
-export default defineConfig( async( { mode } ) => {
+export default defineConfig( async( { mode, command } ) => {
 	// .env into process.env for dev and tests ( server code reads process.env so scripts can
 	// share it ). Real environment variables win. Production never reads .env: the host
 	// provides the environment.
@@ -102,7 +102,7 @@ export default defineConfig( async( { mode } ) => {
 			modules( client ),
 			tailwindcss(),
 			// Its content security policy opens only to the third parties this build's modules use.
-			sveltekit( kitOptions( client ) ),
+			sveltekit( kitOptions( client, { dev: command === 'serve' } ) ),
 			paraglideVitePlugin( {
 				project : './project.inlang',
 				outdir  : './src/lib/paraglide',
