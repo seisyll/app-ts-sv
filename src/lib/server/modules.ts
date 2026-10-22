@@ -1,6 +1,6 @@
 import { error, redirect, type Handle } from '@sveltejs/kit'
 import { moduleDefinition, routeIsUnder, routeOwner, withRequirements } from '$config/modules'
-import { BUILT_MODULES, MODULE_IDS, type ModuleId } from '$lib/modules'
+import { BUILT_MODULES, isBuilt, MODULE_IDS, type ModuleId } from '$lib/modules'
 import { currentTenant } from '$lib/server/db'
 
 /* ―― » Modules for the current workspace: what the build ships, minus what this tenant has
@@ -24,11 +24,13 @@ export async function requireModule( id : ModuleId ) : Promise<void> {
 
 /* ―― » A module's routes for a workspace that switched it off: 404, or its `whenOff`. ( Off in
         the build, they are stubs already. ) The playground has no workspace, so it goes by
-        the build alone, which the stubs cover. */
+        the build alone, which the stubs cover. So does a request whose workspace can't be
+        resolved — no database yet, a shared deployment's bare domain — where the public
+        site must still render; /app's own loads need the tenant and fail there as before. */
 export const handleModules : Handle = async( { event, resolve } ) => {
 	const owner = routeOwner( event.route.id )
 
-	if ( owner && !routeIsUnder( event.route.id!, '/(dev)' ) && !await moduleActive( owner ) ) {
+	if ( owner && !routeIsUnder( event.route.id!, '/(dev)' ) && !await moduleActive( owner ).catch( () => isBuilt( owner ) ) ) {
 		const whenOff = moduleDefinition( owner ).whenOff
 
 		if ( whenOff )
