@@ -23,7 +23,7 @@
         "pg": "^8.23.1",
         "pino": "^10.4.0",
         "prisma": "^7.10.1",
-        "sharp": "^0.35.3",
+        "sharp": "^0.35.5",
         "svelte-tiptap": "^3.0.2",
         "write-excel-file": "^4.1.1",
       },
