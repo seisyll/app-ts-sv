@@ -109,7 +109,7 @@ describe( 'DataTable — in memory', () => {
 
 		await page.getByRole( 'checkbox', { name: 'Select row' } ).nth( 0 ).click()
 		await page.getByRole( 'checkbox', { name: 'Select row' } ).nth( 1 ).click()
-		await expect.element( page.getByRole( 'region', { name: 'Bulk actions' } ) ).toHaveTextContent( '2 selected' )
+		await expect.element( page.getByRole( 'region', { name: 'Bulk actions' } ) ).toMatchTextContent( '2 selected' )
 
 		await page.getByRole( 'button', { name: 'Archive' } ).click()
 
@@ -220,8 +220,8 @@ describe( 'DataTable — server mode', () => {
 
 		const alert = page.getByRole( 'alert' )
 
-		await expect.element( alert ).toHaveTextContent( 'Server unavailable' )
-		await expect.element( alert ).toHaveTextContent( 'The list below hasn\'t been refreshed.' )
+		await expect.element( alert ).toMatchTextContent( 'Server unavailable' )
+		await expect.element( alert ).toMatchTextContent( 'The list below hasn\'t been refreshed.' )
 
 		await alert.getByRole( 'button', { name: 'Retry' } ).click()
 		expect( fetch ).toHaveBeenCalledTimes( 2 )

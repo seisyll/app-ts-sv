@@ -48,7 +48,7 @@ describe.each( themes.map( ( theme ) => [ theme.id, theme ] as const ) )( 'theme
 	it( 'home: every section, with the anchors the nav links to', async() => {
 		const { container } = await render( theme.Home, { content: homeContent( { signUp: false } ) } )
 
-		await expect.element( page.getByRole( 'heading', { level: 1 } ) ).toHaveTextContent( /Ship your app\s*without\s*limits\./ )
+		await expect.element( page.getByRole( 'heading', { level: 1 } ) ).toMatchTextContent( /Ship your app\s*without\s*limits\./ )
 
 		for ( const id of [ 'features', 'how', 'pricing', 'faq' ] )
 			expect( container.querySelector( `#${ id }` ), `#${ id }` ).not.toBeNull()
@@ -64,7 +64,7 @@ describe.each( themes.map( ( theme ) => [ theme.id, theme ] as const ) )( 'theme
 
 		expect( open() ).toEqual( [ true, false, false, false, false ] )
 
-		await page.getByText( 'Can I change plans later?' ).click()
+		await page.getByText( 'Can I change plans later?', { exact: false } ).click()
 
 		expect( open() ).toEqual( [ false, true, false, false, false ] )
 	} )

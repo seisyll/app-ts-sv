@@ -857,7 +857,9 @@ vi.mock( '$app/navigation', () => import( '$lib/test/app-navigation' ) )   // go
 
 `render()` from `vitest-browser-svelte` returns a promise — `await` it. Query the way a
 user would (`page.getByRole( 'button', { name: 'Save' } )`) and assert with
-`expect.element(…)`, which retries until the DOM settles. Playwright is pinned to the
+`expect.element(…)`, which retries until the DOM settles. Text matches whole: `getByText`
+and `toHaveTextContent` want the element's full text, so a part or a RegExp goes through
+`toMatchTextContent` or `{ exact: false }`. Playwright is pinned to the
 version whose Chromium is installed; after bumping it, run `bunx playwright install chromium`.
 
 ## Lint and CI

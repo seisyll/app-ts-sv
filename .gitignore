@@ -28,8 +28,7 @@ vite.config.ts.timestamp-*
 
 # Vitest
 /coverage
-__screenshots__
-.vitest-attachments
+.vitest
 
 # Prisma client ( bun run db:generate )
 /src/lib/server/db/generated

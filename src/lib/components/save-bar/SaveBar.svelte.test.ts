@@ -75,7 +75,7 @@ describe( 'SaveBar', () => {
 			await render( SaveBar, { show: true, ondiscard } )
 
 			await discard().click()
-			await expect.element( dialog() ).toHaveTextContent( 'Discard changes?' )
+			await expect.element( dialog() ).toMatchTextContent( 'Discard changes?' )
 			await dialog().getByRole( 'button', { name: 'Keep editing' } ).click()
 			expect( ondiscard ).not.toHaveBeenCalled()
 
@@ -100,7 +100,7 @@ describe( 'SaveBar', () => {
 			await render( SaveBar, { show: true } )
 
 			expect( attemptNavigation( '/elsewhere' ) ).toBe( true )
-			await expect.element( dialog() ).toHaveTextContent( 'Leave this page?' )
+			await expect.element( dialog() ).toMatchTextContent( 'Leave this page?' )
 
 			await dialog().getByRole( 'button', { name: 'Leave page' } ).click()
 			expect( goto ).toHaveBeenCalledWith( new URL( 'http://localhost/elsewhere' ) )
