@@ -647,6 +647,8 @@
 	"mail_body": "Message",
 	"mail_body_desc": "Insert variables with the variable button in the toolbar. The button with the link is added below the message.",
 	"mail_body_required": "Write a message",
+	"mail_body_images": "Saving makes the images in it public, so recipients can see them without signing in.",
+	"mail_body_image_invalid": "Choose images from this workspace's library.",
 	"mail_preview": "Preview",
 	"mail_preview_desc": "The saved version, with made-up values.",
 	"mail_not_configured": "This workspace's mail isn't set up.",

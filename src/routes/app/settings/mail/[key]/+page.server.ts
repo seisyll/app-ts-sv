@@ -1,5 +1,5 @@
 import { error, redirect } from '@sveltejs/kit'
-import { message, superValidate } from 'sveltekit-superforms'
+import { message, setError, superValidate } from 'sveltekit-superforms'
 import { valibot } from 'sveltekit-superforms/adapters'
 import { mailTemplateSchema } from '$lib/mail'
 import { m } from '$lib/paraglide/messages'
@@ -55,7 +55,11 @@ export const actions : Actions = {
 		const key = templateKey( event.params.key )
 
 		return validateForm( event, mailTemplateSchema, async( form ) => {
-			await saveMailTemplate( key, form.data )
+			// The body is a document, an object to superforms' path types; its errors are a
+			// list all the same, where the page reads them.
+			if ( !await saveMailTemplate( key, form.data ) )
+				return setError( form, 'body' as never, m.mail_body_image_invalid() )
+
 			await audit( event, { action: 'mail.template', target: { id: key, label: MAIL_TEMPLATES[ key ].label() } } )
 
 			return message( form, m.mail_template_saved() )

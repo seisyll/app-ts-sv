@@ -33,6 +33,9 @@
 	const { form: values, errors, tainted, submitting, enhance } = form
 	const shown = ( messages ?: string[] ) => messages?.map( ( text ) => ( { message: text } ) )
 
+	// The picker is the media library's: that module on, in this build and for this workspace.
+	const images = $derived( MODULES.media && data.modules.includes( 'media' ) )
+
 	const dirty = $derived( form.isTainted( $tainted ) )
 	const language = $derived( new Intl.DisplayNames( [ getLocale() ], { type: 'language' } ).of( getLocale() ) ?? getLocale() )
 </script>
@@ -77,9 +80,8 @@
 					</Field.Field>
 
 					<Field.Field data-invalid={$errors.body ? true : undefined}>
-						<!-- Images are off until media can be public: a recipient isn't signed in. -->
-						<RichEditor label={m.mail_body()} bind:value={() => $values.body as RichText, ( next ) => ( $values.body = next )} variables={data.variables} images={false} invalid={!!$errors.body} />
-						<Field.Description>{m.mail_body_desc()}</Field.Description>
+						<RichEditor label={m.mail_body()} bind:value={() => $values.body as RichText, ( next ) => ( $values.body = next )} variables={data.variables} {images} invalid={!!$errors.body} />
+						<Field.Description>{m.mail_body_desc()}{#if images} {m.mail_body_images()}{/if}</Field.Description>
 						<Field.Error errors={shown( $errors.body as string[] | undefined )} />
 					</Field.Field>
 				</Field.Group>
@@ -96,8 +98,10 @@
 		</Card.Header>
 		<Card.Content class="flex flex-col gap-3">
 			<p class="text-sm"><span class="text-muted-foreground">{m.mail_subject()}:</span> {data.preview.subject}</p>
-			<!-- Sandboxed ( no scripts, no same origin ), shown as a mail client would, without the app's CSS. -->
-			<iframe title={m.mail_preview()} sandbox="" srcdoc={data.preview.html} class="h-[32rem] w-full rounded-md border bg-white"></iframe>
+			<!-- Sandboxed ( no scripts ), shown as a mail client would, without the app's CSS.
+			     allow-same-origin only so the page's img-src 'self' covers its images over plain
+			     http ( dev ); with no scripts the frame still can't act. -->
+			<iframe title={m.mail_preview()} sandbox="allow-same-origin" srcdoc={data.preview.html} class="h-[32rem] w-full rounded-md border bg-white"></iframe>
 		</Card.Content>
 	</Card.Root>
 </div>

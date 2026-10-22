@@ -104,6 +104,7 @@ describe( 'mail', () => {
 	let b : TenantRef
 	let mail : typeof import( './index' )
 	let outbox : typeof import( './outbox' )
+	const ids : Record<string, string> = {}
 
 	const inA = <T>( fn : () => Promise<T> ) => t.runWithTenant( a, fn )
 	const inB = <T>( fn : () => Promise<T> ) => t.runWithTenant( b, fn )
@@ -115,6 +116,12 @@ describe( 'mail', () => {
 		t = await createTestDatabase()
 		a = await t.prisma.tenant.create( { data: { slug: 'a', name: 'Acme' } } )
 		b = await t.prisma.tenant.create( { data: { slug: 'b', name: 'Beta' } } )
+
+		const media = ( tenantId : string, kind : 'image' | 'document' ) => t.prisma.media.create( { data: { tenantId, kind, name: 'x', mime: 'image/webp', size: 1 } } ).then( ( row ) => row.id )
+
+		ids.ours = await media( a.id, 'image' )
+		ids.pdf = await media( a.id, 'document' )
+		ids.theirs = await media( b.id, 'image' )
 		await t.asApp()
 		mail = await import( './index' )
 		outbox = await import( './outbox' )
@@ -190,6 +197,27 @@ describe( 'mail', () => {
 
 		await inA( () => mail.resetMailTemplate( 'password.reset' ) )
 		expect( await inA( () => mail.loadMailTemplate( 'password.reset' ) ) ).toBeNull()
+	} )
+
+	it( 'refuses an image that isn\'t one of this workspace\'s, writing nothing', async() => {
+		const withImage = ( src : string ) => ( { subject: 'Hi', body: { type: 'doc' as const, content: [ { type: 'paragraph', content: [ { type: 'text', text: 'Look' } ] }, { type: 'image', attrs: { src } } ] } } )
+		const shared = ( fn : typeof inA ) => fn( () => t.db.media.findMany( { where: { public: true }, select: { id: true } } ) ).then( ( rows ) => rows.map( ( row ) => row.id ) )
+
+		expect( await inA( () => mail.saveMailTemplate( 'user.invite', withImage( `/media/${ ids.theirs }` ) ) ) ).toBe( false )
+		expect( await inA( () => mail.saveMailTemplate( 'user.invite', withImage( `/media/${ ids.pdf }` ) ) ) ).toBe( false )
+		expect( await inA( () => mail.loadMailTemplate( 'user.invite' ) ) ).toBeNull()
+		expect( await shared( inA ) ).toEqual( [] )
+		expect( await shared( inB ) ).toEqual( [] )
+
+		// Its own image ( the thumbnail too ) goes public with the wording, nobody else's file.
+		expect( await inA( () => mail.saveMailTemplate( 'user.invite', withImage( `/media/${ ids.ours }/thumb` ) ) ) ).toBe( true )
+		expect( await inA( () => mail.loadMailTemplate( 'user.invite' ) ) ).toMatchObject( withImage( `/media/${ ids.ours }/thumb` ) )
+		expect( await shared( inA ) ).toEqual( [ ids.ours ] )
+		expect( await shared( inB ) ).toEqual( [] )
+
+		// And the email points a recipient at it on the app's origin.
+		await inA( () => mail.sendMail( { to: { email: 'ada@acme.test' }, template: 'user.invite', values: { link: 'https://acme.test/r' } } ) )
+		expect( smtp.sent ).toMatchObject( [ { html: expect.stringContaining( `src="http://localhost:5173/media/${ ids.ours }/thumb"` ) } ] )
 	} )
 
 	it( 'links to BETTER_AUTH_URL outside a request', async() => {

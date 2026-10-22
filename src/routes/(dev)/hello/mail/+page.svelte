@@ -90,8 +90,9 @@
 						</div>
 					</div>
 					{#if view === 'html'}
-						<!-- Sandboxed ( no scripts, no same origin ), as a mail client would show it. -->
-						<iframe title={open.subject} sandbox="" srcdoc={open.html} class="h-[32rem] w-full rounded-md border bg-white"></iframe>
+						<!-- Sandboxed ( no scripts ), as a mail client would show it. allow-same-origin
+						     only so its images load from this localhost dev server ( img-src 'self' ). -->
+						<iframe title={open.subject} sandbox="allow-same-origin" srcdoc={open.html} class="h-[32rem] w-full rounded-md border bg-white"></iframe>
 					{:else}
 						<pre class="max-h-[32rem] overflow-auto rounded-md bg-muted p-3 text-xs whitespace-pre-wrap">{open.text}</pre>
 					{/if}

@@ -61,6 +61,24 @@ export const isEmptyRichText = ( doc : RichText | null | undefined ) : boolean =
 
 export const EMPTY_RICH_TEXT : RichText = { type: 'doc', content: [ { type: 'paragraph' } ] }
 
+// The media library's files a document shows: /media/<id> or /media/<id>/thumb — for the
+// savers that make them public ( site pages, emails ). A uuid's shape, so a query can't choke.
+export function mediaIdsIn( node : unknown, found = new Set<string>() ) : string[] {
+	if ( Array.isArray( node ) )
+		node.forEach( ( child ) => mediaIdsIn( child, found ) )
+	else if ( node && typeof node === 'object' ) {
+		const { type, attrs, content } = node as { type ?: string, attrs ?: { src ?: unknown }, content ?: unknown }
+		const id = type === 'image' && typeof attrs?.src === 'string' && /^\/media\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\/|$)/.exec( attrs.src )?.[ 1 ]
+
+		if ( id )
+			found.add( id )
+
+		mediaIdsIn( content, found )
+	}
+
+	return [ ...found ]
+}
+
 // A valibot field: accepts the JSON ( or its string form, from a form post ) and outputs
 // the normalised document.
 export const richTextSchema = v.pipe(

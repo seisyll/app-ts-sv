@@ -292,7 +292,9 @@ const mail = renderEmailHTML( body, { baseUrl, values: { customer_name: 'Ada' } 
   `<RichText>` needs no sanitizer — but only ever give it `renderRichText()` output.
 - **Images** come from the media library (the picker), resizable and alignable in place.
 - **Email HTML** is inline-styled, with absolute URLs and variables filled in (escaped).
-  A recipient has no session, so an image in an email must be a **public** file (see Media).
+  A recipient has no session, so an image in an email must be a **public** file (see Media);
+  `mediaIdsIn( doc )` (`$lib/editor/document`) lists the files a document shows, for savers
+  that publish them (site pages, Mail).
 - **Not built:** Markdown output, collaborative editing, tables, alt-text editing, keyboard
   resizing of images.
 - **Detach:** turn the `editor` module off (mail needs it; the public site's pages go with it). To delete it for good: delete `src/lib/editor`, `src/lib/components/editor`, `/hello/editor` and the
@@ -356,6 +358,10 @@ await sendMail( { to: { email, name }, template: 'user.invite', values: { invite
     `{{variables}}`. The rendering uses the email HTML renderer from Rich text, in a
     table-and-inline-style layout with a plain-text copy.
   - The button and its link can't be edited, so a reworded email can't lose its link.
+  - **Images** come from the media library, with the `media` module on in the build and for
+    the workspace. Saving checks each is an image of this workspace (another workspace's
+    file is refused, nothing is written) and makes it **public** in the same transaction
+    (see Media): a recipient isn't signed in. Taking one out later leaves it public.
   - To add an email: add a catalog entry and its messages, then call `sendMail` where it
     happens.
 - **Invites** reuse better-auth's reset token with a 7-day expiry, so accepting an invite is
@@ -374,8 +380,6 @@ await sendMail( { to: { email, name }, template: 'user.invite', values: { invite
     notification emails go out after the response
   - each user's own language: notification emails use the language of the request that
     triggered them
-  - images in email bodies: media can be public now (see Media), but the mail editor doesn't
-    offer images yet
   - removing a workspace's mail settings from the UI
 - **Detach:** turn the `mail` module off. To delete it for good:
   - delete `src/lib/server/mail`, `src/lib/mail.ts`, `/app/settings/mail`, `/hello/mail`,

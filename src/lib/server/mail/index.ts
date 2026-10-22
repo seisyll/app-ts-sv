@@ -3,11 +3,11 @@ import { BlockList, isIP } from 'node:net'
 import { symmetricDecrypt, symmetricEncrypt } from 'better-auth/crypto'
 import nodemailer from 'nodemailer'
 import { dev } from '$app/environment'
-import { parseRichText } from '$lib/editor/document'
+import { mediaIdsIn, parseRichText } from '$lib/editor/document'
 import type { MailSettingsInput, MailTemplateInput } from '$lib/mail'
 import { m } from '$lib/paraglide/messages'
 import { getLocale } from '$lib/paraglide/runtime'
-import { currentTenant, db } from '$lib/server/db'
+import { currentTenant, db, tenantTransaction } from '$lib/server/db'
 import { moduleActive } from '$lib/server/modules'
 import type { MailSetting } from '$lib/server/db/generated/client'
 import { tenancy } from '$lib/server/tenant'
@@ -85,14 +85,30 @@ export async function loadMailTemplate( key : MailTemplateKey ) : Promise<MailCo
 	return row && body ? { subject: row.subject, body } : null
 }
 
-export async function saveMailTemplate( key : MailTemplateKey, input : MailTemplateInput ) : Promise<void> {
-	const locale = getLocale()
+/* ―― » Save the wording in the current language. Its images go public with it, in the same
+        transaction: a recipient has no session to fetch them with ( the logo's rule,
+        src/lib/server/brand.ts ). Each must be one of this workspace's images ( RLS ) —
+        false when one isn't, and nothing is written. An image taken out later stays public:
+        it may be in use elsewhere, and in emails already sent. */
+export async function saveMailTemplate( key : MailTemplateKey, input : MailTemplateInput ) : Promise<boolean> {
+	const ids = mediaIdsIn( input.body )
 
-	await db.mailTemplate.upsert( {
-		where : { tenantId_key_locale: { tenantId: ( await currentTenant() ).id, key, locale } },
-		create: { key, locale, ...input },
-		update: input
+	if ( ids.length && ( !MODULES.media || await db.media.count( { where: { id: { in: ids }, kind: 'image' } } ) !== ids.length ) )
+		return false
+
+	const locale = getLocale()
+	const { id: tenantId } = await currentTenant()
+
+	await tenantTransaction( async( tx ) => {
+		await tx.media.updateMany( { where: { id: { in: ids } }, data: { public: true } } )
+		await tx.mailTemplate.upsert( {
+			where : { tenantId_key_locale: { tenantId, key, locale } },
+			create: { key, locale, ...input },
+			update: input
+		} )
 	} )
+
+	return true
 }
 
 // Back to the default ( in the current language ).

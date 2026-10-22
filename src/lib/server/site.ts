@@ -1,4 +1,4 @@
-import { isEmptyRichText, parseRichText } from '$lib/editor/document'
+import { isEmptyRichText, mediaIdsIn, parseRichText } from '$lib/editor/document'
 import type { RichText } from '$lib/editor/schema'
 import { baseLocale, getLocale } from '$lib/paraglide/runtime'
 import { currentTenant, db, tenantTransaction } from '$lib/server/db'
@@ -105,21 +105,4 @@ export async function loadPublicSite() : Promise<PublicSite | null> {
 	} catch {
 		return null
 	}
-}
-
-// The media library's files an editor document shows: /media/<id> or /media/<id>/thumb.
-function mediaIdsIn( node : unknown, found = new Set<string>() ) : string[] {
-	if ( Array.isArray( node ) )
-		node.forEach( ( child ) => mediaIdsIn( child, found ) )
-	else if ( node && typeof node === 'object' ) {
-		const { type, attrs, content } = node as { type ?: string, attrs ?: { src ?: unknown }, content ?: unknown }
-		const id = type === 'image' && typeof attrs?.src === 'string' && /^\/media\/([0-9a-f-]{36})(?:\/|$)/.exec( attrs.src )?.[ 1 ]
-
-		if ( id )
-			found.add( id )
-
-		mediaIdsIn( content, found )
-	}
-
-	return [ ...found ]
 }

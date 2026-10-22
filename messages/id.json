@@ -647,6 +647,8 @@
 	"mail_body": "Pesan",
 	"mail_body_desc": "Sisipkan variabel dengan tombol variabel di bilah alat. Tombol berisi tautan ditambahkan di bawah pesan.",
 	"mail_body_required": "Tulis pesannya",
+	"mail_body_images": "Menyimpan membuat gambar di dalamnya menjadi publik, agar penerima bisa melihatnya tanpa masuk.",
+	"mail_body_image_invalid": "Pilih gambar dari pustaka ruang kerja ini.",
 	"mail_preview": "Pratinjau",
 	"mail_preview_desc": "Versi tersimpan, dengan nilai contoh.",
 	"mail_not_configured": "Email ruang kerja ini belum diatur.",
