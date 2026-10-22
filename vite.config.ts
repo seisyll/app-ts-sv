@@ -106,7 +106,8 @@ export default defineConfig( async( { mode } ) => {
 				project : './project.inlang',
 				outdir  : './src/lib/paraglide',
 				// Cookie first ( set by the locale switcher ), then the configured default.
-				// Add 'preferredLanguage' before 'baseLocale' to honour the browser language.
+				// Add 'preferredLanguage' before 'baseLocale' to honour the browser language —
+				// and in package.json's `i18n` script, which compiles the same for svelte-check.
 				strategy: [ 'cookie', 'baseLocale' ]
 			} )
 		]
