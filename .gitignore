@@ -42,3 +42,6 @@ vite.config.ts.timestamp-*
 # Deploy ( deploy/README.md )
 deploy/app.env
 deploy/backups
+
+# Impeccable live mode: its config and session journals ( local per checkout )
+/.impeccable/
