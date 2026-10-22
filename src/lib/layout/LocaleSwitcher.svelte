@@ -47,19 +47,19 @@
 		}
 
 		:global( .locale-switcher-trigger svg path ) {
-			transition: translate 150ms cubic-bezier( 0.16, 1, 0.3, 1 );
+			transition: translate 200ms cubic-bezier( 0.33, 1, 0.68, 1 );
 		}
 
 		:global( .locale-switcher-trigger:is( :hover, [data-state='open'] ) svg path ) {
-			transition-duration: 200ms;
+			transition-duration: 320ms;
 		}
 
 		:global( .locale-switcher-trigger:is( :hover, [data-state='open'] ) svg path:nth-of-type( -n + 4 ) ) {
-			translate: -1.5px -1.5px;
+			translate: -2.5px -2px;
 		}
 
 		:global( .locale-switcher-trigger:is( :hover, [data-state='open'] ) svg path:nth-of-type( n + 5 ) ) {
-			translate: 1.5px 1.5px;
+			translate: 2.5px 2px;
 		}
 	}
 </style>

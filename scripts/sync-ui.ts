@@ -14,6 +14,7 @@
         - $lib/registry/hooks/… → #lib/hooks/…
         - any other $lib/…      → #lib/… ( SvelteKit 3's subpath import, package.json )
         - IconPlaceholder       → the per-icon @lucide/svelte import its `lucide` prop names
+        - cn-menu-translucent   → dropped: menus in the default colour ( MENU_TRANSLUCENT )
         - the deliberate divergences in PATCHES, applied by anchor
         It fails rather than writes when an icon has no lucide file, an IconPlaceholder or a
         $lib/registry import survives, or a patch anchor is gone. */
@@ -110,8 +111,13 @@ const PATCHES : Record<string, [ string, string ][]> = {
 	]
 }
 
+// Menus in the default colour, as `shadcn-svelte add` resolves them: the translucent option's
+// marker comes off. Every style's sheet turns animation off for it ( `animate-none!`, the
+// backdrop blur doesn't animate cleanly ), so left on, no menu, select or context menu animates.
+const MENU_TRANSLUCENT = / cn-menu-translucent(?=[\s"'])/g
+
 function transform( body : string, file : string ) : string {
-	let out = body.replace( /[$#]lib\/registry\/ui\//g, '#lib/components/ui/' ).replace( /[$#]lib\/registry\/hooks\//g, '#lib/hooks/' )
+	let out = body.replace( /[$#]lib\/registry\/ui\//g, '#lib/components/ui/' ).replace( /[$#]lib\/registry\/hooks\//g, '#lib/hooks/' ).replace( MENU_TRANSLUCENT, '' )
 
 	for ( const [ anchor, replacement ] of PATCHES[ file ] ?? [] ) {
 		if ( !out.includes( anchor ) )
