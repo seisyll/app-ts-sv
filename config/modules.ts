@@ -7,7 +7,8 @@
                    Off at build: every file under them is replaced by a 404 stub, so the
                    module's pages, endpoints and their imports never enter the bundle. Off
                    for a workspace: hooks.server.ts answers 404 there. Code elsewhere that
-                   merely uses a module guards itself with `if ( MODULES.<id> )`.
+                   merely uses a module guards itself with `if ( MODULES.<id> )`. A route
+                   inside another module's ( the site's pages, in editor ) builds with both.
         requires — modules it can't work without; a config that breaks this fails loudly.
         whenOff  — where its routes send people instead of a 404.
 
@@ -42,7 +43,7 @@ export const MODULES_REGISTRY = {
 	},
 	editor: {
 		description: 'Rich text: the TipTap editor, its validation and its HTML / email renders',
-		routes     : [ '/(dev)/hello/editor', '/(dev)/api/hello/editor' ]
+		routes     : [ '/(site)/[page=site_page]', '/app/settings/site/[page=site_page]', '/(dev)/hello/editor', '/(dev)/api/hello/editor' ]
 	},
 	notifications: {
 		description: 'The bell, the inbox and per-type preferences',

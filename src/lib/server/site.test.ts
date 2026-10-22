@@ -18,6 +18,7 @@ describe( 'site', () => {
 	let a : TenantRef
 	let b : TenantRef
 	let site : typeof import( './site' )
+	let pages : typeof import( './site-pages' )
 	// The runtime site.ts sees: the test database resets the module registry.
 	let runtime : typeof import( '#lib/paraglide/runtime.js' )
 	const ids : Record<string, string> = {}
@@ -34,6 +35,7 @@ describe( 'site', () => {
 		await t.asApp()
 
 		site = await import( './site' )
+		pages = await import( './site-pages' )
 		runtime = await import( '#lib/paraglide/runtime.js' )
 	}, 60_000 )
 
@@ -57,33 +59,33 @@ describe( 'site', () => {
 	it( 'publishes a page, its own images with it, and nobody else\'s', async() => {
 		const body = doc( 'We keep your data safe.', `/media/${ ids.ours }` )
 
-		expect( await inA( () => site.saveSitePage( 'privacy', body ) ) ).toBe( 'saved' )
-		expect( await inA( () => site.saveSitePage( 'terms', doc( 'Be nice.', `/media/${ ids.theirs }/thumb` ) ) ) ).toBe( 'saved' )
+		expect( await inA( () => pages.saveSitePage( 'privacy', body ) ) ).toBe( 'saved' )
+		expect( await inA( () => pages.saveSitePage( 'terms', doc( 'Be nice.', `/media/${ ids.theirs }/thumb` ) ) ) ).toBe( 'saved' )
 
 		const shared = ( fn : typeof inA ) => fn( () => t.db.media.findMany( { where: { public: true }, select: { id: true } } ) ).then( ( rows ) => rows.map( ( row ) => row.id ) )
 
 		expect( await shared( inA ) ).toEqual( [ ids.ours ] )
 		expect( await shared( inB ) ).toEqual( [] )
-		expect( await inA( () => site.loadSitePage( 'privacy' ) ) ).toMatchObject( body )
-		expect( await inB( () => site.loadSitePage( 'privacy' ) ) ).toBeNull()
+		expect( await inA( () => pages.loadSitePage( 'privacy' ) ) ).toMatchObject( body )
+		expect( await inB( () => pages.loadSitePage( 'privacy' ) ) ).toBeNull()
 	} )
 
 	it( 'reads a page in the visitor\'s language, else another one', async() => {
 		const english = runtime.getLocale
 
 		runtime.overwriteGetLocale( () => 'id' )
-		await inA( () => site.saveSitePage( 'privacy', doc( 'Data Anda aman.' ) ) )
+		await inA( () => pages.saveSitePage( 'privacy', doc( 'Data Anda aman.' ) ) )
 		runtime.overwriteGetLocale( english )
 
 		// Stored documents come back normalised ( every attribute spelled out ), hence toMatchObject.
-		expect( await inA( () => site.loadSitePage( 'privacy', 'id' ) ) ).toMatchObject( doc( 'Data Anda aman.' ) )
-		expect( await inA( () => site.loadSitePage( 'privacy', 'en' ) ) ).toMatchObject( doc( 'We keep your data safe.', `/media/${ ids.ours }` ) )
-		expect( await inA( () => site.loadSitePage( 'terms', 'id' ) ) ).toMatchObject( doc( 'Be nice.', `/media/${ ids.theirs }/thumb` ) )
-		expect( await inA( () => site.loadSitePageDraft( 'terms' ) ) ).not.toBeNull()
+		expect( await inA( () => pages.loadSitePage( 'privacy', 'id' ) ) ).toMatchObject( doc( 'Data Anda aman.' ) )
+		expect( await inA( () => pages.loadSitePage( 'privacy', 'en' ) ) ).toMatchObject( doc( 'We keep your data safe.', `/media/${ ids.ours }` ) )
+		expect( await inA( () => pages.loadSitePage( 'terms', 'id' ) ) ).toMatchObject( doc( 'Be nice.', `/media/${ ids.theirs }/thumb` ) )
+		expect( await inA( () => pages.loadSitePageDraft( 'terms' ) ) ).not.toBeNull()
 	} )
 
 	it( 'takes a page down when it is saved empty', async() => {
-		expect( await inA( () => site.saveSitePage( 'terms', { type: 'doc', content: [ { type: 'paragraph' } ] } ) ) ).toBe( 'removed' )
+		expect( await inA( () => pages.saveSitePage( 'terms', { type: 'doc', content: [ { type: 'paragraph' } ] } ) ) ).toBe( 'removed' )
 		expect( await inA( () => site.writtenSitePages() ) ).toEqual( [ 'privacy' ] )
 	} )
 
