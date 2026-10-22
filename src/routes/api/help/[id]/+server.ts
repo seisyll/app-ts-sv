@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { requireApiUser } from '#lib/server/guards.js'
 import { helpArticle } from '#lib/server/help.js'
 import type { RequestHandler } from './$types'
@@ -12,5 +12,5 @@ export const GET : RequestHandler = async( event ) => {
 	if ( !article )
 		error( 404, 'Not found' )
 
-	return json( article, { headers: { 'cache-control': 'private, max-age=300' } } )
+	return Response.json( article, { headers: { 'cache-control': 'private, max-age=300' } } )
 }

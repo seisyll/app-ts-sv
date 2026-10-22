@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { parsePageQuery } from '#lib/components/data-table/index.js'
 import { m } from '#lib/paraglide/messages.js'
 import { audit } from '#lib/server/audit.js'
@@ -10,7 +10,7 @@ import type { RequestHandler } from './$types'
 export const GET : RequestHandler = async( event ) => {
 	await requireApiPermission( event, { media: [ 'list' ] } )
 
-	return json( await listMedia( parsePageQuery( event.url.searchParams ) ) )
+	return Response.json( await listMedia( parsePageQuery( event.url.searchParams ) ) )
 }
 
 // POST — one upload: multipart with a single `file`. One per request keeps each under the
@@ -26,5 +26,5 @@ export const POST : RequestHandler = async( event ) => {
 
 	await audit( event, { action: 'media.upload', target: { id: media.id, label: media.name } } )
 
-	return json( media, { status: 201 } )
+	return Response.json( media, { status: 201 } )
 }

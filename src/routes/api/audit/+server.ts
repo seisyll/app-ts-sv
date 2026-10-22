@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit'
 import { auditChangeLines, auditResourceLabel, auditSentence, type AuditRow } from '#lib/audit.js'
 import { parsePageQuery } from '#lib/components/data-table/index.js'
 import { m } from '#lib/paraglide/messages.js'
@@ -24,7 +23,7 @@ export const GET : RequestHandler = async( event ) => {
 	const format = exportFormat( event.url )
 
 	if ( !format )
-		return json( await listAudit( query ) )
+		return Response.json( await listAudit( query ) )
 
 	const filters = describeQuery( query, {
 		search: m.print_search(),

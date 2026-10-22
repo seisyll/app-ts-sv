@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit'
 import { prisma } from '#lib/server/db/index.js'
 import { redisReady } from '#lib/server/redis.js'
 
@@ -13,5 +12,5 @@ export const GET = async() => {
 	] )
 	const redis = process.env.REDIS_URL ? ( redisReady() ? 'up' : 'down' ) : 'off'
 
-	return json( { status: database ? 'ok' : 'down', database: database ? 'up' : 'down', redis }, { status: database ? 200 : 503, headers: { 'cache-control': 'no-store' } } )
+	return Response.json( { status: database ? 'ok' : 'down', database: database ? 'up' : 'down', redis }, { status: database ? 200 : 503, headers: { 'cache-control': 'no-store' } } )
 }

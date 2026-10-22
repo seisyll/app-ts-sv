@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { m } from '#lib/paraglide/messages.js'
 import { audit } from '#lib/server/audit.js'
 import { removeAvatar, setAvatar } from '#lib/server/avatars.js'
@@ -17,7 +17,7 @@ export const POST : RequestHandler = async( event ) => {
 
 	await audit( event, { action: 'account.avatar' } )
 
-	return json( { url } )
+	return Response.json( { url } )
 }
 
 // DELETE — back to your sign-in provider's picture, or initials.

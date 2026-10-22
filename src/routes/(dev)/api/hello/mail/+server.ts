@@ -1,5 +1,5 @@
 import { dev } from '$app/env'
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { MAIL_TEMPLATE_KEYS, renderMail, sampleMailValues } from '#lib/server/mail/index.js'
 import { clearOutbox, listOutbox, record } from '#lib/server/mail/outbox.js'
 import type { RequestHandler } from './$types'
@@ -11,7 +11,7 @@ export const GET : RequestHandler = () => {
 	if ( !dev )
 		error( 404 )
 
-	return json( listOutbox() )
+	return Response.json( listOutbox() )
 }
 
 export const POST : RequestHandler = ( { url } ) => {
@@ -23,7 +23,7 @@ export const POST : RequestHandler = ( { url } ) => {
 	for ( const key of MAIL_TEMPLATE_KEYS )
 		record( { workspace: values.workspace, to: 'ada@example.test', ...renderMail( key, { values, baseUrl: url.origin } ), sent: false } )
 
-	return json( listOutbox() )
+	return Response.json( listOutbox() )
 }
 
 export const DELETE : RequestHandler = () => {
@@ -32,5 +32,5 @@ export const DELETE : RequestHandler = () => {
 
 	clearOutbox()
 
-	return json( [] )
+	return Response.json( [] )
 }

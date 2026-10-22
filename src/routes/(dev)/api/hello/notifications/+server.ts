@@ -1,5 +1,5 @@
 import { dev } from '$app/env'
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { mockNotifications } from '../../../demo-data'
 import type { RequestHandler } from './$types'
 
@@ -11,5 +11,5 @@ export const GET : RequestHandler = ( { url } ) => {
 	if ( url.searchParams.get( 'reset' ) === '1' )
 		mockNotifications.reset()
 
-	return json( { items: mockNotifications.items, unread: mockNotifications.items.filter( ( item ) => !item.readAt ).length } )
+	return Response.json( { items: mockNotifications.items, unread: mockNotifications.items.filter( ( item ) => !item.readAt ).length } )
 }

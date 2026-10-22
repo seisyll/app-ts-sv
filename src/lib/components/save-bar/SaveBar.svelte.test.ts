@@ -143,6 +143,13 @@ describe( 'SaveBar', () => {
 			await expect.element( dialog() ).not.toBeInTheDocument()
 		} )
 
+		it( 'lets a shallow navigation through while dirty: the page stays', async() => {
+			await render( SaveBar, { show: true } )
+
+			expect( attemptNavigation( '/people?page=2', { type: 'goto', shallow: true } ) ).toBe( false )
+			await expect.element( dialog() ).not.toBeInTheDocument()
+		} )
+
 		it( 'does not guard when clean, while saving, or when it cannot know', async() => {
 			const screen = await render( SaveBar, { show: false } )
 

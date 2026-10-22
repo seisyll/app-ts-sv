@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { toast } from 'svelte-sonner'
-import { invalidateAll } from '$app/navigation'
+import { refreshAll } from '$app/navigation'
 import { errorMessage, HttpError } from './http'
 import { mutate } from './mutate'
 
-vi.mock( '$app/navigation', () => ( { invalidateAll: vi.fn( async() => {} ) } ) )
+vi.mock( '$app/navigation', () => ( { refreshAll: vi.fn( async() => {} ) } ) )
 vi.mock( 'svelte-sonner', () => ( { toast: { success: vi.fn(), error: vi.fn() } } ) )
 
 const respond = ( body : unknown, status = 200 ) =>
@@ -20,7 +20,7 @@ describe( 'mutate', () => {
 		respond( { id: 1 } )
 		const order : string[] = []
 
-		vi.mocked( invalidateAll ).mockImplementationOnce( async() => {
+		vi.mocked( refreshAll ).mockImplementationOnce( async() => {
 			order.push( 'refresh' )
 		} )
 
@@ -35,7 +35,7 @@ describe( 'mutate', () => {
 		respond( {} )
 		await mutate( '/api/things', { refresh: false } )
 
-		expect( invalidateAll ).not.toHaveBeenCalled()
+		expect( refreshAll ).not.toHaveBeenCalled()
 	} )
 
 	it( 'toasts the endpoint\'s message on failure, and returns it', async() => {
@@ -45,7 +45,7 @@ describe( 'mutate', () => {
 
 		expect( result ).toMatchObject( { ok: false, message: 'Name already used' } )
 		expect( toast.error ).toHaveBeenCalledWith( 'Name already used' )
-		expect( invalidateAll ).not.toHaveBeenCalled()
+		expect( refreshAll ).not.toHaveBeenCalled()
 	} )
 
 	it( 'can leave the error to the caller', async() => {

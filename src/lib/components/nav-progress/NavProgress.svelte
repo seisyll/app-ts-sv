@@ -4,6 +4,7 @@
 	import { navigating } from '$app/state'
 	import { m } from '#lib/paraglide/messages.js'
 	import { cn } from '#lib/utils.js'
+	import { shallow } from './pending'
 
 	/* ―― » The app-wide "something is loading" bar. SvelteKit runs `load` BEFORE painting
 	        the next page, so without it a slow load reads as a click that didn't take.
@@ -30,7 +31,7 @@
 	const CEILING = 92
 	const TICK = 240
 
-	const busy = $derived( active ?? ( navigating.to !== null ) )
+	const busy = $derived( active ?? ( navigating.to !== null && !shallow() ) )
 
 	let visible = $state( false )
 	let closing = $state( false )

@@ -465,8 +465,9 @@ await audit( event, { action: 'captcha.settings', changes: changesBetween( befor
 - **URL state** (`syncUrl`, one table per page): page, size, sort, search and filters live in
   the address bar — `?page=2&size=20&sort=name&dir=desc&q=ada&in=email&from=…&to=…&role=admin`
   (defaults left out; any other key is a facet, so don't name a filter column like those
-  keys). Written with `replaceState`: reload and share keep the view, Back leaves the list.
-  The load must read the same query so the server render matches:
+  keys). Written with a shallow `goto` that replaces the entry: reload and share keep the
+  view, Back leaves the list, and SaveBar and the progress bar ignore it. The load must read
+  the same query so the server render matches:
   `listUsers( toPageQuery( fromUrlParams( url.searchParams ) ) )` (see `/app/users`).
 - **Columns** are TanStack Table 9's `ColumnDef<DataTableFeatures, Row>[]`, with
   `renderComponent` / `renderSnippet` for cells, all from `@tanstack/svelte-table`. What every
@@ -492,7 +493,7 @@ await audit( event, { action: 'captcha.settings', changes: changesBetween( befor
   `.fieldErrors`, `.unreachable`). In a load or action pass `event.fetch`.
   `errorMessage( error )` gives the text to show a user.
 - **`mutate( path, { body, success } )`** (`src/lib/mutate.ts`): a write from the browser,
-  toast on success or failure, then `invalidateAll()`.
+  toast on success or failure, then `refreshAll()`.
 - **Validation messages** (`src/lib/validation.ts`): valibot's defaults go through
   paraglide, so schemas stay plain (`v.pipe( v.string(), v.nonEmpty(), v.email() )`) and
   messages follow the user's language in the browser and the request's on the server.

@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit'
 import { parsePageQuery } from '#lib/components/data-table/index.js'
 import { m } from '#lib/paraglide/messages.js'
 import { deviceLabel, methodLabel, outcomeLabel, SIGN_IN_METHODS, SIGN_IN_OUTCOMES, type SignInRow } from '#lib/sign-ins.js'
@@ -24,7 +23,7 @@ export const GET : RequestHandler = async( event ) => {
 	const format = exportFormat( event.url )
 
 	if ( !format )
-		return json( await listSignIns( query ) )
+		return Response.json( await listSignIns( query ) )
 
 	const filters = describeQuery( query, {
 		search: m.print_search(),

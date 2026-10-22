@@ -1,4 +1,4 @@
-import { error, text } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { prisma } from '#lib/server/db/index.js'
 import { normaliseHost, subdomainOf, tenancy } from '#lib/server/tenant.js'
 
@@ -26,5 +26,5 @@ export const GET = async( { url } ) => {
 	if ( !tenant )
 		error( 404, 'Not found' )
 
-	return text( 'ok' )
+	return new Response( 'ok' )
 }

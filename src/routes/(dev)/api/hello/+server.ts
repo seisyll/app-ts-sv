@@ -1,5 +1,5 @@
 import { dev } from '$app/env'
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { m } from '#lib/paraglide/messages.js'
 import { getLocale } from '#lib/paraglide/runtime.js'
 import type { RequestHandler } from './$types'
@@ -26,7 +26,7 @@ export const GET : RequestHandler = () => {
 	if ( !dev )
 		error( 404 )
 
-	return json( {
+	return Response.json( {
 		ok  : true,
 		data: {
 			message : m.api_greeting(),

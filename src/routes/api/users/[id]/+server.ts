@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit'
 import type { Permission } from '#lib/permissions.js'
 import type { AuditAction } from '#lib/audit.js'
 import { audit } from '#lib/server/audit.js'
@@ -44,7 +43,7 @@ export const PATCH : RequestHandler = async( event ) => {
 	if ( change.action === 'set-role' )
 		await notify( { type: 'role.changed', params: { role: change.role, by: user.name }, to: { users: [ event.params.id ] } } )
 
-	return json( { ok: true } )
+	return Response.json( { ok: true } )
 }
 
 export const DELETE : RequestHandler = async( event ) => {
@@ -55,5 +54,5 @@ export const DELETE : RequestHandler = async( event ) => {
 	await deleteUser( auth(), event.request.headers, user.id, event.params.id ).catch( rethrowAuthError )
 	await audit( event, { action: 'user.delete', target: { id: event.params.id, label: label( before, event.params.id ) } } )
 
-	return json( { ok: true } )
+	return Response.json( { ok: true } )
 }

@@ -134,6 +134,10 @@
 
 	// Registered unconditionally ( must run during init ); decides per navigation.
 	beforeNavigate( ( navigation ) => {
+		// Shallow ( a table writing its query to the address ): the page and its edits stay.
+		if ( navigation.shallow )
+			return
+
 		if ( leaving ) {
 			leaving = false
 

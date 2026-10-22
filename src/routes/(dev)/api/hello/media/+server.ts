@@ -1,5 +1,5 @@
 import { dev } from '$app/env'
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { mockMedia } from '../../../demo-data'
 import type { RequestHandler } from './$types'
 
@@ -16,7 +16,7 @@ export const GET : RequestHandler = ( { url } ) => {
 	const take = Number( url.searchParams.get( 'take' ) ?? 24 )
 	const rows = ALL.filter( ( row ) => row.name.toLowerCase().includes( search ) )
 
-	return json( { rows: rows.slice( skip, skip + take ), total: rows.length } )
+	return Response.json( { rows: rows.slice( skip, skip + take ), total: rows.length } )
 }
 
 export const POST : RequestHandler = async( { request } ) => {
@@ -27,5 +27,5 @@ export const POST : RequestHandler = async( { request } ) => {
 
 	await new Promise( ( resolve ) => setTimeout( resolve, 500 ) )
 
-	return json( mockMedia( Math.floor( Math.random() * 1000 ) + 100, file instanceof File ? file.name : 'upload.jpg' ), { status: 201 } )
+	return Response.json( mockMedia( Math.floor( Math.random() * 1000 ) + 100, file instanceof File ? file.name : 'upload.jpg' ), { status: 201 } )
 }

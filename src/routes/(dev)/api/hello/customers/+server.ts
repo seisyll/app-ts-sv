@@ -1,5 +1,5 @@
 import { dev } from '$app/env'
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { calendarDay, parsePageQuery, type Paged } from '#lib/components/data-table/index.js'
 import { CUSTOMERS, type Customer } from '../../../demo-data'
 import type { RequestHandler } from './$types'
@@ -31,7 +31,7 @@ export const GET : RequestHandler = async( { url } ) => {
 	await new Promise( ( resolve ) => setTimeout( resolve, Number( url.searchParams.get( 'delay' ) ?? 400 ) ) )
 
 	if ( url.searchParams.get( 'fail' ) === '1' )
-		return json( { message: 'Mock API failure ( toggled in the playground ).' }, { status: 503 } )
+		return Response.json( { message: 'Mock API failure ( toggled in the playground ).' }, { status: 503 } )
 
 	const query = parsePageQuery( url.searchParams )
 	let rows = CUSTOMERS
@@ -74,7 +74,7 @@ export const GET : RequestHandler = async( { url } ) => {
 		} )
 	}
 
-	return json( {
+	return Response.json( {
 		rows : rows.slice( query.skip, query.skip + query.take ),
 		total: rows.length,
 		stats: { mrr: rows.reduce( ( sum, row ) => sum + row.mrr, 0 ) }

@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit'
 import { requireApiUser } from '#lib/server/guards.js'
 import { listNotifications } from '#lib/server/notifications/index.js'
 import type { RequestHandler } from './$types'
@@ -7,5 +6,5 @@ import type { RequestHandler } from './$types'
 export const GET : RequestHandler = async( event ) => {
 	const { user } = await requireApiUser( event )
 
-	return json( await listNotifications( user.id, Number( event.url.searchParams.get( 'limit' ) ) || 20 ) )
+	return Response.json( await listNotifications( user.id, Number( event.url.searchParams.get( 'limit' ) ) || 20 ) )
 }

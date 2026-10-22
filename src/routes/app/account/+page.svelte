@@ -2,7 +2,7 @@
 	import { toast } from 'svelte-sonner'
 	import { superForm } from 'sveltekit-superforms'
 	import { valibot } from 'sveltekit-superforms/adapters'
-	import { invalidateAll } from '$app/navigation'
+	import { refreshAll } from '$app/navigation'
 	import { AvatarField } from '#lib/components/avatar/index.js'
 	import * as Card from '#lib/components/ui/card/index.js'
 	import * as Field from '#lib/components/ui/field/index.js'
@@ -35,12 +35,12 @@
 
 		body.set( 'file', picture, 'avatar.webp' )
 		await http.post( '/api/account/avatar', body )
-		await invalidateAll()
+		await refreshAll()
 	}
 
 	async function removeAvatar() {
 		await http.delete( '/api/account/avatar' )
-		await invalidateAll()
+		await refreshAll()
 	}
 </script>
 

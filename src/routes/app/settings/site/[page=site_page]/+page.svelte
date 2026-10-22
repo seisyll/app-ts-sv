@@ -4,7 +4,7 @@
 	import { toast } from 'svelte-sonner'
 	import { superForm } from 'sveltekit-superforms'
 	import { valibot } from 'sveltekit-superforms/adapters'
-	import { invalidateAll } from '$app/navigation'
+	import { refreshAll } from '$app/navigation'
 	import { RichEditor } from '#lib/components/editor/index.js'
 	import { SaveBar } from '#lib/components/save-bar/index.js'
 	import { Badge } from '#lib/components/ui/badge/index.js'
@@ -29,7 +29,7 @@
 			if ( updated.valid && updated.message ) {
 				toast.success( updated.message )
 				// "Written" follows what was saved.
-				await invalidateAll()
+				await refreshAll()
 			}
 		}
 	} )

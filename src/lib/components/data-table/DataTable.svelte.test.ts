@@ -7,7 +7,7 @@ import DataTable from './DataTable.svelte'
 import type { DataTableFeatures } from './features'
 import type { TableQuery } from './query'
 import { TableSource } from './table-source.svelte'
-import { replaceState, resetNavigation } from '#lib/test/app-navigation.js'
+import { goto, resetNavigation } from '#lib/test/app-navigation.js'
 import { setPath } from '#lib/test/app-state.svelte.js'
 
 vi.mock( '$app/state', () => import( '#lib/test/app-state.svelte.js' ) )
@@ -231,7 +231,7 @@ describe( 'DataTable — server mode', () => {
 
 describe( 'DataTable — URL state', () => {
 	const STATUS = [ { columnId: 'status', title: 'Status', options: [ { value: 'trial', label: 'Trial' }, { value: 'active', label: 'Active' } ] } ]
-	const written = () => new URL( String( replaceState.mock.lastCall?.[ 0 ] ), 'http://localhost' ).searchParams
+	const written = () => new URL( String( goto.mock.lastCall?.[ 0 ] ), 'http://localhost' ).searchParams
 
 	it( 'starts from the address: page, size, sort and a facet', async() => {
 		setPath( '/people?page=2&size=5&sort=name&status=trial&utm=x' )
@@ -244,13 +244,14 @@ describe( 'DataTable — URL state', () => {
 		setPath( '/' )
 	} )
 
-	it( 'writes changes back with replaceState, keeping params it does not own', async() => {
+	it( 'writes changes back with a shallow goto that replaces the entry', async() => {
 		resetNavigation()
 		setPath( '/' )
 		await render( DataTable<Person>, { data: PEOPLE, columns: COLUMNS, visibilityKey: null, syncUrl: true } )
 
 		await page.getByRole( 'button', { name: 'Next page' } ).click()
 		expect( written().get( 'page' ) ).toBe( '2' )
+		expect( goto.mock.lastCall?.[ 1 ] ).toMatchObject( { shallow: true, replace: true } )
 
 		await header( 'Email' ).click()
 		// A new sort starts again from page 1, which is the default and so left out.

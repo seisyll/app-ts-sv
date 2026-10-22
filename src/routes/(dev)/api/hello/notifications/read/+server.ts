@@ -1,5 +1,5 @@
 import { dev } from '$app/env'
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { mockNotifications } from '../../../../demo-data'
 import type { RequestHandler } from './$types'
 
@@ -9,5 +9,5 @@ export const POST : RequestHandler = async( { request } ) => {
 
 	const { ids } = await request.json().catch( () => ( {} ) ) as { ids ?: string[] }
 
-	return json( { count: mockNotifications.markRead( ids ) } )
+	return Response.json( { count: mockNotifications.markRead( ids ) } )
 }

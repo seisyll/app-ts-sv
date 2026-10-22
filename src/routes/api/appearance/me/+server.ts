@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { appearanceOverrideSchema, resolveAppearance } from '#lib/appearance.js'
 import { m } from '#lib/paraglide/messages.js'
 import { loadAppearance, rememberAppearance, saveUserAppearance } from '#lib/server/appearance.js'
@@ -23,5 +23,5 @@ export const PUT : RequestHandler = async( event ) => {
 
 	rememberAppearance( event.cookies, resolved )
 
-	return json( { resolved } )
+	return Response.json( { resolved } )
 }

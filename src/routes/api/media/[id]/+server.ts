@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import * as v from 'valibot'
 import { audit } from '#lib/server/audit.js'
 import { readJson } from '#lib/server/forms.js'
@@ -18,7 +18,7 @@ export const PATCH : RequestHandler = async( event ) => {
 
 	await audit( event, { action: value ? 'media.publish' : 'media.unpublish', target: { id: media.id, label: media.name } } )
 
-	return json( media )
+	return Response.json( media )
 }
 
 // DELETE — the row and its files. Records that pointed at it keep a dangling id; the media
@@ -33,5 +33,5 @@ export const DELETE : RequestHandler = async( event ) => {
 
 	await audit( event, { action: 'media.delete', target: { id: event.params.id, label: name } } )
 
-	return json( { ok: true } )
+	return Response.json( { ok: true } )
 }

@@ -1,5 +1,5 @@
 import { dev } from '$app/env'
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import * as v from 'valibot'
 import { richTextSchema } from '#lib/editor/document.js'
 import { renderEmailHTML, renderRichText } from '#lib/editor/render.js'
@@ -14,7 +14,7 @@ export const POST : RequestHandler = async( { request, url } ) => {
 
 	const { content } = await readJson( request, v.object( { content: richTextSchema } ) )
 
-	return json( {
+	return Response.json( {
 		content,
 		html : renderRichText( content ),
 		email: renderEmailHTML( content, { baseUrl: url.origin, values: { customer_name: 'Ada Lovelace', invoice_total: '$1,250.00', invoice_link: 'https://example.test/invoice/42' } } )

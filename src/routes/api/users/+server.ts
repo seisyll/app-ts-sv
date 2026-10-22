@@ -1,4 +1,4 @@
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { APIError } from 'better-auth/api'
 import { parsePageQuery } from '#lib/components/data-table/index.js'
 import { m } from '#lib/paraglide/messages.js'
@@ -35,7 +35,7 @@ export const GET : RequestHandler = async( event ) => {
 	const format = exportFormat( event.url )
 
 	if ( !format )
-		return json( await listUsers( query ) )
+		return Response.json( await listUsers( query ) )
 
 	const filters = describeQuery( query, {
 		search: m.print_search(),
@@ -74,5 +74,5 @@ export const POST : RequestHandler = async( event ) => {
 
 	await audit( event, { action: input.password ? 'user.create' : 'user.invite', target: { label: `${ input.name } <${ input.email }>` } } )
 
-	return json( { ok: true }, { status: 201 } )
+	return Response.json( { ok: true }, { status: 201 } )
 }

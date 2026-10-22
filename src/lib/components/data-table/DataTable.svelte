@@ -1,7 +1,7 @@
 <script lang="ts" generics="TData extends RowData, TStats = undefined">
 	import { untrack, type Snippet } from 'svelte'
 	import { browser } from '$app/env'
-	import { afterNavigate, replaceState } from '$app/navigation'
+	import { afterNavigate, goto } from '$app/navigation'
 	import { page } from '$app/state'
 	import {
 		createTable,
@@ -56,7 +56,8 @@
 	        A column with a plain string `header` gets a sort button for free; opt out with
 	        `enableSorting: false`. `meta.title` names a column in the Columns menu.
 	        `syncUrl` mirrors page, size, sort, search and filters in the address bar
-	        ( replaceState: reload and share keep them, Back leaves the list ). */
+	        ( a shallow goto that replaces the entry: reload and share keep them, Back leaves
+	        the list ). */
 	let {
 		source,
 		data,
@@ -337,7 +338,7 @@
 		written = String( params ) ? `?${ params }` : ''
 
 		if ( written !== location.search )
-			replaceState( `${ location.pathname }${ written }${ location.hash }`, page.state )
+			void goto( `${ location.pathname }${ written }${ location.hash }`, { shallow: true, replace: true, state: page.state } )
 	}
 
 	// Typing rewrites the address once per pause, like the source's request.
@@ -354,7 +355,8 @@
 	}
 
 	// A link to this page with another query ( the nav's bare /app/users ) keeps the table
-	// mounted: take the new address. The table's own replaceState is not a navigation.
+	// mounted: take the new address. The table's own writes come through here too, as shallow
+	// navigations, and are told apart by `written`.
 	afterNavigate( ( { type, to } ) => {
 		if ( !syncUrl || type === 'enter' || !to || to.url.search === written )
 			return

@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit'
 import * as v from 'valibot'
 import { readJson } from '#lib/server/forms.js'
 import { requireApiUser } from '#lib/server/guards.js'
@@ -11,5 +10,5 @@ export const POST : RequestHandler = async( event ) => {
 	const { user } = await requireApiUser( event )
 	const { ids } = await readJson( event.request, v.object( { ids: v.optional( v.pipe( v.array( v.pipe( v.string(), v.uuid() ) ), v.maxLength( 100 ) ) ) } ) )
 
-	return json( { count: await markRead( user.id, ids ) } )
+	return Response.json( { count: await markRead( user.id, ids ) } )
 }

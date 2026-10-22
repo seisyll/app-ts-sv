@@ -1,5 +1,5 @@
 import { dev } from '$app/env'
-import { error, json } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
 import { m } from '#lib/paraglide/messages.js'
 import { readJson } from '#lib/server/forms.js'
 import { profileSchema } from '../../../hello/forms/schema'
@@ -22,5 +22,5 @@ export const PUT : RequestHandler = async( { request, url } ) => {
 	if ( profile.email.toLowerCase() === 'taken@example.test' )
 		error( 409, m.validation_failed(), { errors: { email: [ m.demo_forms_email_taken() ] } } )
 
-	return json( { profile, savedAt: new Date().toISOString() } )
+	return Response.json( { profile, savedAt: new Date().toISOString() } )
 }

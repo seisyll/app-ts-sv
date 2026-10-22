@@ -12,9 +12,7 @@ const guards = new Set<( navigation : BeforeNavigate ) => void>()
 
 export const goto = vi.fn( async( _url : string | URL, _options ?: object ) => {} )
 export const invalidate = vi.fn( async( _resource : string | URL ) => {} )
-export const invalidateAll = vi.fn( async() => {} )
-export const pushState = vi.fn()
-export const replaceState = vi.fn()
+export const refreshAll = vi.fn( async() => {} )
 export const preloadData = vi.fn( async() => ( { type: 'loaded', status: 200, data: {} } ) )
 export const preloadCode = vi.fn( async() => {} )
 
@@ -37,10 +35,12 @@ type Attempt = {
 	// Back = -1, Forward = 1 ( popstate only ).
 	delta ?     : number
 	willUnload ?: boolean
+	// A table writing its query to the address.
+	shallow ?   : boolean
 }
 
 // Simulate the user trying to leave for `to`. Returns true if a guard cancelled it.
-export function attemptNavigation( to : string, { type = 'link', delta, willUnload = false } : Attempt = {} ) : boolean {
+export function attemptNavigation( to : string, { type = 'link', delta, willUnload = false, shallow = false } : Attempt = {} ) : boolean {
 	let cancelled = false
 	const navigation = {
 		from      : { url: page.url, params: {}, route: { id: null } },
@@ -48,6 +48,7 @@ export function attemptNavigation( to : string, { type = 'link', delta, willUnlo
 		type,
 		delta,
 		willUnload,
+		shallow,
 		complete  : Promise.resolve(),
 		cancel    : () => {
 			cancelled = true
@@ -61,6 +62,6 @@ export function attemptNavigation( to : string, { type = 'link', delta, willUnlo
 }
 
 export function resetNavigation() : void {
-	for ( const spy of [ goto, invalidate, invalidateAll, pushState, replaceState, preloadData, preloadCode ] )
+	for ( const spy of [ goto, invalidate, refreshAll, preloadData, preloadCode ] )
 		spy.mockClear()
 }

@@ -1,4 +1,4 @@
-import { invalidateAll } from '$app/navigation'
+import { refreshAll } from '$app/navigation'
 import { toast } from 'svelte-sonner'
 import { errorMessage, http, type HttpMethod } from '#lib/http.js'
 
@@ -45,7 +45,7 @@ export async function mutate<T = unknown>( path : string, options : MutateOption
 	onSuccess?.()
 
 	if ( refresh )
-		await invalidateAll()
+		await refreshAll()
 
 	return { ok: true, data }
 }
