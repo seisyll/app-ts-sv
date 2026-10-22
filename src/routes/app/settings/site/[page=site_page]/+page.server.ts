@@ -1,4 +1,3 @@
-import { error } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { valibot } from 'sveltekit-superforms/adapters'
 import { EMPTY_RICH_TEXT } from '$lib/editor/document'
@@ -6,7 +5,7 @@ import { m } from '$lib/paraglide/messages'
 import { audit } from '$lib/server/audit'
 import { validateForm } from '$lib/server/forms'
 import { requirePermission } from '$lib/server/guards'
-import { loadSitePageDraft, saveSitePage } from '$lib/server/site'
+import { loadSitePageDraft, saveSitePage } from '$lib/server/site-pages'
 import { SITE_PAGES } from '$lib/site'
 import type { Actions, PageServerLoad } from './$types'
 import { sitePageSchema } from './schema'
@@ -14,9 +13,6 @@ import { sitePageSchema } from './schema'
 // One public page, in the language the admin is using now ( each language is its own copy ).
 export const load : PageServerLoad = async( event ) => {
 	await requirePermission( event, { site: [ 'manage' ] } )
-
-	if ( !MODULES.editor )
-		error( 404, 'Not found' )
 
 	const body = await loadSitePageDraft( event.params.page )
 

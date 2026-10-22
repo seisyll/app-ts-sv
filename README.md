@@ -91,7 +91,8 @@ export default defineClient( { extends: core, modules: { users: true, media: tru
 
 - **The registry** (`config/modules.ts`) lists each module: its description, the routes it
   owns (route ids such as `/app/media` or `/(auth)/reset-password`), what it `requires`, and
-  an optional `whenOff` redirect.
+  an optional `whenOff` redirect. A route inside another module's builds only with both:
+  the site's pages (`/(site)/[page=site_page]` and their settings page) are `editor`'s too.
 - **Client configs** (`config/clients/<name>.ts`) build on presets (`config/presets`:
   `full` has everything, `core` has nothing). Any module they don't mention is off.
   - `CLIENT` picks the config; without it, `config/clients/default.ts` (everything) is
@@ -110,8 +111,9 @@ export default defineClient( { extends: core, modules: { users: true, media: tru
   - Server code outside a module reaches mail and notifications through their gates,
     `$lib/server/mail/gate` and `$lib/server/notifications/gate`, which load the module
     with a dynamic import behind the flag.
-  - A build without mail contains no nodemailer and no TipTap. `bun run build` with a
-    small client is the way to check.
+  - A build without mail contains no nodemailer, and one without editor no TipTap.
+    `bun run build` with a small client, then `grep -rl @tiptap .svelte-kit/output`, is
+    the way to check.
 - **Off per workspace** (shared tenancy):
   - `bun run tenant:modules acme -mail` switches a built module off for one tenant;
     `+mail` turns it back on, and `all` turns everything the build ships back on. With no
@@ -171,7 +173,8 @@ nothing else. A build without the `site` module has no public site at all.
     `site.social`, with `NetworkIcon` ( `$lib/components/site` ) for the marks.
 - **Detach:** turn the `site` module off in the client config. To delete it for good,
   remove `src/routes/(site)`, `src/routes/app/settings/site`, `src/lib/themes`,
-  `src/lib/site.ts`, `src/lib/server/site.ts`, `src/params/site_page.ts`, `/hello/site`,
+  `src/lib/site.ts`, `src/lib/server/site.ts`, `src/lib/server/site-pages.ts`,
+  `src/params/site_page.ts`, `/hello/site`,
   `$theme` in `svelte.config.js`, the `site_*` messages, and the `site_settings` and
   `site_pages` tables ( `prisma/schema/Site.prisma` ). The `@fontsource-variable` packages
   other than Inter are aurora's.
