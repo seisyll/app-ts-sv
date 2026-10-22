@@ -1,7 +1,9 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-svelte'
-import { page } from '$app/state'
 import Seo from './Seo.svelte'
+
+// No SvelteKit runtime here: the test kit's page, on http://localhost.
+vi.mock( '$app/state', () => import( '$lib/test/app-state.svelte' ) )
 
 const tag = ( selector : string, attribute = 'content' ) => document.head.querySelector( selector )?.getAttribute( attribute )
 
@@ -15,9 +17,9 @@ describe( 'Seo', () => {
 
 		expect( document.title ).toBe( 'Pricing · Acme' )
 		expect( tag( 'meta[name=description]' ) ).toBe( 'Three plans.' )
-		// On the request's origin ( page.url ), whatever host it is.
-		expect( tag( 'link[rel=canonical]', 'href' ) ).toBe( new URL( '/pricing', page.url.origin ).href )
-		expect( tag( 'meta[property="og:image"]' ) ).toBe( new URL( '/share.png', page.url.origin ).href )
+		// On the request's origin ( page.url ).
+		expect( tag( 'link[rel=canonical]', 'href' ) ).toBe( 'http://localhost/pricing' )
+		expect( tag( 'meta[property="og:image"]' ) ).toBe( 'http://localhost/share.png' )
 		expect( tag( 'meta[property="og:site_name"]' ) ).toBe( 'Acme' )
 		expect( tag( 'meta[name="twitter:card"]' ) ).toBe( 'summary_large_image' )
 	} )
