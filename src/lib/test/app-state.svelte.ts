@@ -1,5 +1,5 @@
 // Stand-in for `$app/state` in component tests — there is no SvelteKit runtime there:
-//   vi.mock( '$app/state', () => import( '$lib/test/app-state.svelte' ) )
+//   vi.mock( '$app/state', () => import( '#lib/test/app-state.svelte.js' ) )
 // It is reactive: change `page` / `navigating` in a test and components update.
 export const page = $state( {
 	url   : new URL( 'http://localhost/' ),

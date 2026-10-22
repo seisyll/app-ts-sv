@@ -1,7 +1,7 @@
 import { generateText, type JSONContent } from '@tiptap/core'
-import { renderEmailHTML } from '$lib/editor/render'
-import { richTextExtensions, type RichText } from '$lib/editor/schema'
-import { m } from '$lib/paraglide/messages'
+import { renderEmailHTML } from '#lib/editor/render.js'
+import { richTextExtensions, type RichText } from '#lib/editor/schema.js'
+import { m } from '#lib/paraglide/messages.js'
 
 /* ―― » Every email the app sends ( like the notification catalog ): its variables, its default
         subject and body, and the button it ends with. A workspace can reword the subject and

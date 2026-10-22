@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 import type { TenantRef } from './client'
 
 // Tables the app may READ without a tenant_id ( and never write ). Anything else without a

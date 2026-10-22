@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 import { render } from 'vitest-browser-svelte'
-import { DEFAULT_SETTING, NO_OVERRIDE } from '$lib/appearance'
+import { DEFAULT_SETTING, NO_OVERRIDE } from '#lib/appearance.js'
 import AppearancePicker from './AppearancePicker.svelte'
 
 const html = () => document.documentElement.className

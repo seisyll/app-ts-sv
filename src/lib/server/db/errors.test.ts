@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 import { isForeignKeyViolation, isRestrictViolation, isUniqueViolation, withUniqueRetry } from './errors'
 
 /* ―― » One refused write per database: PGlite serves a single connection, and a failed

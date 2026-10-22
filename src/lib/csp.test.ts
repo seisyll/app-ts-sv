@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { createInitialModeExpression } from 'mode-watcher'
 import { render } from 'svelte/server'
 import { describe, expect, it } from 'vitest'
-import { SVELTE_EVENT_CAPTURE } from '../../svelte.config.js'
+import { SVELTE_EVENT_CAPTURE } from '#config/kit.js'
 import Capture from './test/fixtures/EventCapture.svelte'
 
 /* ―― » The content security policy allows no inline script without SvelteKit's nonce, so

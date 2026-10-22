@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis'
-import { currentTenant } from '$lib/server/db'
-import { log } from '$lib/server/log'
+import { currentTenant } from '#lib/server/db/index.js'
+import { log } from '#lib/server/log.js'
 
 /* ―― » Redis ( the fundraiser app's client ), optional infrastructure: with REDIS_URL set the
         counters below are shared by every instance and outlive a restart; without it, or

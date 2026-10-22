@@ -4,9 +4,9 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import sharp from 'sharp'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import type { PageQuery } from '$lib/components/data-table'
-import type { TenantRef } from '$lib/server/db'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import type { PageQuery } from '#lib/components/data-table/index.js'
+import type { TenantRef } from '#lib/server/db/index.js'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 import { processImage, sniff } from './media'
 
 const bytes = ( ...values : number[] ) => new Uint8Array( [ ...values, ...new Array( 16 ).fill( 0 ) ] )

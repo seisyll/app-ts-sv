@@ -1,7 +1,7 @@
-import { fromUrlParams, toPageQuery } from '$lib/components/data-table'
-import { requirePermission } from '$lib/server/guards'
-import { mailReady } from '$lib/server/mail/gate'
-import { listUsers } from '$lib/server/users'
+import { fromUrlParams, toPageQuery } from '#lib/components/data-table/index.js'
+import { requirePermission } from '#lib/server/guards.js'
+import { mailReady } from '#lib/server/mail/gate.js'
+import { listUsers } from '#lib/server/users.js'
 import type { PageServerLoad } from './$types'
 
 // The first page comes with the server render — the one the address asks for ( the table

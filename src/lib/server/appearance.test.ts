@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { DEFAULT_SETTING } from '$lib/appearance'
-import type { TenantRef } from '$lib/server/db'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import { DEFAULT_SETTING } from '#lib/appearance.js'
+import type { TenantRef } from '#lib/server/db/index.js'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 
 // The workspace default and personal overrides on the tenant-scoped database ( PGlite,
 // real migrations, as the app's RLS role ).

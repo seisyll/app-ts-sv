@@ -1,13 +1,13 @@
 import { redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { valibot } from 'sveltekit-superforms/adapters'
-import { resetSchema } from '$lib/auth-schemas'
-import { m } from '$lib/paraglide/messages'
-import { auth } from '$lib/server/auth'
-import { audit } from '$lib/server/audit'
-import { authErrorMessage, isAuthError } from '$lib/server/auth-errors'
-import { db } from '$lib/server/db'
-import { validateForm } from '$lib/server/forms'
+import { resetSchema } from '#lib/auth-schemas.js'
+import { m } from '#lib/paraglide/messages.js'
+import { auth } from '#lib/server/auth.js'
+import { audit } from '#lib/server/audit.js'
+import { authErrorMessage, isAuthError } from '#lib/server/auth-errors.js'
+import { db } from '#lib/server/db/index.js'
+import { validateForm } from '#lib/server/forms.js'
 import type { Actions, PageServerLoad } from './$types'
 
 /* ―― » Choose a password from an emailed link: a password reset, or accepting an invite ( the
@@ -48,7 +48,7 @@ export const actions : Actions = {
 			return message( form, m.auth_link_expired(), { status: 400 } )
 
 		try {
-			// Also ends their other sessions and marks the email verified ( $lib/server/auth ).
+			// Also ends their other sessions and marks the email verified ( #lib/server/auth ).
 			await auth().api.resetPassword( { body: { token, newPassword }, headers: event.request.headers } )
 		} catch ( caught ) {
 			return message( form, isAuthError( caught, 'INVALID_TOKEN' ) ? m.auth_link_expired() : authErrorMessage( caught ), { status: 400 } )

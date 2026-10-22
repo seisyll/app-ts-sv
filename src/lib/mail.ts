@@ -1,9 +1,9 @@
 import * as v from 'valibot'
-import { isEmptyRichText, richTextSchema } from '$lib/editor/document'
-import { m } from '$lib/paraglide/messages'
+import { isEmptyRichText, richTextSchema } from '#lib/editor/document.js'
+import { m } from '#lib/paraglide/messages.js'
 
 // Mail settings and email wording: the forms' schemas, shared by the settings pages
-// ( browser ) and their actions ( server ). Sending lives in $lib/server/mail.
+// ( browser ) and their actions ( server ). Sending lives in #lib/server/mail.
 
 export const MAIL_SECURITY = [ 'tls', 'starttls', 'none' ] as const
 

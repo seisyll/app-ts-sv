@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state'
-	import { Button } from '$lib/components/ui/button'
-	import { m } from '$lib/paraglide/messages'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	// A plain error page for every route: each project designs its own later. Not-found and
 	// server errors get friendly words; anything else shows the error's own message.

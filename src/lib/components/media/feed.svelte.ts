@@ -1,7 +1,7 @@
-import type { Paged } from '$lib/components/data-table'
-import { toSearchParams } from '$lib/components/data-table/query'
-import { errorMessage, http } from '$lib/http'
-import type { MediaKind, MediaRow } from '$lib/media'
+import type { Paged } from '#lib/components/data-table/index.js'
+import { toSearchParams } from '#lib/components/data-table/query.js'
+import { errorMessage, http } from '#lib/http.js'
+import type { MediaKind, MediaRow } from '#lib/media.js'
 
 /* ―― » One kind of media, a page at a time, appended as people scroll ( "Load more" ) —
         the library page and the picker both read one. Search is debounced by the caller.

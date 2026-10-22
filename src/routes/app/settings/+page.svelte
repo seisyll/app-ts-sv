@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge'
-	import * as Card from '$lib/components/ui/card'
-	import { APP } from '$lib/config'
-	import { date } from '$lib/format'
-	import { moduleLabel } from '$lib/modules'
-	import { m } from '$lib/paraglide/messages'
+	import { Badge } from '#lib/components/ui/badge/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { APP } from '#lib/config.js'
+	import { date } from '#lib/format.js'
+	import { moduleLabel } from '#lib/modules.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let { data } = $props()
 </script>

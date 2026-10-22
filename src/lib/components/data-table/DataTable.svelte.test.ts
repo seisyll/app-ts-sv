@@ -6,11 +6,11 @@ import { dateRangeFilter, facetedFilter, rowNumberColumn, selectColumn } from '.
 import DataTable from './DataTable.svelte'
 import type { TableQuery } from './query'
 import { TableSource } from './table-source.svelte'
-import { replaceState, resetNavigation } from '$lib/test/app-navigation'
-import { setPath } from '$lib/test/app-state.svelte'
+import { replaceState, resetNavigation } from '#lib/test/app-navigation.js'
+import { setPath } from '#lib/test/app-state.svelte.js'
 
-vi.mock( '$app/state', () => import( '$lib/test/app-state.svelte' ) )
-vi.mock( '$app/navigation', () => import( '$lib/test/app-navigation' ) )
+vi.mock( '$app/state', () => import( '#lib/test/app-state.svelte.js' ) )
+vi.mock( '$app/navigation', () => import( '#lib/test/app-navigation.js' ) )
 
 type Person = { id : string, name : string, email : string, status : 'active' | 'trial' }
 

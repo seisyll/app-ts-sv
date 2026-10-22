@@ -1,7 +1,7 @@
 import type { ColumnDef, Row } from '@tanstack/table-core'
-import { renderComponent } from '$lib/components/ui/data-table'
-import { APP } from '$lib/config'
-import { m } from '$lib/paraglide/messages'
+import { renderComponent } from '#lib/components/ui/data-table/index.js'
+import { APP } from '#lib/config.js'
+import { m } from '#lib/paraglide/messages.js'
 import DataTableCheckbox from './DataTableCheckbox.svelte'
 
 // Faceted-filter options from plain values; `labels` maps stored values to display text.

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import ImageIcon from '@lucide/svelte/icons/image'
 	import ImageOffIcon from '@lucide/svelte/icons/image-off'
-	import { Button, buttonVariants } from '$lib/components/ui/button'
-	import { Spinner } from '$lib/components/ui/spinner'
-	import { ACCEPT, mediaUrl, type MediaRow } from '$lib/media'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	import { Button, buttonVariants } from '#lib/components/ui/button/index.js'
+	import { Spinner } from '#lib/components/ui/spinner/index.js'
+	import { ACCEPT, mediaUrl, type MediaRow } from '#lib/media.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 	import MediaPicker from './MediaPicker.svelte'
 	import { uploadMedia } from './upload'
 

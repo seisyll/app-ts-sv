@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-svelte'
 import Seo from './Seo.svelte'
 
 // No SvelteKit runtime here: the test kit's page, on http://localhost.
-vi.mock( '$app/state', () => import( '$lib/test/app-state.svelte' ) )
+vi.mock( '$app/state', () => import( '#lib/test/app-state.svelte.js' ) )
 
 const tag = ( selector : string, attribute = 'content' ) => document.head.querySelector( selector )?.getAttribute( attribute )
 

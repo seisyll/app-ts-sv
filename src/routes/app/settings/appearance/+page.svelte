@@ -13,16 +13,16 @@
 		styleDescription,
 		styleLabel,
 		STYLES
-	} from '$lib/appearance'
-	import * as Card from '$lib/components/ui/card'
-	import * as Field from '$lib/components/ui/field'
-	import { Switch } from '$lib/components/ui/switch'
-	import { MediaField } from '$lib/components/media'
-	import { SaveBar } from '$lib/components/save-bar'
-	import { BrandMark, FaviconPreview } from '$lib/layout'
-	import { mediaUrl } from '$lib/media'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	} from '#lib/appearance.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import * as Field from '#lib/components/ui/field/index.js'
+	import { Switch } from '#lib/components/ui/switch/index.js'
+	import { MediaField } from '#lib/components/media/index.js'
+	import { SaveBar } from '#lib/components/save-bar/index.js'
+	import { BrandMark, FaviconPreview } from '#lib/layout/index.js'
+	import { mediaUrl } from '#lib/media.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 	import { appearancePageSchema } from './schema'
 
 	let { data } = $props()

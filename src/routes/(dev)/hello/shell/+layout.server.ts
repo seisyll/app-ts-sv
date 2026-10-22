@@ -1,4 +1,4 @@
-import { SIDEBAR_COOKIE_NAME } from '$lib/components/ui/sidebar/constants'
+import { SIDEBAR_COOKIE_NAME } from '#lib/components/ui/sidebar/constants.js'
 import type { LayoutServerLoad } from './$types'
 
 // The sidebar writes its state to a cookie; reading it here keeps a collapsed sidebar

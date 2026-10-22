@@ -1,10 +1,10 @@
 import { json } from '@sveltejs/kit'
-import { parsePageQuery } from '$lib/components/data-table'
-import { m } from '$lib/paraglide/messages'
-import { deviceLabel, methodLabel, outcomeLabel, SIGN_IN_METHODS, SIGN_IN_OUTCOMES, type SignInRow } from '$lib/sign-ins'
-import { describeQuery, exportAll, exportFormat, exportResponse, type ExportColumn } from '$lib/server/export'
-import { requireApiPermission } from '$lib/server/guards'
-import { listSignIns } from '$lib/server/sign-ins'
+import { parsePageQuery } from '#lib/components/data-table/index.js'
+import { m } from '#lib/paraglide/messages.js'
+import { deviceLabel, methodLabel, outcomeLabel, SIGN_IN_METHODS, SIGN_IN_OUTCOMES, type SignInRow } from '#lib/sign-ins.js'
+import { describeQuery, exportAll, exportFormat, exportResponse, type ExportColumn } from '#lib/server/export.js'
+import { requireApiPermission } from '#lib/server/guards.js'
+import { listSignIns } from '#lib/server/sign-ins.js'
 import type { RequestHandler } from './$types'
 
 const columns = () : ExportColumn<SignInRow>[] => [

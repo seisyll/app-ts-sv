@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { NetworkIcon } from '$lib/components/site'
-	import { Separator } from '$lib/components/ui/separator'
+	import { NetworkIcon } from '#lib/components/site/index.js'
+	import { Separator } from '#lib/components/ui/separator/index.js'
 	import type { Site } from '../contract'
 
 	let { site } : { site : Site } = $props()

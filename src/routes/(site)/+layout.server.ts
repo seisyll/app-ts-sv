@@ -1,5 +1,5 @@
-import { signUpEnabled } from '$lib/server/auth'
-import { loadPublicSite } from '$lib/server/site'
+import { signUpEnabled } from '#lib/server/auth.js'
+import { loadPublicSite } from '#lib/server/site.js'
 import type { LayoutServerLoad } from './$types'
 
 // The public site needs no database: it works before db:setup, and on a shared

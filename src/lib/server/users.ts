@@ -1,14 +1,14 @@
 import { randomBytes } from 'node:crypto'
 import { error } from '@sveltejs/kit'
-import type { Paged, PageQuery } from '$lib/components/data-table'
-import { m } from '$lib/paraglide/messages'
-import type { createAuth } from '$lib/server/auth'
-import { avatarUrl, removeAvatar } from '$lib/server/avatars'
-import { db } from '$lib/server/db'
-import { listArgs, type ListSpec } from '$lib/server/list'
-import { sendMail } from '$lib/server/mail/gate'
-import { appUrl } from '$lib/server/url'
-import type { NewUser, UserChange, UserRow } from '$lib/users'
+import type { Paged, PageQuery } from '#lib/components/data-table/index.js'
+import { m } from '#lib/paraglide/messages.js'
+import type { createAuth } from '#lib/server/auth.js'
+import { avatarUrl, removeAvatar } from '#lib/server/avatars.js'
+import { db } from '#lib/server/db/index.js'
+import { listArgs, type ListSpec } from '#lib/server/list.js'
+import { sendMail } from '#lib/server/mail/gate.js'
+import { appUrl } from '#lib/server/url.js'
+import type { NewUser, UserChange, UserRow } from '#lib/users.js'
 
 // The current tenant's users ( RLS scopes `db` ), for the Users table.
 const USERS : ListSpec = {

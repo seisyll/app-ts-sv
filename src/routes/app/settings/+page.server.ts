@@ -1,9 +1,9 @@
-import { signUpEnabled } from '$lib/server/auth'
-import { CLIENT, isBuilt, MODULE_IDS } from '$lib/modules'
-import { requirePermission } from '$lib/server/guards'
-import { jobStatus } from '$lib/server/jobs'
-import { activeModules } from '$lib/server/modules'
-import { tenancy } from '$lib/server/tenant'
+import { signUpEnabled } from '#lib/server/auth.js'
+import { CLIENT, isBuilt, MODULE_IDS } from '#lib/modules.js'
+import { requirePermission } from '#lib/server/guards.js'
+import { jobStatus } from '#lib/server/jobs/index.js'
+import { activeModules } from '#lib/server/modules.js'
+import { tenancy } from '#lib/server/tenant.js'
 import type { PageServerLoad } from './$types'
 
 // Admin-only: a member gets a 404, as if the page didn't exist.

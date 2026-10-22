@@ -1,7 +1,7 @@
-import { lastMonths, type MonthWindow } from '$lib/months'
-import { db } from '$lib/server/db'
-import { log } from '$lib/server/log'
-import { moduleActive } from '$lib/server/modules'
+import { lastMonths, type MonthWindow } from '#lib/months.js'
+import { db } from '#lib/server/db/index.js'
+import { log } from '#lib/server/log.js'
+import { moduleActive } from '#lib/server/modules.js'
 
 /* ―― » The workspace's figures for /app ( under RLS: this workspace only ). Each is its own
         read, and a read that fails is null — the page shows a dash there, never a zero

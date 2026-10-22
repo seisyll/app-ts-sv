@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BrandMark, LocaleSwitcher, ThemeToggle } from '$lib/layout'
+	import { BrandMark, LocaleSwitcher, ThemeToggle } from '#lib/layout/index.js'
 
 	let { data, children } = $props()
 </script>

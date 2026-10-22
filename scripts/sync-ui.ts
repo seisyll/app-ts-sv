@@ -10,8 +10,9 @@
         Updates every folder already in src/lib/components/ui; name more to add them. Writes
         the sheet of every style in STYLES ( src/lib/appearance.ts ). Deterministic, so a
         re-run against a newer checkout re-applies everything:
-        - $lib/registry/ui/…    → $lib/components/ui/…
-        - $lib/registry/hooks/… → $lib/hooks/…
+        - $lib/registry/ui/…    → #lib/components/ui/…
+        - $lib/registry/hooks/… → #lib/hooks/…
+        - any other $lib/…      → #lib/… ( SvelteKit 3's subpath import, package.json )
         - IconPlaceholder       → the per-icon @lucide/svelte import its `lucide` prop names
         - the deliberate divergences in PATCHES, applied by anchor
         It fails rather than writes when an icon has no lucide file, an IconPlaceholder or a
@@ -46,7 +47,7 @@ const kebabIcon = ( pascal : string ) => {
 	return ICON_RENAMES[ kebab ] ?? kebab
 }
 
-const ICON_IMPORT = /^([ \t]*)import IconPlaceholder from ["']\$lib\/components\/icon-placeholder\/icon-placeholder\.svelte["'];?\r?\n/m
+const ICON_IMPORT = /^([ \t]*)import IconPlaceholder from ["'][$#]lib\/components\/icon-placeholder\/icon-placeholder\.svelte["'];?\r?\n/m
 const ICON_ELEMENT = /<IconPlaceholder\b([\s\S]*?)\/>/g
 const LIBRARY_PROP = /^(lucide|tabler|hugeicons|phosphor|remixicon)$/
 
@@ -113,7 +114,7 @@ const PATCHES : Record<string, [ string, string ][]> = {
 }
 
 function transform( body : string, file : string ) : string {
-	let out = body.replace( /\$lib\/registry\/ui\//g, '$lib/components/ui/' ).replace( /\$lib\/registry\/hooks\//g, '$lib/hooks/' )
+	let out = body.replace( /[$#]lib\/registry\/ui\//g, '#lib/components/ui/' ).replace( /[$#]lib\/registry\/hooks\//g, '#lib/hooks/' )
 
 	for ( const [ anchor, replacement ] of PATCHES[ file ] ?? [] ) {
 		if ( !out.includes( anchor ) )
@@ -124,10 +125,10 @@ function transform( body : string, file : string ) : string {
 
 	out = transformIcons( out, file )
 
-	if ( out.includes( '$lib/registry/' ) )
+	if ( /[$#]lib\/registry\//.test( out ) )
 		throw new Error( `${ file }: an unmapped $lib/registry import survived` )
 
-	return out.replace( /\r\n/g, '\n' )
+	return out.replace( /\$lib\//g, '#lib/' ).replace( /\r\n/g, '\n' )
 }
 
 const upstream = readdirSync( SRC_UI, { withFileTypes: true } ).filter( ( entry ) => entry.isDirectory() ).map( ( entry ) => entry.name )

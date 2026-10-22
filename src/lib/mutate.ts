@@ -1,6 +1,6 @@
 import { invalidateAll } from '$app/navigation'
 import { toast } from 'svelte-sonner'
-import { errorMessage, http, type HttpMethod } from '$lib/http'
+import { errorMessage, http, type HttpMethod } from '#lib/http.js'
 
 export type MutateOptions = {
 	method ?     : Exclude<HttpMethod, 'GET'>

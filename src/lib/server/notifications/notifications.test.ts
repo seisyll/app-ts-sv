@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import type { TenantRef } from '$lib/server/db'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
-import { relativeTime } from '$lib/notifications'
+import type { TenantRef } from '#lib/server/db/index.js'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
+import { relativeTime } from '#lib/notifications.js'
 import { renderNotification } from './catalog'
 
 describe( 'renderNotification', () => {
@@ -78,7 +78,7 @@ describe( 'notifications', () => {
 	} )
 
 	it( 'never throws, and writes nothing, for params that don\'t fit', async() => {
-		const log = vi.spyOn( ( await import( '$lib/server/log' ) ).log, 'error' )
+		const log = vi.spyOn( ( await import( '#lib/server/log.js' ) ).log, 'error' )
 
 		await expect( inA( () => service.notify( { type: 'user.joined', params: { name: 1 } as never, to: { users: [ users.mia ] } } ) ) ).resolves.toBeUndefined()
 		expect( log ).toHaveBeenCalled()
@@ -114,7 +114,7 @@ describe( 'notifications', () => {
 
 	// No mail server in these workspaces, so the copies land in the dev outbox.
 	it( 'emails whoever wants it, by the catalog\'s default until they choose', async() => {
-		const { clearOutbox, listOutbox } = await import( '$lib/server/mail/outbox' )
+		const { clearOutbox, listOutbox } = await import( '#lib/server/mail/outbox.js' )
 
 		clearOutbox()
 		await inA( () => service.setPreferences( users.ada, { 'user.joined': { enabled: false, email: true } } ) )

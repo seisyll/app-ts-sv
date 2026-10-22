@@ -1,6 +1,6 @@
 import * as v from 'valibot'
-import { m } from '$lib/paraglide/messages'
-import { roleLabel } from '$lib/users'
+import { m } from '#lib/paraglide/messages.js'
+import { roleLabel } from '#lib/users.js'
 
 /* ―― » What each notification type MEANS ( the fundraiser app's catalog ). The database
         stores only `type` + `params`; this turns them into the title, body and link a

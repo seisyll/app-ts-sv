@@ -1,9 +1,9 @@
 import { error, json } from '@sveltejs/kit'
-import { parsePageQuery } from '$lib/components/data-table'
-import { m } from '$lib/paraglide/messages'
-import { audit } from '$lib/server/audit'
-import { requireApiPermission } from '$lib/server/guards'
-import { listMedia, saveMedia } from '$lib/server/media'
+import { parsePageQuery } from '#lib/components/data-table/index.js'
+import { m } from '#lib/paraglide/messages.js'
+import { audit } from '#lib/server/audit.js'
+import { requireApiPermission } from '#lib/server/guards.js'
+import { listMedia, saveMedia } from '#lib/server/media.js'
 import type { RequestHandler } from './$types'
 
 // GET — the library, one page at a time ( the DataTable query contract; filter by kind ).

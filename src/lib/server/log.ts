@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 import pino, { type DestinationStream, type Logger } from 'pino'
-import { dev } from '$app/environment'
+import { dev } from '$app/env'
 
 /* ―― » The server's log ( the fundraiser app's Trace, on pino ). In production, one JSON
         object per line on stdout — the container's log, which Docker keeps and rotates, and

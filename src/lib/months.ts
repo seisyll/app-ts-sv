@@ -1,4 +1,4 @@
-import { getLocale } from '$lib/paraglide/runtime'
+import { getLocale } from '#lib/paraglide/runtime.js'
 
 /* ―― » Calendar months, for month pickers and charts bucketed by month ( billing-app's ). In
         UTC, as the app's dates are ( APP.timeZone ): in local time the first hours of a month

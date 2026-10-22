@@ -1,8 +1,8 @@
-import { monthFromKey } from '$lib/months'
-import { hasPermission } from '$lib/permissions'
-import { loadDashboard } from '$lib/server/dashboard'
-import { requireUser } from '$lib/server/guards'
-import { moduleActive } from '$lib/server/modules'
+import { monthFromKey } from '#lib/months.js'
+import { hasPermission } from '#lib/permissions.js'
+import { loadDashboard } from '#lib/server/dashboard.js'
+import { requireUser } from '#lib/server/guards.js'
+import { moduleActive } from '#lib/server/modules.js'
 import type { PageServerLoad } from './$types'
 
 // The dashboard, for the month in ?month=YYYY-MM ( default: this one ). People figures are for

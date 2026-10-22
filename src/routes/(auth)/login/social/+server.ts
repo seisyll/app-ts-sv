@@ -1,9 +1,9 @@
 import { error, redirect } from '@sveltejs/kit'
-import { isSocialProvider } from '$lib/social'
-import { auth } from '$lib/server/auth'
-import { safeRedirect } from '$lib/server/guards'
-import { authHeaders } from '$lib/server/sign-in-guard'
-import { enabledSocialProviders } from '$lib/server/social'
+import { isSocialProvider } from '#lib/social.js'
+import { auth } from '#lib/server/auth.js'
+import { safeRedirect } from '#lib/server/guards.js'
+import { authHeaders } from '#lib/server/sign-in-guard.js'
+import { enabledSocialProviders, PROVIDER_ORIGINS } from '#lib/server/social.js'
 import type { RequestHandler } from './$types'
 
 // A provider button ( a plain form, so it works without JavaScript ): off to the provider,
@@ -24,5 +24,5 @@ export const POST : RequestHandler = async( event ) => {
 	if ( !url )
 		error( 500, 'No authorization URL' )
 
-	redirect( 303, url )
+	redirect( 303, url, { external: PROVIDER_ORIGINS } )
 }

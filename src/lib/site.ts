@@ -1,5 +1,5 @@
 import * as v from 'valibot'
-import { m } from '$lib/paraglide/messages'
+import { m } from '#lib/paraglide/messages.js'
 
 /* ―― » What a workspace can say on its public site ( the fundraiser app's static pages and
         contact links, per workspace ): a few pages written with the rich-text editor, and

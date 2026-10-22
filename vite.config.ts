@@ -1,10 +1,11 @@
+import path from 'node:path'
 import { paraglideVitePlugin } from '@inlang/paraglide-js'
 import { sveltekit } from '@sveltejs/kit/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { playwright } from '@vitest/browser-playwright'
 import { loadEnv } from 'vite'
 import { defineConfig, type ViteUserConfig as UserConfig } from 'vitest/config'
-import { MODULE_IDS } from './config/modules.ts'
+import { kitOptions } from './config/kit.ts'
 import { loadClient, modules } from './config/vite.ts'
 
 // The plugins come with the client ( see the bottom ); the rest is the same for every build.
@@ -91,17 +92,17 @@ export default defineConfig( async( { mode } ) => {
 	// Which client this build is for ( CLIENT → config/clients ): its modules and its theme.
 	const client = await loadClient()
 
-	// svelte.config.js points $theme at it, and opens its content security policy only to
-	// the third parties this build's modules use; it's read when sveltekit() loads that file.
-	process.env.APP_THEME = client.theme
-	process.env.APP_MODULES = MODULE_IDS.filter( ( id ) => client.modules[ id ] ).join( ',' )
-
 	return {
 		...config,
+		// The public site's theme, one per build: routes import `#theme`, so the others never
+		// reach the bundle. package.json's `#theme` names the default, which is all tools that
+		// skip this file ( svelte-check ) need: every theme has the same contract.
+		resolve: { alias: [ { find: /^#theme$/, replacement: path.resolve( 'src/lib/themes', client.theme, 'index.ts' ) } ] },
 		plugins: [
 			modules( client ),
 			tailwindcss(),
-			sveltekit(),
+			// Its content security policy opens only to the third parties this build's modules use.
+			sveltekit( kitOptions( client ) ),
 			paraglideVitePlugin( {
 				project : './project.inlang',
 				outdir  : './src/lib/paraglide',

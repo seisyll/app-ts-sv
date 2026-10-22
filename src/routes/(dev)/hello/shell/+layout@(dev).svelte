@@ -2,8 +2,8 @@
 	import { toast } from 'svelte-sonner'
 	import FlaskConicalIcon from '@lucide/svelte/icons/flask-conical'
 	import UserIcon from '@lucide/svelte/icons/user'
-	import { AppShell, LocaleSwitcher, ThemeToggle } from '$lib/layout'
-	import { m } from '$lib/paraglide/messages'
+	import { AppShell, LocaleSwitcher, ThemeToggle } from '#lib/layout/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 	import { BASE, demoNav } from './nav'
 
 	// `@(dev)` resets past the playground layout: the shell owns the whole screen.

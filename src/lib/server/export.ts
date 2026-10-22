@@ -1,6 +1,6 @@
 import writeExcelFile from 'write-excel-file/node'
-import type { PageQuery } from '$lib/components/data-table'
-import { date } from '$lib/format'
+import type { PageQuery } from '#lib/components/data-table/index.js'
+import { date } from '#lib/format.js'
 
 /* ―― » One way out for every list ( billing-app's export.ts ). A list endpoint answers
         `?export=csv|xlsx|json` with the WHOLE filtered set — the search, facets and sort the

@@ -1,14 +1,14 @@
-import { MODULE_IDS, type ModuleId } from '$config/modules'
-import { m } from '$lib/paraglide/messages'
+import { MODULE_IDS, type ModuleId } from '#config/modules.js'
+import { m } from '#lib/paraglide/messages.js'
 
-export { MODULE_IDS, type ModuleId } from '$config/modules'
+export { MODULE_IDS, type ModuleId } from '#config/modules.js'
 
 /* ―― » Which modules are on, browser and server ( registry: config/modules.ts ). Two levels:
           built   — this build ships it ( the client config ). Off: its routes are stubbed and
                     `MODULES.<id>` guards drop its code.
           active  — built AND switched on for the current workspace ( shared tenancy can switch
                     modules off per tenant ). Pages get the list as `data.modules` from the
-                    /app layout; the server asks $lib/server/modules. */
+                    /app layout; the server asks #lib/server/modules. */
 
 export const BUILT : Readonly<Record<ModuleId, boolean>> = __BUILT_MODULES__
 

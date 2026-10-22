@@ -1,4 +1,4 @@
-import { m } from '$lib/paraglide/messages'
+import { m } from '#lib/paraglide/messages.js'
 import type { Customer } from '../../demo-data'
 
 export const planLabel = ( plan : Customer['plan'] ) => ( { free: 'Free', pro: 'Pro', team: 'Team' } )[ plan ]

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NetworkIcon } from '$lib/components/site'
+	import { NetworkIcon } from '#lib/components/site/index.js'
 	import type { Site } from '../contract'
 	import Mark from './Mark.svelte'
 

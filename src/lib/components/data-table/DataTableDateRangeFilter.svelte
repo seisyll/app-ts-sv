@@ -5,12 +5,12 @@
 	import type { DateRange } from 'bits-ui'
 	import CalendarPlusIcon from '@lucide/svelte/icons/calendar-plus'
 	import XIcon from '@lucide/svelte/icons/x'
-	import { Button } from '$lib/components/ui/button'
-	import * as Popover from '$lib/components/ui/popover'
-	import { RangeCalendar } from '$lib/components/ui/range-calendar'
-	import { APP } from '$lib/config'
-	import { date } from '$lib/format'
-	import { m } from '$lib/paraglide/messages'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as Popover from '#lib/components/ui/popover/index.js'
+	import { RangeCalendar } from '#lib/components/ui/range-calendar/index.js'
+	import { APP } from '#lib/config.js'
+	import { date } from '#lib/format.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let {
 		table,

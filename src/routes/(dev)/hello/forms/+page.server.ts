@@ -1,7 +1,7 @@
 import { message, superValidate } from 'sveltekit-superforms'
 import { valibot } from 'sveltekit-superforms/adapters'
-import { m } from '$lib/paraglide/messages'
-import { validateForm } from '$lib/server/forms'
+import { m } from '#lib/paraglide/messages.js'
+import { validateForm } from '#lib/server/forms.js'
 import { newsletterSchema } from './schema'
 import type { Actions, PageServerLoad } from './$types'
 

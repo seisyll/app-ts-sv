@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { Component } from 'svelte'
-	import { Button, type ButtonProps } from '$lib/components/ui/button'
-	import { Spinner } from '$lib/components/ui/spinner'
-	import * as Tooltip from '$lib/components/ui/tooltip'
-	import { cn } from '$lib/utils'
+	import { Button, type ButtonProps } from '#lib/components/ui/button/index.js'
+	import { Spinner } from '#lib/components/ui/spinner/index.js'
+	import * as Tooltip from '#lib/components/ui/tooltip/index.js'
+	import { cn } from '#lib/utils.js'
 
 	// One action on <SaveBar> ( its own Discard/Save and any page-specific extra ).
 	// ≥sm: icon + label. <sm: icon only on a 40px target, label in tooltip + aria-label.

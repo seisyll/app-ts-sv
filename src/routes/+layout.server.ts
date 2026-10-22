@@ -1,4 +1,4 @@
-import { loadBrand } from '$lib/server/brand'
+import { loadBrand } from '#lib/server/brand.js'
 import type { LayoutServerLoad } from './$types'
 
 // The workspace's name, logo and favicon for every page's chrome; null without a database

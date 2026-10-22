@@ -1,8 +1,8 @@
 import { error, json } from '@sveltejs/kit'
-import { m } from '$lib/paraglide/messages'
-import { audit } from '$lib/server/audit'
-import { removeAvatar, setAvatar } from '$lib/server/avatars'
-import { requireApiUser } from '$lib/server/guards'
+import { m } from '#lib/paraglide/messages.js'
+import { audit } from '#lib/server/audit.js'
+import { removeAvatar, setAvatar } from '#lib/server/avatars.js'
+import { requireApiUser } from '#lib/server/guards.js'
 import type { RequestHandler } from './$types'
 
 // POST — your own new avatar: multipart with one `file`, already cropped square ( AvatarField ).

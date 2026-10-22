@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import PrinterIcon from '@lucide/svelte/icons/printer'
-	import { Button } from '$lib/components/ui/button'
-	import { date } from '$lib/format'
-	import { BrandMark } from '$lib/layout'
-	import { m } from '$lib/paraglide/messages'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import { date } from '#lib/format.js'
+	import { BrandMark } from '#lib/layout/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let { data } = $props()
 

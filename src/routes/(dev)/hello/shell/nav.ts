@@ -4,8 +4,8 @@ import InboxIcon from '@lucide/svelte/icons/inbox'
 import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard'
 import SettingsIcon from '@lucide/svelte/icons/settings'
 import UsersIcon from '@lucide/svelte/icons/users'
-import type { NavGroup } from '$lib/layout'
-import { m } from '$lib/paraglide/messages'
+import type { NavGroup } from '#lib/layout/index.js'
+import { m } from '#lib/paraglide/messages.js'
 
 export const BASE = '/hello/shell'
 

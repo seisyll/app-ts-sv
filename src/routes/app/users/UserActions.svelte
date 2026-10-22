@@ -6,13 +6,13 @@
 	import ShieldIcon from '@lucide/svelte/icons/shield'
 	import TrashIcon from '@lucide/svelte/icons/trash-2'
 	import UndoIcon from '@lucide/svelte/icons/undo-2'
-	import * as AlertDialog from '$lib/components/ui/alert-dialog'
-	import { Button } from '$lib/components/ui/button'
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
-	import { mutate } from '$lib/mutate'
-	import { m } from '$lib/paraglide/messages'
-	import type { RoleName } from '$lib/permissions'
-	import { ROLE_NAMES, roleLabel, type UserChange, type UserRow } from '$lib/users'
+	import * as AlertDialog from '#lib/components/ui/alert-dialog/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.js'
+	import { mutate } from '#lib/mutate.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import type { RoleName } from '#lib/permissions.js'
+	import { ROLE_NAMES, roleLabel, type UserChange, type UserRow } from '#lib/users.js'
 
 	// `self`: your own row — no actions ( the endpoint refuses them too ).
 	let { user, self, onchange } : { user : UserRow, self : boolean, onchange : () => void } = $props()

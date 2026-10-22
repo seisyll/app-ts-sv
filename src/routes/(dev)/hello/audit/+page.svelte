@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { AuditEntry } from '$lib/components/audit'
-	import * as Card from '$lib/components/ui/card'
-	import { m } from '$lib/paraglide/messages'
+	import { AuditEntry } from '#lib/components/audit/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	// Entries as the trail stores them: an action, names as they were, what changed.
 	const entries = [

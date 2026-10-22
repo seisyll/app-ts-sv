@@ -16,7 +16,8 @@ COPY . .
 # Which config/clients/<name>.ts to build: modules and theme are fixed at build time.
 ARG CLIENT=default
 ENV CLIENT=${CLIENT}
-# sync first: prisma.config.ts is loaded through tsconfig.json, which extends .svelte-kit's.
+# sync first: prisma.config.ts is loaded through tsconfig.json, which extends the
+# $app/tsconfig that sync writes.
 RUN bunx svelte-kit sync && bunx prisma generate && bun run build
 
 # Production dependencies only. Install scripts run here ( unlike above ): Prisma's fetches

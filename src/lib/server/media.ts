@@ -4,12 +4,12 @@ import path from 'node:path'
 import { Readable } from 'node:stream'
 import { error } from '@sveltejs/kit'
 import sharp from 'sharp'
-import type { Paged, PageQuery } from '$lib/components/data-table'
-import { IMAGE_EDGE, MAX_BYTES, mediaUrl, THUMB_EDGE, type MediaKind, type MediaRow } from '$lib/media'
-import { m } from '$lib/paraglide/messages'
-import { currentTenant, db, tenantTransaction } from '$lib/server/db'
-import { listArgs, type ListSpec } from '$lib/server/list'
-import { ensureRoom } from '$lib/server/storage'
+import type { Paged, PageQuery } from '#lib/components/data-table/index.js'
+import { IMAGE_EDGE, MAX_BYTES, mediaUrl, THUMB_EDGE, type MediaKind, type MediaRow } from '#lib/media.js'
+import { m } from '#lib/paraglide/messages.js'
+import { currentTenant, db, tenantTransaction } from '#lib/server/db/index.js'
+import { listArgs, type ListSpec } from '#lib/server/list.js'
+import { ensureRoom } from '#lib/server/storage.js'
 
 /* ―― » Uploads on disk ( from the fundraiser app's /api/upload, with billing-app's ADR 0011
         rules ). Files live at UPLOAD_ROOT/<tenant>/<yyyy>/<mm>/<id>[-thumb].<ext>:

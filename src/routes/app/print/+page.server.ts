@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit'
-import { m } from '$lib/paraglide/messages'
-import type { PrintTable } from '$lib/server/export'
+import { m } from '#lib/paraglide/messages.js'
+import type { PrintTable } from '#lib/server/export.js'
 import type { PageServerLoad } from './$types'
 
 // A list endpoint of this app, never better-auth's: the only thing ?src may name.

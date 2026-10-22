@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit'
-import { auth } from '$lib/server/auth'
+import { auth } from '#lib/server/auth.js'
 import type { Actions, PageServerLoad } from './$types'
 
 // Sign-out is a POST ( a GET link could be triggered by any page ). The GET shows a button.

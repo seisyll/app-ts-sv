@@ -6,7 +6,7 @@ import svelte from 'eslint-plugin-svelte'
 import { defineConfig } from 'eslint/config'
 import globals from 'globals'
 import ts from 'typescript-eslint'
-import svelteConfig from './svelte.config.js'
+import { compilerOptions } from './config/kit.ts'
 
 /* ―― » The house style ( CLAUDE.md ), as this template writes it — not a style to convert it
         to — plus the recommended correctness rules of typescript-eslint and eslint-plugin-svelte.
@@ -54,7 +54,7 @@ export default defineConfig(
 	},
 	{
 		files          : [ '**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js' ],
-		languageOptions: { parserOptions: { projectService: true, extraFileExtensions: [ '.svelte' ], parser: ts.parser, svelteConfig } },
+		languageOptions: { parserOptions: { projectService: true, extraFileExtensions: [ '.svelte' ], parser: ts.parser, svelteConfig: { compilerOptions } } },
 		rules          : {
 			// A $bindable() prop's default is "assigned" and then assigned again: not useless.
 			'no-useless-assignment': 'off'

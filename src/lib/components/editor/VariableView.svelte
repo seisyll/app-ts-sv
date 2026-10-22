@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { NodeViewProps } from '@tiptap/core'
 	import { NodeViewWrapper } from 'svelte-tiptap'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 
 	// A variable as a chip: its label from the editor's list, its {{name}} on hover.
 	let { node, selected, editor } : NodeViewProps = $props()

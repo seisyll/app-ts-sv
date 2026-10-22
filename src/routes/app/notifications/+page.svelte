@@ -5,11 +5,11 @@
 	import SettingsIcon from '@lucide/svelte/icons/settings-2'
 	import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert'
 	import BellIcon from '@lucide/svelte/icons/bell'
-	import { AllClear, getNotifications, NotificationList } from '$lib/components/notifications'
-	import { Button } from '$lib/components/ui/button'
-	import * as Card from '$lib/components/ui/card'
-	import type { NotificationItem } from '$lib/notifications'
-	import { m } from '$lib/paraglide/messages'
+	import { AllClear, getNotifications, NotificationList } from '#lib/components/notifications/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import type { NotificationItem } from '#lib/notifications.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	// The inbox ( the fundraiser app's ): the same queue as the bell, full size. Handling an
 	// item — opening it, or its check — marks it read and it leaves; history stays stored.

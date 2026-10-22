@@ -1,8 +1,8 @@
 import { Cron } from 'croner'
-import { APP } from '$lib/config'
-import { prisma } from '$lib/server/db'
-import { log, withLog } from '$lib/server/log'
-import { withLock } from '$lib/server/redis'
+import { APP } from '#lib/config.js'
+import { prisma } from '#lib/server/db/index.js'
+import { log, withLog } from '#lib/server/log.js'
+import { withLock } from '#lib/server/redis.js'
 import { JOBS, type Job } from './catalog'
 
 /* ―― » Scheduled jobs ( the fundraiser app's scheduler, without Agenda ): each one in

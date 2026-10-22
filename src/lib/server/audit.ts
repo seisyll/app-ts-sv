@@ -1,10 +1,10 @@
 import type { RequestEvent } from '@sveltejs/kit'
-import type { Paged, PageQuery } from '$lib/components/data-table'
-import type { AuditAction, AuditChanges, AuditRow } from '$lib/audit'
-import { db } from '$lib/server/db'
-import { listArgs, type ListSpec } from '$lib/server/list'
-import { log } from '$lib/server/log'
-import { moduleActive } from '$lib/server/modules'
+import type { Paged, PageQuery } from '#lib/components/data-table/index.js'
+import type { AuditAction, AuditChanges, AuditRow } from '#lib/audit.js'
+import { db } from '#lib/server/db/index.js'
+import { listArgs, type ListSpec } from '#lib/server/list.js'
+import { log } from '#lib/server/log.js'
+import { moduleActive } from '#lib/server/modules.js'
 
 /* ―― » The audit trail's writer ( billing-app's recordAudit ). Called by every handler that
         changes something — there is no automatic interception: what changed is only sayable

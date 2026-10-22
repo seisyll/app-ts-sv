@@ -1,10 +1,10 @@
 import type { RequestEvent } from '@sveltejs/kit'
 import { APIError, createAuthMiddleware, isAPIError } from 'better-auth/api'
-import type { CaptchaWidgetConfig } from '$lib/captcha'
-import { m } from '$lib/paraglide/messages'
-import { activeCaptcha, verifyCaptcha, type ActiveCaptcha } from '$lib/server/captcha'
-import { clear, hit, peek, rateLimit, tenantKey } from '$lib/server/redis'
-import { recordSignIn } from '$lib/server/sign-ins'
+import type { CaptchaWidgetConfig } from '#lib/captcha.js'
+import { m } from '#lib/paraglide/messages.js'
+import { activeCaptcha, verifyCaptcha, type ActiveCaptcha } from '#lib/server/captcha.js'
+import { clear, hit, peek, rateLimit, tenantKey } from '#lib/server/redis.js'
+import { recordSignIn } from '#lib/server/sign-ins.js'
 
 /* ―― » Sign-in protection, in layers ( the fundraiser app's TRUST.md ):
           1. better-auth's per-IP rate limit, on /api/auth/* in production.

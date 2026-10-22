@@ -1,8 +1,8 @@
 import { symmetricDecrypt, symmetricEncrypt } from 'better-auth/crypto'
-import { CAPTCHA_PROVIDER_IDS, type CaptchaProvider, type CaptchaSettingsInput, type CaptchaWidgetConfig } from '$lib/captcha'
-import { currentTenant, db } from '$lib/server/db'
-import { log } from '$lib/server/log'
-import { moduleActive } from '$lib/server/modules'
+import { CAPTCHA_PROVIDER_IDS, type CaptchaProvider, type CaptchaSettingsInput, type CaptchaWidgetConfig } from '#lib/captcha.js'
+import { currentTenant, db } from '#lib/server/db/index.js'
+import { log } from '#lib/server/log.js'
+import { moduleActive } from '#lib/server/modules.js'
 
 /* ―― » The workspace's captcha ( the fundraiser app's Captcha.ts, plus hCaptcha ): set on
         /app/settings/security, checked by the sign-in guard ( src/lib/server/sign-in-guard.ts ).

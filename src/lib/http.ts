@@ -1,4 +1,4 @@
-import { m } from '$lib/paraglide/messages'
+import { m } from '#lib/paraglide/messages.js'
 
 /* ―― » The one fetch wrapper ( ported from billing-app, which ported it from the fundraiser
         app ): builds the request, classifies every failure as an HttpError, times out.

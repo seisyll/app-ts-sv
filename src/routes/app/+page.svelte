@@ -5,10 +5,10 @@
 	import UsersIcon from '@lucide/svelte/icons/users'
 	import { goto } from '$app/navigation'
 	import { navigating } from '$app/state'
-	import { LifecycleRail, MonthPicker, StatBreakdown, StatCards, TrendChart, UnitGrid, type StatCard } from '$lib/components/dashboard'
-	import { formatBytes } from '$lib/media'
-	import { monthFromKey, monthLabel } from '$lib/months'
-	import { m } from '$lib/paraglide/messages'
+	import { LifecycleRail, MonthPicker, StatBreakdown, StatCards, TrendChart, UnitGrid, type StatCard } from '#lib/components/dashboard/index.js'
+	import { formatBytes } from '#lib/media.js'
+	import { monthFromKey, monthLabel } from '#lib/months.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let { data } = $props()
 
@@ -44,7 +44,7 @@
 		<h1 class="text-2xl font-semibold tracking-tight">{m.app_welcome( { name: data.user.name } )}</h1>
 		<p class="text-sm text-muted-foreground">{m.app_welcome_desc( { tenant: data.tenant.name, role: data.user.role } )}</p>
 	</div>
-	<MonthPicker {month} {loading} onchange={( next ) => goto( `?month=${ next.key }`, { replaceState: true, noScroll: true, keepFocus: true } )} />
+	<MonthPicker {month} {loading} onchange={( next ) => goto( `?month=${ next.key }`, { replace: true, reset: false } )} />
 </div>
 
 <StatCards {cards} columns={cards.length === 4 ? 4 : cards.length === 3 ? 3 : 2} />

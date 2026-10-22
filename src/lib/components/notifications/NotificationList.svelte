@@ -1,9 +1,9 @@
 <script lang="ts">
 	import CheckIcon from '@lucide/svelte/icons/check'
-	import type { NotificationItem } from '$lib/notifications'
-	import { relativeTime } from '$lib/notifications'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	import type { NotificationItem } from '#lib/notifications.js'
+	import { relativeTime } from '#lib/notifications.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 	import { dismiss } from './dismiss'
 	import { notificationIcon } from './icons'
 

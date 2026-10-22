@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
-import { definePreset } from '$config/define'
-import { MODULE_IDS, moduleDefinition, routeOwner, withRequirements, type ModuleId } from '$config/modules'
-import { full } from '$config/presets/full'
-import { resolveClient } from '$config/resolve'
-import { routeStub } from '$config/vite'
-import { runWithTenant, type TenantRef } from '$lib/server/db'
+import { definePreset } from '#config/define.js'
+import { MODULE_IDS, moduleDefinition, routeOwner, withRequirements, type ModuleId } from '#config/modules.js'
+import { full } from '#config/presets/full.js'
+import { resolveClient } from '#config/resolve.js'
+import { routeStub } from '#config/vite.js'
+import { runWithTenant, type TenantRef } from '#lib/server/db/index.js'
 
 const THEMES = [ 'aurora', 'plain' ]
 
@@ -78,14 +78,14 @@ describe( 'the workspace\'s modules', () => {
 	const tenant = ( modulesOff : string[] ) : TenantRef => ( { id: 't', slug: 't', name: 'T', modulesOff } )
 
 	it( 'are the build\'s, minus what the workspace switched off and what needs it', async() => {
-		const { activeModules } = await import( '$lib/server/modules' )
+		const { activeModules } = await import( '#lib/server/modules.js' )
 
 		expect( await runWithTenant( tenant( [] ), activeModules ) ).toEqual( MODULE_IDS )
 		expect( await runWithTenant( tenant( [ 'editor', 'site' ] ), activeModules ) ).toEqual( MODULE_IDS.filter( ( id ) => ![ 'editor', 'mail', 'site' ].includes( id ) ) )
 	} )
 
 	it( 'close a module\'s routes for a workspace that switched it off: 404, or its whenOff', async() => {
-		const { handleModules } = await import( '$lib/server/modules' )
+		const { handleModules } = await import( '#lib/server/modules.js' )
 		const resolve = vi.fn( async() => new Response( 'ok' ) )
 		const request = ( id : string, off : string[] ) => runWithTenant( tenant( off ), () => handleModules( { event: { route: { id } }, resolve } as never ) )
 

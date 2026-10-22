@@ -3,7 +3,7 @@ import { defaults, setError, superForm } from 'sveltekit-superforms'
 import { valibot, type Infer } from 'sveltekit-superforms/adapters'
 import { toast } from 'svelte-sonner'
 import type * as v from 'valibot'
-import { errorMessage, isHttpError } from '$lib/http'
+import { errorMessage, isHttpError } from '#lib/http.js'
 
 type Schema = v.GenericSchema<Record<string, unknown>, Record<string, unknown>>
 

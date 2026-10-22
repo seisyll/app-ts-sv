@@ -1,7 +1,7 @@
-import type { Brand, BrandSetting } from '$lib/brand'
-import { mediaUrl } from '$lib/media'
-import { currentTenant, db, tenantTransaction, type TenantRef } from '$lib/server/db'
-import { activeModules } from '$lib/server/modules'
+import type { Brand, BrandSetting } from '#lib/brand.js'
+import { mediaUrl } from '#lib/media.js'
+import { currentTenant, db, tenantTransaction, type TenantRef } from '#lib/server/db/index.js'
+import { activeModules } from '#lib/server/modules.js'
 
 // The stored ids, for the settings form. No row yet: none.
 export async function loadBrandSetting() : Promise<BrandSetting> {

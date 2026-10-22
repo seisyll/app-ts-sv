@@ -1,8 +1,8 @@
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card'
-	import { Button } from '$lib/components/ui/button'
-	import { BrandMark, FaviconPreview } from '$lib/layout'
-	import { m } from '$lib/paraglide/messages'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import { BrandMark, FaviconPreview } from '#lib/layout/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 	import { DEMO_LOGO } from '../../demo-data'
 
 	// The workspace brand's pieces with and without a logo. The real controls are on

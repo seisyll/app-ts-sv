@@ -6,8 +6,8 @@
 
 <script lang="ts">
 	import NumberFlow from '@number-flow/svelte'
-	import { APP } from '$lib/config'
-	import { getLocale } from '$lib/paraglide/runtime'
+	import { APP } from '#lib/config.js'
+	import { getLocale } from '#lib/paraglide/runtime.js'
 
 	/* ―― » A big number that rolls to its new value ( billing-app's Figure, NumberFlow ): when a
 	        filter or a refresh changes it, the eye sees which figure moved and roughly how far.

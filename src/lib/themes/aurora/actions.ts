@@ -1,4 +1,4 @@
-import { getLocale } from '$lib/paraglide/runtime'
+import { getLocale } from '#lib/paraglide/runtime.js'
 
 // Ported from billing-app's landing page. Both leave the server-rendered content as is
 // when motion is reduced or JavaScript never runs.

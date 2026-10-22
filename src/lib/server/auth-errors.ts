@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit'
 import { APIError } from 'better-auth/api'
-import { m } from '$lib/paraglide/messages'
+import { m } from '#lib/paraglide/messages.js'
 
 // What to tell the user when better-auth refuses ( wrong password, banned, throttled ).
 // Credential failures stay vague on purpose: "wrong email or password", never which.
@@ -29,7 +29,7 @@ export const isAuthError = ( error : unknown, code : string ) : boolean => error
 // anything else is rethrown untouched. Use as `.catch( rethrowAuthError )`.
 export function rethrowAuthError( caught : unknown ) : never {
 	if ( caught instanceof APIError )
-		error( caught.statusCode, { message: caught.message || m.http_failed() } )
+		error( caught.statusCode, caught.message || m.http_failed() )
 
 	throw caught
 }

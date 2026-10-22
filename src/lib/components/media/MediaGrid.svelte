@@ -6,10 +6,10 @@
 	import CheckIcon from '@lucide/svelte/icons/check'
 	import FileTextIcon from '@lucide/svelte/icons/file-text'
 	import GlobeIcon from '@lucide/svelte/icons/globe'
-	import { date } from '$lib/format'
-	import { formatBytes, type MediaRow } from '$lib/media'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	import { date } from '#lib/format.js'
+	import { formatBytes, type MediaRow } from '#lib/media.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 
 	/* ―― » The fundraiser app's media grid: masonry ( natural heights ), a square grid, or a
 	        list with details. Each tile is a button; `onselect` decides what a click means —

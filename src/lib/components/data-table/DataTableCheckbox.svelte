@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ComponentProps } from 'svelte'
-	import { Checkbox } from '$lib/components/ui/checkbox'
+	import { Checkbox } from '#lib/components/ui/checkbox/index.js'
 
 	// Centered checkbox for the select column. Controlled: TanStack owns the state.
 	let {

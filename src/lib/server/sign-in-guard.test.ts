@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { hashPassword } from 'better-auth/crypto'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
-import type { TenantRef } from '$lib/server/db'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
+import type { TenantRef } from '#lib/server/db/index.js'
 import type { ActiveCaptcha } from './captcha'
 
 /* ―― » The sign-in guard through better-auth itself ( PGlite, real migrations ): the counts

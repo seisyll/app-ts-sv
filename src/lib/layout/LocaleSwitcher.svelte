@@ -1,8 +1,8 @@
 <script lang="ts">
-	import * as ToggleGroup from '$lib/components/ui/toggle-group'
-	import { languageName } from '$lib/format'
-	import { m } from '$lib/paraglide/messages'
-	import { getLocale, locales, setLocale, type Locale } from '$lib/paraglide/runtime'
+	import * as ToggleGroup from '#lib/components/ui/toggle-group/index.js'
+	import { languageName } from '#lib/format.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { getLocale, locales, setLocale, type Locale } from '#lib/paraglide/runtime.js'
 
 	let { size = 'default' } : { size ?: 'sm' | 'default' } = $props()
 

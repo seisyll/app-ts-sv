@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { RemotePicker, type PickerOption } from '$lib/components/pickers'
-	import * as Card from '$lib/components/ui/card'
-	import { Label } from '$lib/components/ui/label'
-	import { m } from '$lib/paraglide/messages'
+	import { RemotePicker, type PickerOption } from '#lib/components/pickers/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { Label } from '#lib/components/ui/label/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 	import type { Customer } from '../../demo-data'
 
 	// RemotePicker over the mock customers endpoint ( 137 rows, searched and paged there ).

@@ -1,4 +1,4 @@
-import { publishedSitePages } from '$lib/server/site'
+import { publishedSitePages } from '#lib/server/site.js'
 
 /* ―― » The public pages of the workspace this host serves: home, and each page it has
         published ( Settings → Public site ). Built per request, so every workspace in shared

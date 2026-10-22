@@ -5,11 +5,11 @@
 	import { fly } from 'svelte/transition'
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down'
 	import XIcon from '@lucide/svelte/icons/x'
-	import * as AlertDialog from '$lib/components/ui/alert-dialog'
-	import { Button } from '$lib/components/ui/button'
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
-	import { Separator } from '$lib/components/ui/separator'
-	import { m } from '$lib/paraglide/messages'
+	import * as AlertDialog from '#lib/components/ui/alert-dialog/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.js'
+	import { Separator } from '#lib/components/ui/separator/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 	import type { BulkAction, BulkConfirm } from './bulk'
 
 	let {

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { OutcomeBadge, SignInList } from '$lib/components/sign-ins'
-	import * as Card from '$lib/components/ui/card'
-	import { m } from '$lib/paraglide/messages'
-	import { SIGN_IN_OUTCOMES, type SignInRow } from '$lib/sign-ins'
+	import { OutcomeBadge, SignInList } from '#lib/components/sign-ins/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { SIGN_IN_OUTCOMES, type SignInRow } from '#lib/sign-ins.js'
 
 	// Attempts as the log stores them; the admin page lists them in a DataTable.
 	const at = ( minutes : number ) => new Date( Date.UTC( 2026, 9, 21, 9 ) - minutes * 60_000 ).toISOString()

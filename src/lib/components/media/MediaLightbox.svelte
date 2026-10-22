@@ -19,11 +19,11 @@
 	import XIcon from '@lucide/svelte/icons/x'
 	import ZoomInIcon from '@lucide/svelte/icons/zoom-in'
 	import ZoomOutIcon from '@lucide/svelte/icons/zoom-out'
-	import * as AlertDialog from '$lib/components/ui/alert-dialog'
-	import * as Avatar from '$lib/components/ui/avatar'
-	import { date, initials } from '$lib/format'
-	import { formatBytes, type MediaRow } from '$lib/media'
-	import { m } from '$lib/paraglide/messages'
+	import * as AlertDialog from '#lib/components/ui/alert-dialog/index.js'
+	import * as Avatar from '#lib/components/ui/avatar/index.js'
+	import { date, initials } from '#lib/format.js'
+	import { formatBytes, type MediaRow } from '#lib/media.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	/* ―― » The fundraiser app's media viewer: a native modal <dialog> ( focus kept inside,
 	        Escape closes ) over a dark backdrop — dark in every theme, as photos read best on

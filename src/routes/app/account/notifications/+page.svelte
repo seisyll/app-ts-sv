@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner'
 	import { enhance } from '$app/forms'
-	import { SaveBar } from '$lib/components/save-bar'
-	import * as Card from '$lib/components/ui/card'
-	import * as Field from '$lib/components/ui/field'
-	import { Switch } from '$lib/components/ui/switch'
-	import { m } from '$lib/paraglide/messages'
+	import { SaveBar } from '#lib/components/save-bar/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import * as Field from '#lib/components/ui/field/index.js'
+	import { Switch } from '#lib/components/ui/switch/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let { data } = $props()
 

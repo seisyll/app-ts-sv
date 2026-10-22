@@ -1,8 +1,8 @@
-import { isEmptyRichText, mediaIdsIn, parseRichText } from '$lib/editor/document'
-import type { RichText } from '$lib/editor/schema'
-import { baseLocale, getLocale } from '$lib/paraglide/runtime'
-import { currentTenant, db, tenantTransaction } from '$lib/server/db'
-import { SITE_PAGE_KEYS, SOCIAL_NETWORK_IDS, SOCIAL_NETWORKS, type PublicSite, type SitePageKey, type SiteSettingsInput } from '$lib/site'
+import { isEmptyRichText, mediaIdsIn, parseRichText } from '#lib/editor/document.js'
+import type { RichText } from '#lib/editor/schema.js'
+import { baseLocale, getLocale } from '#lib/paraglide/runtime.js'
+import { currentTenant, db, tenantTransaction } from '#lib/server/db/index.js'
+import { SITE_PAGE_KEYS, SOCIAL_NETWORK_IDS, SOCIAL_NETWORKS, type PublicSite, type SitePageKey, type SiteSettingsInput } from '#lib/site.js'
 
 // The settings form's values. No row yet: all blank.
 export async function loadSiteSetting() : Promise<SiteSettingsInput> {

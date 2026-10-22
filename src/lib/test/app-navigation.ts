@@ -1,10 +1,10 @@
 import { onDestroy, onMount } from 'svelte'
 import { vi } from 'vitest'
-import type { BeforeNavigate, AfterNavigate } from '@sveltejs/kit'
+import type { BeforeNavigate, AfterNavigate } from '$app/navigation'
 import { page } from './app-state.svelte'
 
 // Stand-in for `$app/navigation` in component tests:
-//   vi.mock( '$app/navigation', () => import( '$lib/test/app-navigation' ) )
+//   vi.mock( '$app/navigation', () => import( '#lib/test/app-navigation.js' ) )
 // Navigation functions are spies; `attemptNavigation()` runs the registered
 // `beforeNavigate` guards the way SvelteKit would.
 

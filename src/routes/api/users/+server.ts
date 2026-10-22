@@ -1,18 +1,18 @@
 import { error, json } from '@sveltejs/kit'
 import { APIError } from 'better-auth/api'
-import { parsePageQuery } from '$lib/components/data-table'
-import { m } from '$lib/paraglide/messages'
-import { audit } from '$lib/server/audit'
-import { auth } from '$lib/server/auth'
-import { isAuthError, rethrowAuthError } from '$lib/server/auth-errors'
-import { describeQuery, exportAll, exportFormat, exportResponse, type ExportColumn } from '$lib/server/export'
-import { readJson } from '$lib/server/forms'
-import { requireApiPermission } from '$lib/server/guards'
-import { log } from '$lib/server/log'
-import { mailReady } from '$lib/server/mail/gate'
-import { notify } from '$lib/server/notifications/gate'
-import { createUser, listUsers } from '$lib/server/users'
-import { newUserSchema, roleLabel, type UserRow } from '$lib/users'
+import { parsePageQuery } from '#lib/components/data-table/index.js'
+import { m } from '#lib/paraglide/messages.js'
+import { audit } from '#lib/server/audit.js'
+import { auth } from '#lib/server/auth.js'
+import { isAuthError, rethrowAuthError } from '#lib/server/auth-errors.js'
+import { describeQuery, exportAll, exportFormat, exportResponse, type ExportColumn } from '#lib/server/export.js'
+import { readJson } from '#lib/server/forms.js'
+import { requireApiPermission } from '#lib/server/guards.js'
+import { log } from '#lib/server/log.js'
+import { mailReady } from '#lib/server/mail/gate.js'
+import { notify } from '#lib/server/notifications/gate.js'
+import { createUser, listUsers } from '#lib/server/users.js'
+import { newUserSchema, roleLabel, type UserRow } from '#lib/users.js'
 import type { RequestHandler } from './$types'
 
 const status = ( row : UserRow ) => ( row.banned ? m.users_status_banned() : row.invited ? m.users_status_invited() : m.users_status_active() )
@@ -55,18 +55,18 @@ export const POST : RequestHandler = async( event ) => {
 
 	// No password means an invite, which needs a way to send it.
 	if ( !input.password && !await mailReady() )
-		error( 400, { message: m.validation_failed(), errors: { password: [ m.users_password_needed() ] } } )
+		error( 400, m.validation_failed(), { errors: { password: [ m.users_password_needed() ] } } )
 
 	await createUser( auth(), event.request.headers, input, user.name ).catch( ( caught ) => {
 		if ( isAuthError( caught, 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL' ) || isAuthError( caught, 'USER_ALREADY_EXISTS' ) )
-			error( 409, { message: m.validation_failed(), errors: { email: [ m.auth_email_taken() ] } } )
+			error( 409, m.validation_failed(), { errors: { email: [ m.auth_email_taken() ] } } )
 
 		if ( caught instanceof APIError )
 			rethrowAuthError( caught )
 
 		// The invite email didn't go ( createUser already took the account back out ).
 		log.error( { err: caught, scope: 'users' }, 'invite failed' )
-		error( 502, { message: m.users_invite_failed() } )
+		error( 502, m.users_invite_failed() )
 	} )
 
 	// The other admins hear about it; the one who added them already knows.

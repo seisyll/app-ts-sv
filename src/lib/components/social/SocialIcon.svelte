@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SocialProvider } from '$lib/social'
+	import type { SocialProvider } from '#lib/social.js'
 
 	// The providers' own marks. Google's keeps its four colours ( its brand rules ask for it —
 	// like a palette swatch, data, not styling ); Apple's follows the text colour.

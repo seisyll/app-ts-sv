@@ -1,4 +1,4 @@
-import { m } from '$lib/paraglide/messages'
+import { m } from '#lib/paraglide/messages.js'
 
 /* ―― » The audit trail's vocabulary, shared by the server ( src/lib/server/audit.ts ) and the
         page. A row stores its action and facts; it is worded here, in the reader's language,

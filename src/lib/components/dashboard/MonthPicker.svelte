@@ -1,10 +1,10 @@
 <script lang="ts">
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left'
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right'
-	import { Button } from '$lib/components/ui/button'
-	import { Spinner } from '$lib/components/ui/spinner'
-	import { currentMonth, monthLabel, shiftMonth, type MonthWindow } from '$lib/months'
-	import { m } from '$lib/paraglide/messages'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import { Spinner } from '#lib/components/ui/spinner/index.js'
+	import { currentMonth, monthLabel, shiftMonth, type MonthWindow } from '#lib/months.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	/* ―― » Previous / this month / next ( billing-app's MonthPicker ). There is nothing to report
 	        on a month that hasn't happened, so it stops at the current one. */

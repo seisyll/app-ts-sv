@@ -1,6 +1,6 @@
 import type { Component } from 'svelte'
-import type { ModuleId } from '$lib/modules'
-import type { Permission } from '$lib/permissions'
+import type { ModuleId } from '#lib/modules.js'
+import type { Permission } from '#lib/permissions.js'
 
 // One sidebar entry. A leaf has `href` ( a full path, base included — it's compared with
 // page.url.pathname as-is ); a parent has `items` ( one collapsible level ).

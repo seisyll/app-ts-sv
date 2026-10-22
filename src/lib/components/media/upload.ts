@@ -1,7 +1,7 @@
 import { toast } from 'svelte-sonner'
-import { errorMessage, http } from '$lib/http'
-import { prepareImage, type MediaRow } from '$lib/media'
-import { m } from '$lib/paraglide/messages'
+import { errorMessage, http } from '#lib/http.js'
+import { prepareImage, type MediaRow } from '#lib/media.js'
+import { m } from '#lib/paraglide/messages.js'
 
 // Upload files one by one ( each request under the body limit, each with its own answer ),
 // shrinking images first. One progress toast; a failed file says why and the rest go on.

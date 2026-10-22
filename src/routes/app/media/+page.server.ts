@@ -1,7 +1,7 @@
-import { hasPermission } from '$lib/permissions'
-import { requirePermission } from '$lib/server/guards'
-import { listMedia } from '$lib/server/media'
-import { storageUsage } from '$lib/server/storage'
+import { hasPermission } from '#lib/permissions.js'
+import { requirePermission } from '#lib/server/guards.js'
+import { listMedia } from '#lib/server/media.js'
+import { storageUsage } from '#lib/server/storage.js'
 import type { PageServerLoad } from './$types'
 
 // The library. The first page of images comes with the server render; documents load when

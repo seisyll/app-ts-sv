@@ -1,5 +1,5 @@
 import * as v from 'valibot'
-import { m } from '$lib/paraglide/messages'
+import { m } from '#lib/paraglide/messages.js'
 
 // One schema per form, imported by the page ( browser validation ) AND the endpoint /
 // action ( server validation ). Messages come from src/lib/validation.ts unless a rule

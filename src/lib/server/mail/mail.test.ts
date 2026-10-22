@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
-import { parseRichText } from '$lib/editor/document'
-import type { TenantRef } from '$lib/server/db'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import { parseRichText } from '#lib/editor/document.js'
+import type { TenantRef } from '#lib/server/db/index.js'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 import { defaultMailContent, MAIL_TEMPLATE_KEYS, renderMail } from './templates'
 
 // The SMTP boundary: what would have gone to the server.
@@ -221,6 +221,6 @@ describe( 'mail', () => {
 	} )
 
 	it( 'links to BETTER_AUTH_URL outside a request', async() => {
-		expect( ( await import( '$lib/server/url' ) ).appUrl( '/reset-password?token=x' ) ).toBe( 'http://localhost:5173/reset-password?token=x' )
+		expect( ( await import( '#lib/server/url.js' ) ).appUrl( '/reset-password?token=x' ) ).toBe( 'http://localhost:5173/reset-password?token=x' )
 	} )
 } )

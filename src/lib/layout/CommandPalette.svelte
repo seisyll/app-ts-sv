@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Command as CommandPrimitive } from 'bits-ui'
-	import * as Command from '$lib/components/ui/command'
-	import { ScrollArea } from '$lib/components/ui/scroll-area'
-	import { m } from '$lib/paraglide/messages'
+	import * as Command from '#lib/components/ui/command/index.js'
+	import { ScrollArea } from '#lib/components/ui/scroll-area/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 	import type { NavSearchGroup } from './nav'
 	import { navSearchFilter } from './search-score'
 

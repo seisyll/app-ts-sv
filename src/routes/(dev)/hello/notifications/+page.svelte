@@ -1,9 +1,9 @@
 <script lang="ts">
 	import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw'
-	import { AllClear, NotificationBell, NotificationList, NotificationStore } from '$lib/components/notifications'
-	import { Button } from '$lib/components/ui/button'
-	import * as Card from '$lib/components/ui/card'
-	import { m } from '$lib/paraglide/messages'
+	import { AllClear, NotificationBell, NotificationList, NotificationStore } from '#lib/components/notifications/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	// The bell and the queue against a mock inbox ( /api/hello/notifications, in memory ).
 	// The real ones live in /app's header and at /app/notifications.

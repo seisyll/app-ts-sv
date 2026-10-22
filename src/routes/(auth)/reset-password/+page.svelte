@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms'
 	import { valibot } from 'sveltekit-superforms/adapters'
-	import { Alert, AlertDescription } from '$lib/components/ui/alert'
-	import { Button } from '$lib/components/ui/button'
-	import * as Card from '$lib/components/ui/card'
-	import * as Field from '$lib/components/ui/field'
-	import { Input } from '$lib/components/ui/input'
-	import { Spinner } from '$lib/components/ui/spinner'
-	import { resetSchema } from '$lib/auth-schemas'
-	import { m } from '$lib/paraglide/messages'
+	import { Alert, AlertDescription } from '#lib/components/ui/alert/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import * as Field from '#lib/components/ui/field/index.js'
+	import { Input } from '#lib/components/ui/input/index.js'
+	import { Spinner } from '#lib/components/ui/spinner/index.js'
+	import { resetSchema } from '#lib/auth-schemas.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let { data } = $props()
 

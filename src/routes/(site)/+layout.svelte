@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { dev } from '$app/environment'
-	import { Footer, Header, id } from '$theme'
-	import { Button } from '$lib/components/ui/button'
-	import { siteChrome } from '$lib/themes/content'
-	import { m } from '$lib/paraglide/messages'
+	import { dev } from '$app/env'
+	import { Footer, Header, id } from '#theme'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import { siteChrome } from '#lib/themes/content.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let { data, children } = $props()
 
-	// The active theme ( the client config's, see svelte.config.js ), under its .theme-<id> class.
+	// The active theme ( the client config's, see vite.config.ts ), under its .theme-<id> class.
 	const site = $derived( siteChrome( { signUp: data.signUp, logo: data.brand?.logo, site: data.site } ) )
 </script>
 

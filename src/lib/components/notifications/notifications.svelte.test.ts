@@ -1,13 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 import { render } from 'vitest-browser-svelte'
-import type { NotificationItem } from '$lib/notifications'
+import type { NotificationItem } from '#lib/notifications.js'
 import NotificationBell from './NotificationBell.svelte'
 import NotificationList from './NotificationList.svelte'
 import { NotificationStore } from './store.svelte'
 
 // No SvelteKit runtime in a component test: route $app/navigation to the test kit.
-vi.mock( '$app/navigation', () => import( '$lib/test/app-navigation' ) )
+vi.mock( '$app/navigation', () => import( '#lib/test/app-navigation.js' ) )
 
 const item = ( n : number, overrides : Partial<NotificationItem> = {} ) : NotificationItem => ( {
 	id       : `00000000-0000-7000-8000-00000000000${ n }`,

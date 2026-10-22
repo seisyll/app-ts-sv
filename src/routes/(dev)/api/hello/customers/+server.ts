@@ -1,6 +1,6 @@
-import { dev } from '$app/environment'
+import { dev } from '$app/env'
 import { error, json } from '@sveltejs/kit'
-import { calendarDay, parsePageQuery, type Paged } from '$lib/components/data-table'
+import { calendarDay, parsePageQuery, type Paged } from '#lib/components/data-table/index.js'
 import { CUSTOMERS, type Customer } from '../../../demo-data'
 import type { RequestHandler } from './$types'
 

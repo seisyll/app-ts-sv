@@ -1,10 +1,10 @@
-import { SIDEBAR_COOKIE_NAME } from '$lib/components/ui/sidebar/constants'
-import { DEFAULT_ROLE } from '$lib/permissions'
-import { loadAppearance, rememberAppearance } from '$lib/server/appearance'
-import { avatarUrl } from '$lib/server/avatars'
-import { requireUser } from '$lib/server/guards'
-import { activeModules } from '$lib/server/modules'
-import { firstPage } from '$lib/server/notifications/gate'
+import { SIDEBAR_COOKIE_NAME } from '#lib/components/ui/sidebar/constants.js'
+import { DEFAULT_ROLE } from '#lib/permissions.js'
+import { loadAppearance, rememberAppearance } from '#lib/server/appearance.js'
+import { avatarUrl } from '#lib/server/avatars.js'
+import { requireUser } from '#lib/server/guards.js'
+import { activeModules } from '#lib/server/modules.js'
+import { firstPage } from '#lib/server/notifications/gate.js'
 import type { LayoutServerLoad } from './$types'
 
 // hooks.server.ts already turned away signed-out requests; this just reads the user.
@@ -21,7 +21,7 @@ export const load : LayoutServerLoad = async( event ) => {
 	rememberAppearance( event.cookies, appearance.resolved )
 
 	return {
-		// What this workspace has on ( $lib/modules ): the nav and shared pieces check it.
+		// What this workspace has on ( #lib/modules ): the nav and shared pieces check it.
 		modules,
 		appearance,
 		// The bell's first page, so the badge is right on the first paint. Null: no bell.

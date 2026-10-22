@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { CAPTCHA_PROVIDERS, type CaptchaProvider } from '$lib/captcha'
+	import { CAPTCHA_PROVIDERS, type CaptchaProvider } from '#lib/captcha.js'
 
 	// Each provider's script once per page, ready when it says so: Turnstile and hCaptcha
 	// call `onload`, reCAPTCHA's grecaptcha.ready() is awaited where it's used.

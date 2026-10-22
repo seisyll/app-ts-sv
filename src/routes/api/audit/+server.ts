@@ -1,10 +1,10 @@
 import { json } from '@sveltejs/kit'
-import { auditChangeLines, auditResourceLabel, auditSentence, type AuditRow } from '$lib/audit'
-import { parsePageQuery } from '$lib/components/data-table'
-import { m } from '$lib/paraglide/messages'
-import { listAudit } from '$lib/server/audit'
-import { describeQuery, exportAll, exportFormat, exportResponse, type ExportColumn } from '$lib/server/export'
-import { requireApiPermission } from '$lib/server/guards'
+import { auditChangeLines, auditResourceLabel, auditSentence, type AuditRow } from '#lib/audit.js'
+import { parsePageQuery } from '#lib/components/data-table/index.js'
+import { m } from '#lib/paraglide/messages.js'
+import { listAudit } from '#lib/server/audit.js'
+import { describeQuery, exportAll, exportFormat, exportResponse, type ExportColumn } from '#lib/server/export.js'
+import { requireApiPermission } from '#lib/server/guards.js'
 import type { RequestHandler } from './$types'
 
 const columns = () : ExportColumn<AuditRow>[] => [

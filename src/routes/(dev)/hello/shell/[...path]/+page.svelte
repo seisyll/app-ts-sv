@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state'
-	import { navTrail } from '$lib/layout'
-	import { m } from '$lib/paraglide/messages'
+	import { navTrail } from '#lib/layout/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 	import { demoNav } from '../nav'
 
 	let { data } = $props()

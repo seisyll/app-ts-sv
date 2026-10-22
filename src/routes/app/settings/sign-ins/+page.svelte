@@ -3,14 +3,14 @@
 	import LogInIcon from '@lucide/svelte/icons/log-in'
 	import ShieldAlertIcon from '@lucide/svelte/icons/shield-alert'
 	import WifiIcon from '@lucide/svelte/icons/wifi'
-	import { StatCards, TrendChart } from '$lib/components/dashboard'
-	import { DataTable, dateRangeFilter, facetedFilter, TableSource, textCell } from '$lib/components/data-table'
-	import { OutcomeBadge } from '$lib/components/sign-ins'
-	import { renderComponent } from '$lib/components/ui/data-table'
-	import { date } from '$lib/format'
-	import { m } from '$lib/paraglide/messages'
-	import { getLocale } from '$lib/paraglide/runtime'
-	import { deviceLabel, methodLabel, outcomeLabel, SIGN_IN_METHODS, SIGN_IN_OUTCOMES, type SignInRow } from '$lib/sign-ins'
+	import { StatCards, TrendChart } from '#lib/components/dashboard/index.js'
+	import { DataTable, dateRangeFilter, facetedFilter, TableSource, textCell } from '#lib/components/data-table/index.js'
+	import { OutcomeBadge } from '#lib/components/sign-ins/index.js'
+	import { renderComponent } from '#lib/components/ui/data-table/index.js'
+	import { date } from '#lib/format.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { getLocale } from '#lib/paraglide/runtime.js'
+	import { deviceLabel, methodLabel, outcomeLabel, SIGN_IN_METHODS, SIGN_IN_OUTCOMES, type SignInRow } from '#lib/sign-ins.js'
 
 	let { data } = $props()
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages'
+	import { m } from '#lib/paraglide/messages.js'
 
 	/* ―― » The "all clear" moment ( the fundraiser app's ), shown when the last item in the
 	        queue is handled: a check that draws itself in a ring, two soft pulses out. Plays

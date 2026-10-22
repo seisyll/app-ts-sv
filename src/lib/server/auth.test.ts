@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
-import type { TenantRef } from '$lib/server/db'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
+import type { TenantRef } from '#lib/server/db/index.js'
 
 // better-auth end to end on the tenant-scoped database ( PGlite, real migrations ).
 describe( 'auth', () => {

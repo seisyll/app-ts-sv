@@ -1,9 +1,9 @@
-import { dev } from '$app/environment'
+import { dev } from '$app/env'
 import { error, json } from '@sveltejs/kit'
 import * as v from 'valibot'
-import { richTextSchema } from '$lib/editor/document'
-import { renderEmailHTML, renderRichText } from '$lib/editor/render'
-import { readJson } from '$lib/server/forms'
+import { richTextSchema } from '#lib/editor/document.js'
+import { renderEmailHTML, renderRichText } from '#lib/editor/render.js'
+import { readJson } from '#lib/server/forms.js'
 import type { RequestHandler } from './$types'
 
 // The playground's save: the real server path — validate with richTextSchema, then render

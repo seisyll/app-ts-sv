@@ -1,15 +1,15 @@
 import { error, fail, redirect } from '@sveltejs/kit'
 import { message, superValidate } from 'sveltekit-superforms'
 import { valibot } from 'sveltekit-superforms/adapters'
-import { profileSchema } from '$lib/auth-schemas'
-import { m } from '$lib/paraglide/messages'
-import { isSocialProvider, SOCIAL_LABELS } from '$lib/social'
-import { audit } from '$lib/server/audit'
-import { auth } from '$lib/server/auth'
-import { authErrorMessage } from '$lib/server/auth-errors'
-import { validateForm } from '$lib/server/forms'
-import { requireUser } from '$lib/server/guards'
-import { enabledSocialProviders } from '$lib/server/social'
+import { profileSchema } from '#lib/auth-schemas.js'
+import { m } from '#lib/paraglide/messages.js'
+import { isSocialProvider, SOCIAL_LABELS } from '#lib/social.js'
+import { audit } from '#lib/server/audit.js'
+import { auth } from '#lib/server/auth.js'
+import { authErrorMessage } from '#lib/server/auth-errors.js'
+import { validateForm } from '#lib/server/forms.js'
+import { requireUser } from '#lib/server/guards.js'
+import { enabledSocialProviders, PROVIDER_ORIGINS } from '#lib/server/social.js'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load : PageServerLoad = async( event ) => {
@@ -64,7 +64,7 @@ export const actions : Actions = {
 			headers: event.request.headers
 		} )
 
-		redirect( 303, url )
+		redirect( 303, url, { external: PROVIDER_ORIGINS } )
 	},
 	// better-auth refuses to remove the last way to sign in ( and wants a recent sign-in ).
 	unlink: async( event ) => {

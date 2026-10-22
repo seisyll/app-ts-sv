@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge'
-	import { Button } from '$lib/components/ui/button'
-	import * as Card from '$lib/components/ui/card'
-	import { m } from '$lib/paraglide/messages'
-	import { SOCIAL_LABELS, type ConnectedAccount } from '$lib/social'
+	import { Badge } from '#lib/components/ui/badge/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { SOCIAL_LABELS, type ConnectedAccount } from '#lib/social.js'
 	import SocialIcon from './SocialIcon.svelte'
 
 	/* ―― » The profile page's sign-in methods: each provider this deployment offers, connected

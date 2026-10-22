@@ -1,12 +1,12 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import type { TenantRef } from '$lib/server/db'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import type { TenantRef } from '#lib/server/db/index.js'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 
 // The help centre against two workspaces, one with mail off ( PGlite, real migrations ).
 describe( 'help', () => {
 	let t : TestDatabase
 	let help : typeof import( './help' )
-	let runtime : typeof import( '$lib/paraglide/runtime' )
+	let runtime : typeof import( '#lib/paraglide/runtime.js' )
 	let everything : TenantRef
 	let noMail : TenantRef
 
@@ -16,7 +16,7 @@ describe( 'help', () => {
 		noMail = await t.prisma.tenant.create( { data: { slug: 'b', name: 'B', modulesOff: [ 'mail' ] } } )
 		await t.asApp()
 		help = await import( './help' )
-		runtime = await import( '$lib/paraglide/runtime' )
+		runtime = await import( '#lib/paraglide/runtime.js' )
 	}, 60_000 )
 
 	afterAll( async() => {

@@ -1,10 +1,10 @@
-import type { Paged, PageQuery } from '$lib/components/data-table'
-import { log } from '$lib/server/log'
-import type { SignInMethod, SignInOutcome, SignInRow } from '$lib/sign-ins'
-import { lastDays } from '$lib/months'
-import { db } from '$lib/server/db'
-import { listArgs, type ListSpec } from '$lib/server/list'
-import { moduleActive } from '$lib/server/modules'
+import type { Paged, PageQuery } from '#lib/components/data-table/index.js'
+import { log } from '#lib/server/log.js'
+import type { SignInMethod, SignInOutcome, SignInRow } from '#lib/sign-ins.js'
+import { lastDays } from '#lib/months.js'
+import { db } from '#lib/server/db/index.js'
+import { listArgs, type ListSpec } from '#lib/server/list.js'
+import { moduleActive } from '#lib/server/modules.js'
 
 /* ―― » The sign-in log ( billing-app's login log ): every attempt, written by the sign-in
         guard ( password: src/lib/server/sign-in-guard.ts ) and better-auth's session hook

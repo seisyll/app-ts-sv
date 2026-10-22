@@ -1,8 +1,8 @@
 import { json } from '@sveltejs/kit'
 import * as v from 'valibot'
-import { readJson } from '$lib/server/forms'
-import { requireApiUser } from '$lib/server/guards'
-import { markRead } from '$lib/server/notifications'
+import { readJson } from '#lib/server/forms.js'
+import { requireApiUser } from '#lib/server/guards.js'
+import { markRead } from '#lib/server/notifications/index.js'
 import type { RequestHandler } from './$types'
 
 // POST { ids? } — mark the caller's own notifications read: these, or all. Another user's

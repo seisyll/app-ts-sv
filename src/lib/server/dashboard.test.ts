@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import { monthWindow } from '$lib/months'
-import type { TenantRef } from '$lib/server/db'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import { monthWindow } from '#lib/months.js'
+import type { TenantRef } from '#lib/server/db/index.js'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 
 // The dashboard's reads on the tenant-scoped database ( PGlite, real migrations, as the app's
 // RLS role ): this workspace's figures only, and a dash rather than a zero when one fails.
@@ -61,7 +61,7 @@ describe( 'dashboard', () => {
 	} )
 
 	it( 'gives a failed read as null, and the rest still', async() => {
-		const spy = vi.spyOn( ( await import( '$lib/server/log' ) ).log, 'error' )
+		const spy = vi.spyOn( ( await import( '#lib/server/log.js' ) ).log, 'error' )
 		const result = await t.runWithTenant( a, async() => {
 			vi.spyOn( t.db.media, 'groupBy' ).mockRejectedValueOnce( new Error( 'down' ) )
 

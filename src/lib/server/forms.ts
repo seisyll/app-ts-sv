@@ -2,8 +2,8 @@ import { error, fail, type RequestEvent } from '@sveltejs/kit'
 import { superValidate, type SuperValidated } from 'sveltekit-superforms'
 import { valibot, type Infer, type ValidationAdapter } from 'sveltekit-superforms/adapters'
 import * as v from 'valibot'
-import { m } from '$lib/paraglide/messages'
-import { fieldErrors } from '$lib/validation'
+import { m } from '#lib/paraglide/messages.js'
+import { fieldErrors } from '#lib/validation.js'
 
 /* ―― » The server re-validates every write with the SAME schema the form used. Client
         validation is a convenience; this is the trust boundary.
@@ -20,7 +20,7 @@ export async function readJson<S extends Schema>( request : Request, schema : S 
 	const result = await v.safeParseAsync( schema, body )
 
 	if ( !result.success )
-		error( 400, { message: m.validation_failed(), errors: fieldErrors( result.issues ) } )
+		error( 400, m.validation_failed(), { errors: fieldErrors( result.issues ) } )
 
 	return result.output
 }

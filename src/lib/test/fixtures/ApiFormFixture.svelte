@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as v from 'valibot'
-	import { apiForm } from '$lib/forms'
+	import { apiForm } from '#lib/forms.js'
 
 	// Minimal apiForm consumer for forms.svelte.test.ts.
 	let { submit, initial } : { submit : ( data : unknown ) => Promise<unknown>, initial ?: { name ?: string, email ?: string } } = $props()

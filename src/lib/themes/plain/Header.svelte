@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button'
-	import LocaleSwitcher from '$lib/layout/LocaleSwitcher.svelte'
-	import ThemeToggle from '$lib/layout/ThemeToggle.svelte'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import LocaleSwitcher from '#lib/layout/LocaleSwitcher.svelte'
+	import ThemeToggle from '#lib/layout/ThemeToggle.svelte'
 	import type { Site } from '../contract'
 
 	let { site } : { site : Site } = $props()

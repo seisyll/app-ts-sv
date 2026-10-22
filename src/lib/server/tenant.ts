@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit'
-import { assertRlsRole, prisma, type TenantRef } from '$lib/server/db'
+import { assertRlsRole, prisma, type TenantRef } from '#lib/server/db/index.js'
 
 /* ―― » Which tenant a request belongs to — the tenancy switch ( TENANCY in .env ):
           single — one tenant, TENANT_SLUG ( default "default" ). Also the per-client

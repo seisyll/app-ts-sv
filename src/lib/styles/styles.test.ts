@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { PALETTES, RADII, STYLES } from '$lib/appearance'
+import { PALETTES, RADII, STYLES } from '#lib/appearance.js'
 
 // The catalog in src/lib/appearance.ts against the CSS that serves it: a row without its
 // CSS would paint nothing, CSS without a row would ship unused.

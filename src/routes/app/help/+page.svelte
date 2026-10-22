@@ -1,11 +1,11 @@
 <script lang="ts">
 	import SearchIcon from '@lucide/svelte/icons/search'
 	import { page } from '$app/state'
-	import * as Empty from '$lib/components/ui/empty'
-	import * as InputGroup from '$lib/components/ui/input-group'
-	import * as Item from '$lib/components/ui/item'
-	import { HELP_CATEGORIES, helpHref, type HelpCategory } from '$lib/help'
-	import { m } from '$lib/paraglide/messages'
+	import * as Empty from '#lib/components/ui/empty/index.js'
+	import * as InputGroup from '#lib/components/ui/input-group/index.js'
+	import * as Item from '#lib/components/ui/item/index.js'
+	import { HELP_CATEGORIES, helpHref, type HelpCategory } from '#lib/help/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let { data } = $props()
 
@@ -45,7 +45,7 @@
 					{#if index}<Item.Separator />{/if}
 					<Item.Root>
 						{#snippet child( { props } )}
-							<a {...props} href={helpHref( page.url, article.id )} data-sveltekit-replacestate data-sveltekit-noscroll data-sveltekit-keepfocus>
+							<a {...props} href={helpHref( page.url, article.id )} data-sveltekit-replacestate data-sveltekit-reset="false">
 								<Item.Content>
 									<Item.Title>{article.title}</Item.Title>
 									<Item.Description>{article.summary}</Item.Description>

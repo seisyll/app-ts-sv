@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation'
-	import * as Sidebar from '$lib/components/ui/sidebar'
-	import { m } from '$lib/paraglide/messages'
+	import * as Sidebar from '#lib/components/ui/sidebar/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 	import Brand from './Brand.svelte'
 	import { navSearchGroups, type NavGroup } from './nav'
 	import NavMain from './NavMain.svelte'

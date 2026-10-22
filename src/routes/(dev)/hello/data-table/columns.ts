@@ -6,10 +6,10 @@ import {
 	selectColumn,
 	textCell,
 	type FacetedFilterConfig
-} from '$lib/components/data-table'
-import { renderComponent } from '$lib/components/ui/data-table'
-import { date, money } from '$lib/format'
-import { m } from '$lib/paraglide/messages'
+} from '#lib/components/data-table/index.js'
+import { renderComponent } from '#lib/components/ui/data-table/index.js'
+import { date, money } from '#lib/format.js'
+import { m } from '#lib/paraglide/messages.js'
 import type { Customer } from '../../demo-data'
 import { planLabel, statusLabel } from './labels'
 import RowActions from './RowActions.svelte'

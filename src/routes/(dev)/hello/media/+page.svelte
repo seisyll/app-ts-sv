@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner'
-	import { MediaDropzone, MediaFeed, MediaField, MediaGrid, MediaLightbox, type MediaView } from '$lib/components/media'
-	import * as Card from '$lib/components/ui/card'
-	import * as ToggleGroup from '$lib/components/ui/toggle-group'
-	import { ACCEPT, type MediaRow } from '$lib/media'
-	import { m } from '$lib/paraglide/messages'
+	import { MediaDropzone, MediaFeed, MediaField, MediaGrid, MediaLightbox, type MediaView } from '#lib/components/media/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import * as ToggleGroup from '#lib/components/ui/toggle-group/index.js'
+	import { ACCEPT, type MediaRow } from '#lib/media.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	// The media components against a mock library ( /api/hello/media: generated pictures,
 	// nothing stored ). The real library is /app/media.

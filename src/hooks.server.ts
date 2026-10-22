@@ -1,32 +1,27 @@
-import type { Handle, HandleServerError, ServerInit } from '@sveltejs/kit'
-import { sequence } from '@sveltejs/kit/hooks'
+import { sequence, type Handle, type HandleServerError, type ServerInit } from '@sveltejs/kit/hooks'
 import { svelteKitHandler } from 'better-auth/svelte-kit'
-import { building, dev } from '$app/environment'
-import { paraglideMiddleware } from '$lib/paraglide/server'
-import { appearanceClassOf } from '$lib/server/appearance'
-import { auth, type Session } from '$lib/server/auth'
-import { checkEnv } from '$lib/server/env'
-import { startJobs } from '$lib/server/jobs'
-import { log, withLog } from '$lib/server/log'
-import { requireUser } from '$lib/server/guards'
-import { runWithTenant, type TenantRef } from '$lib/server/db'
-import { handleModules } from '$lib/server/modules'
-import { CLIENT_IP } from '$lib/server/sign-in-guard'
-import { resolveTenant } from '$lib/server/tenant'
+import { building, dev } from '$app/env'
+import { paraglideMiddleware } from '#lib/paraglide/server.js'
+import { appearanceClassOf } from '#lib/server/appearance.js'
+import { auth, type Session } from '#lib/server/auth.js'
+import { checkEnv } from '#lib/server/env.js'
+import { startJobs } from '#lib/server/jobs/index.js'
+import { log, withLog } from '#lib/server/log.js'
+import { requireUser } from '#lib/server/guards.js'
+import { runWithTenant, type TenantRef } from '#lib/server/db/index.js'
+import { handleModules } from '#lib/server/modules.js'
+import { CLIENT_IP } from '#lib/server/sign-in-guard.js'
+import { resolveTenant } from '#lib/server/tenant.js'
 // Localised valibot messages for server-side validation ( see src/lib/validation.ts ).
-import '$lib/validation'
+import '#lib/validation.js'
 
 // Resolves the request locale ( cookie → baseLocale ) so `m.*()` and `getLocale()`
 // work in loads, actions and +server.ts handlers, and stamps <html lang>.
-const handleLocale : Handle = ( { event, resolve } ) => paraglideMiddleware( event.request, ( { request, locale } ) => {
-	event.request = request
+const handleLocale : Handle = ( { event, resolve } ) => paraglideMiddleware( event.request, ( { request, locale } ) => resolve( { ...event, request }, {
+	transformPageChunk: ( { html } ) => html.replace( '%paraglide.lang%', locale )
+} ) )
 
-	return resolve( event, {
-		transformPageChunk: ( { html } ) => html.replace( '%paraglide.lang%', locale )
-	} )
-} )
-
-// Paints <html> with the appearance classes from the cookie ( see $lib/server/appearance ).
+// Paints <html> with the appearance classes from the cookie ( see #lib/server/appearance ).
 // Read at transform time, after the loads, so a cookie the /app layout healed this request
 // is the one painted.
 const handleAppearance : Handle = ( { event, resolve } ) => resolve( event, {
@@ -34,9 +29,10 @@ const handleAppearance : Handle = ( { event, resolve } ) => resolve( event, {
 } )
 
 // A broken deployment says so before anyone visits ( src/lib/server/env.ts ); then the
-// scheduled jobs start ( src/lib/server/jobs ).
+// scheduled jobs start ( src/lib/server/jobs ). Neither while building, nor in the server
+// Vitest starts for the component tests: SvelteKit answers there too, but it's no deployment.
 export const init : ServerInit = () => {
-	if ( building )
+	if ( building || process.env.VITEST )
 		return
 
 	checkEnv()
@@ -45,14 +41,15 @@ export const init : ServerInit = () => {
 
 /* ―― » Only real server faults reach the log ( the fundraiser app's handleError ): a 5xx, with
         the request that caused it and the stack. 404s — scanners try every host for
-        WordPress — and other 4xx are the visitor's business, not ours. What the visitor
-        sees is unchanged. */
-export const handleError : HandleServerError = ( { error, status, message } ) => {
+        WordPress — and other 4xx are the visitor's business, not ours. Every error comes
+        through here, error( … ) ones too; returning nothing leaves what the visitor sees to
+        SvelteKit's safe defaults ( "Internal Error" for anything unexpected ). */
+export const handleError : HandleServerError = ( { kind, error } ) => {
+	const status = kind === 'unknown' ? 500 : error.status
+
 	// The request's method, path and id are on the line already ( handleLog ).
 	if ( status >= 500 )
 		log.error( { err: error, status }, 'server fault' )
-
-	return { message }
 }
 
 /* ―― » Each request in its own log context ( src/lib/server/log.ts ): an id — the proxy's, if
@@ -87,7 +84,7 @@ const handleLog : Handle = ( { event, resolve } ) => {
 }
 
 /* ―― » Headers every response carries ( the content security policy is SvelteKit's, from
-        svelte.config.js, and X-Robots-Tag is below ):
+        config/kit.ts, and X-Robots-Tag is below ):
           · nosniff — an upload served as image/webp stays one;
           · the referrer leaves the site as its origin only, never a page's path or query;
           · no camera, microphone, location or payment, which nothing here asks for;

@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit'
-import { isEmptyRichText } from '$lib/editor/document'
-import { renderRichText } from '$lib/editor/render'
-import { loadSitePage } from '$lib/server/site'
-import { SITE_PAGES } from '$lib/site'
+import { isEmptyRichText } from '#lib/editor/document.js'
+import { renderRichText } from '#lib/editor/render.js'
+import { loadSitePage } from '#lib/server/site.js'
+import { SITE_PAGES } from '#lib/site.js'
 import type { PageServerLoad } from './$types'
 
 // Our own renderer's HTML ( never a visitor's ), so dropping its tags and undoing its few

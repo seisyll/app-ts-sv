@@ -1,7 +1,7 @@
 import * as v from 'valibot'
-import { email, name, newPassword } from '$lib/auth-schemas'
-import { m } from '$lib/paraglide/messages'
-import { roles, type RoleName } from '$lib/permissions'
+import { email, name, newPassword } from '#lib/auth-schemas.js'
+import { m } from '#lib/paraglide/messages.js'
+import { roles, type RoleName } from '#lib/permissions.js'
 
 // User administration: shared by the Users page ( browser ) and its endpoints ( server ).
 

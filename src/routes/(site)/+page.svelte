@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Home, shareImage } from '$theme'
+	import { Home, shareImage } from '#theme'
 	import { page } from '$app/state'
-	import { Seo } from '$lib/components/seo'
-	import { APP } from '$lib/config'
-	import { homeContent } from '$lib/themes/content'
+	import { Seo } from '#lib/components/seo/index.js'
+	import { APP } from '#lib/config.js'
+	import { homeContent } from '#lib/themes/content.js'
 
 	let { data } = $props()
 

@@ -4,9 +4,9 @@
 </script>
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card'
-	import { m } from '$lib/paraglide/messages'
-	import { getLocale } from '$lib/paraglide/runtime'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { getLocale } from '#lib/paraglide/runtime.js'
 	import Figure from './Figure.svelte'
 	import { shares } from './shares'
 

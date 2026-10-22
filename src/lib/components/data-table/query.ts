@@ -1,3 +1,5 @@
+import type { ReadonlyURLSearchParams } from '$app/state'
+
 // The paging contract between <DataTable> ( browser ) and a list endpoint ( server ).
 // Isomorphic: TableSource serializes with `toSearchParams`, an endpoint reads the same
 // params back with `parsePageQuery`.
@@ -166,7 +168,7 @@ export function toUrlParams( query : TableQuery, { pageSize = PAGE_SIZE_DEFAULT 
 	return params
 }
 
-export function fromUrlParams( params : URLSearchParams, { pageSize = PAGE_SIZE_DEFAULT } = {} ) : TableQuery {
+export function fromUrlParams( params : ReadonlyURLSearchParams, { pageSize = PAGE_SIZE_DEFAULT } = {} ) : TableQuery {
 	const int = ( key : string, fallback : number ) => {
 		const value = Number.parseInt( params.get( key ) ?? '', 10 )
 

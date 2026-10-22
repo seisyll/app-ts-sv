@@ -1,4 +1,4 @@
-import { getLocale } from '$lib/paraglide/runtime'
+import { getLocale } from '#lib/paraglide/runtime.js'
 
 // A notification as the bell and the inbox see it: already rendered, in the reader's locale.
 export type NotificationItem = {

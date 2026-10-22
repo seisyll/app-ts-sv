@@ -45,7 +45,7 @@ export type MediaRow = {
 
 export const mediaUrl = ( id : string, variant ?: 'thumb' ) => `/media/${ id }${ variant ? `/${ variant }` : '' }`
 
-// "1.4 MB" ( $lib/bytes, where scripts can reach it ).
+// "1.4 MB" ( #lib/bytes, where scripts can reach it ).
 export { formatBytes } from './bytes'
 
 /* ―― » In the browser, before an upload: shrink what is too big to send, and re-encode

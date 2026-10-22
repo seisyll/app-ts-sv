@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit'
 import type { Customer } from '../../demo-data'
-import { fromUrlParams, toPageQuery, toSearchParams, type Paged } from '$lib/components/data-table'
+import { fromUrlParams, toPageQuery, toSearchParams, type Paged } from '#lib/components/data-table/index.js'
 import type { PageLoad } from './$types'
 
 // The server-mode table's first page, loaded here so it is in the server render — the page

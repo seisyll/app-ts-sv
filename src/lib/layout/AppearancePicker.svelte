@@ -15,11 +15,11 @@
 		STYLES,
 		type AppearanceOverride,
 		type AppearanceSetting
-	} from '$lib/appearance'
-	import { buttonVariants } from '$lib/components/ui/button'
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	} from '#lib/appearance.js'
+	import { buttonVariants } from '#lib/components/ui/button/index.js'
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 
 	/* ―― » One person's appearance ( from billing-app's header picker ): colour, style and
 	        corners, each overriding the workspace on its own. Each knob is shaped like its

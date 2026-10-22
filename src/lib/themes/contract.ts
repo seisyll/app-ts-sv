@@ -1,9 +1,9 @@
 import type { Component } from 'svelte'
-import type { SocialLink } from '$lib/site'
+import type { SocialLink } from '#lib/site.js'
 
 /* ―― » The public-site theme contract ( from the fundraiser app's themes/contract.ts ).
         A theme is a folder here whose index.ts exports `id`, `Header`, `Footer` and `Home`
-        with the props below. The (site) routes import it through `$theme` and pass the same
+        with the props below. The (site) routes import it through `#theme` and pass the same
         data to whichever theme is active, so themes stay drop-in swappable.
 
         Themes own the LOOK. The words come from content.ts ( localised, app-level ), so

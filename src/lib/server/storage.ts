@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit'
-import { parseBytes } from '$lib/bytes'
-import { formatBytes } from '$lib/media'
-import { m } from '$lib/paraglide/messages'
-import { currentTenant, db, prisma } from '$lib/server/db'
+import { parseBytes } from '#lib/bytes.js'
+import { formatBytes } from '#lib/media.js'
+import { m } from '#lib/paraglide/messages.js'
+import { currentTenant, db, prisma } from '#lib/server/db/index.js'
 
 /* ―― » How much a workspace may store ( the fundraiser app's storage usage, made per
         workspace: A measured pg_database_size, which under shared tenancy is everyone's ).

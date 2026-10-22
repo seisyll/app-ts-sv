@@ -3,29 +3,29 @@ import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { admin as adminPlugin } from 'better-auth/plugins'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
 import { getRequestEvent } from '$app/server'
-import { APP } from '$lib/config'
-import { ac, DEFAULT_ROLE, roles } from '$lib/permissions'
-import { log } from '$lib/server/log'
-import { SOCIAL_LABELS, type SocialProvider } from '$lib/social'
-import { audit, type AuditEntry } from '$lib/server/audit'
-import { currentTenant, db, tenantTransaction } from '$lib/server/db'
-import type { PrismaClient } from '$lib/server/db/generated/client'
-import { sendMail } from '$lib/server/mail/gate'
-import { notify } from '$lib/server/notifications/gate'
-import { afterAuth, beforeAuth, CLIENT_IP } from '$lib/server/sign-in-guard'
-import { recordSignIn } from '$lib/server/sign-ins'
-import { socialProviders } from '$lib/server/social'
-import { appUrl } from '$lib/server/url'
+import { APP } from '#lib/config.js'
+import { ac, DEFAULT_ROLE, roles } from '#lib/permissions.js'
+import { log } from '#lib/server/log.js'
+import { SOCIAL_LABELS, type SocialProvider } from '#lib/social.js'
+import { audit, type AuditEntry } from '#lib/server/audit.js'
+import { currentTenant, db, tenantTransaction } from '#lib/server/db/index.js'
+import type { PrismaClient } from '#lib/server/db/generated/client.js'
+import { sendMail } from '#lib/server/mail/gate.js'
+import { notify } from '#lib/server/notifications/gate.js'
+import { afterAuth, beforeAuth, CLIENT_IP } from '#lib/server/sign-in-guard.js'
+import { recordSignIn } from '#lib/server/sign-ins.js'
+import { socialProviders } from '#lib/server/social.js'
+import { appUrl } from '#lib/server/url.js'
 
 /* ―― » better-auth on the tenant-scoped database: users, sessions and accounts are rows
         of the request's tenant, so a session from one tenant does not exist in another
         and the same email can sign up separately in each.
 
         Email + password, scrypt hashing ( better-auth's default ), roles from
-        $lib/permissions via the admin plugin. Sign-up is OFF unless AUTH_SIGNUP=true —
+        #lib/permissions via the admin plugin. Sign-up is OFF unless AUTH_SIGNUP=true —
         the fundraiser app shipped with it on and any visitor became a user. With it on,
         a new account must verify its email before it can sign in. Reset, verification and
-        invite links go out through the workspace's mail ( $lib/server/mail ).
+        invite links go out through the workspace's mail ( #lib/server/mail ).
 
         Env: BETTER_AUTH_SECRET ( ≥ 32 chars ), BETTER_AUTH_URL ( single tenancy ),
         AUTH_SIGNUP. Shared tenancy derives the base URL from each request's host; unknown

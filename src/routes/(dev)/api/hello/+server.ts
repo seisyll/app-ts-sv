@@ -1,7 +1,7 @@
-import { dev } from '$app/environment'
+import { dev } from '$app/env'
 import { error, json } from '@sveltejs/kit'
-import { m } from '$lib/paraglide/messages'
-import { getLocale } from '$lib/paraglide/runtime'
+import { m } from '#lib/paraglide/messages.js'
+import { getLocale } from '#lib/paraglide/runtime.js'
 import type { RequestHandler } from './$types'
 
 // Fixed mock data: no database. Only `message`/`locale` ( request locale ) and

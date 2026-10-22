@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SocialNetwork } from '$lib/site'
+	import type { SocialNetwork } from '#lib/site.js'
 
 	/* ―― » The networks' marks, in outline like the lucide icons around them ( lucide ships no
 	        brand marks ). Paths from Tabler Icons 3.44, MIT: github.com/tabler/tabler-icons. */

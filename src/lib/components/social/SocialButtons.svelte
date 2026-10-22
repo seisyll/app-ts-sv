@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button'
-	import { m } from '$lib/paraglide/messages'
-	import { SOCIAL_LABELS, type SocialProvider } from '$lib/social'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { SOCIAL_LABELS, type SocialProvider } from '#lib/social.js'
 	import SocialIcon from './SocialIcon.svelte'
 
 	/* ―― » "Continue with …" under the sign-in and sign-up forms, one per provider this

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { shareImage } from '$theme'
-	import { RichText } from '$lib/components/editor'
-	import { Seo } from '$lib/components/seo'
-	import { APP } from '$lib/config'
-	import { m } from '$lib/paraglide/messages'
+	import { shareImage } from '#theme'
+	import { RichText } from '#lib/components/editor/index.js'
+	import { Seo } from '#lib/components/seo/index.js'
+	import { APP } from '#lib/config.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let { data } = $props()
 

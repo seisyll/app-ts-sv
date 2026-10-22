@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit'
-import { requireApiPermission } from '$lib/server/guards'
-import { readMedia } from '$lib/server/media'
+import { requireApiPermission } from '#lib/server/guards.js'
+import { readMedia } from '#lib/server/media.js'
 import type { RequestHandler } from './$types'
 
 /* ―― » A stored file. The row is looked up through RLS first, so another workspace's id is

@@ -3,9 +3,9 @@
 	import CopyIcon from '@lucide/svelte/icons/copy'
 	import EllipsisIcon from '@lucide/svelte/icons/ellipsis'
 	import EyeIcon from '@lucide/svelte/icons/eye'
-	import { Button } from '$lib/components/ui/button'
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
-	import { m } from '$lib/paraglide/messages'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 	import type { Customer } from '../../demo-data'
 
 	let { customer } : { customer : Customer } = $props()

@@ -13,13 +13,13 @@
 	import LogInIcon from '@lucide/svelte/icons/log-in'
 	import UserIcon from '@lucide/svelte/icons/user'
 	import UsersIcon from '@lucide/svelte/icons/users'
-	import { paintAppearance } from '$lib/appearance'
-	import { AppearancePicker, AppShell, filterNav, LocaleSwitcher, ThemeToggle, type NavGroup } from '$lib/layout'
-	import { NotificationBell, NotificationStore, setNotifications } from '$lib/components/notifications'
-	import { HelpSheet } from '$lib/components/help'
-	import { mutate } from '$lib/mutate'
-	import { m } from '$lib/paraglide/messages'
-	import { hasPermission } from '$lib/permissions'
+	import { paintAppearance } from '#lib/appearance.js'
+	import { AppearancePicker, AppShell, filterNav, LocaleSwitcher, ThemeToggle, type NavGroup } from '#lib/layout/index.js'
+	import { NotificationBell, NotificationStore, setNotifications } from '#lib/components/notifications/index.js'
+	import { HelpSheet } from '#lib/components/help/index.js'
+	import { mutate } from '#lib/mutate.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { hasPermission } from '#lib/permissions.js'
 
 	let { data, children } = $props()
 

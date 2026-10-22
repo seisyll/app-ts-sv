@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit'
-import { prisma } from '$lib/server/db'
-import { redisReady } from '$lib/server/redis'
+import { prisma } from '#lib/server/db/index.js'
+import { redisReady } from '#lib/server/redis.js'
 
 /* ―― » For the container's HEALTHCHECK and anything else that watches the app ( no tenant,
         no session ). Healthy means the database answers within two seconds; Redis is

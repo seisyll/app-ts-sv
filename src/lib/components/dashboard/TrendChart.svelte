@@ -8,13 +8,13 @@
 	import { scaleBand } from 'd3-scale'
 	import { AreaChart, BarChart } from 'layerchart'
 	import { cubicInOut } from 'svelte/easing'
-	import * as Card from '$lib/components/ui/card'
-	import * as Chart from '$lib/components/ui/chart'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import * as Chart from '#lib/components/ui/chart/index.js'
 
 	/* ―― » A figure over time ( billing-app's login trend chart, generalised ): grouped bars —
 	        side by side, never stacked, so two series stay comparable — or an area. `data` is one
 	        row per period: `label` for the axis, then a number per series key. Feed it calendar
-	        periods ( lastMonths / lastDays in $lib/months ), so a quiet one is a zero, not a gap.
+	        periods ( lastMonths / lastDays in #lib/months ), so a quiet one is a zero, not a gap.
 	        Axis labels that would overlap are dropped, keeping the latest. */
 	let { title, description, series, data, kind = 'bar', empty } : {
 		title          : string

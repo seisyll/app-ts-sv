@@ -1,9 +1,9 @@
 import { error, json } from '@sveltejs/kit'
 import * as v from 'valibot'
-import { audit } from '$lib/server/audit'
-import { readJson } from '$lib/server/forms'
-import { requireApiPermission } from '$lib/server/guards'
-import { deleteMedia, setMediaPublic } from '$lib/server/media'
+import { audit } from '#lib/server/audit.js'
+import { readJson } from '#lib/server/forms.js'
+import { requireApiPermission } from '#lib/server/guards.js'
+import { deleteMedia, setMediaPublic } from '#lib/server/media.js'
 import type { RequestHandler } from './$types'
 
 // PATCH { public } — served without a session, or members only again. Answers the row.

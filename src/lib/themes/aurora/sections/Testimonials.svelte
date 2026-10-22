@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { initials } from '$lib/format'
+	import { initials } from '#lib/format.js'
 	import type { HomeContent } from '../../contract'
 	import { reveal } from '../actions'
 	import Eyebrow from '../Eyebrow.svelte'

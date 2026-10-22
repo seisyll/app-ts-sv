@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { AvatarField } from '$lib/components/avatar'
-	import * as Card from '$lib/components/ui/card'
-	import { formatBytes } from '$lib/media'
-	import { m } from '$lib/paraglide/messages'
+	import { AvatarField } from '#lib/components/avatar/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { formatBytes } from '#lib/media.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	// Nothing leaves the page: an "upload" shows the cropped square and its size.
 	let image = $state<string | null>( null )

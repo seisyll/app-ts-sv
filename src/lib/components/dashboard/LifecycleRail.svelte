@@ -5,8 +5,8 @@
 
 <script lang="ts">
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right'
-	import * as Card from '$lib/components/ui/card'
-	import { m } from '$lib/paraglide/messages'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 	import Figure from './Figure.svelte'
 	import { shares } from './shares'
 

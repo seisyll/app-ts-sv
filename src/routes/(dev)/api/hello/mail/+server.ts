@@ -1,10 +1,10 @@
-import { dev } from '$app/environment'
+import { dev } from '$app/env'
 import { error, json } from '@sveltejs/kit'
-import { MAIL_TEMPLATE_KEYS, renderMail, sampleMailValues } from '$lib/server/mail'
-import { clearOutbox, listOutbox, record } from '$lib/server/mail/outbox'
+import { MAIL_TEMPLATE_KEYS, renderMail, sampleMailValues } from '#lib/server/mail/index.js'
+import { clearOutbox, listOutbox, record } from '#lib/server/mail/outbox.js'
 import type { RequestHandler } from './$types'
 
-/* ―― » The dev outbox ( $lib/server/mail/outbox ): what the app sent, newest first. POST adds
+/* ―― » The dev outbox ( #lib/server/mail/outbox ): what the app sent, newest first. POST adds
         one of every email, rendered from its default with made-up values — no database, so
         it works in the playground too. DELETE empties it. */
 export const GET : RequestHandler = () => {

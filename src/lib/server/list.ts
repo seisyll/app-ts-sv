@@ -1,5 +1,5 @@
-import { APP } from '$lib/config'
-import type { PageQuery } from '$lib/components/data-table'
+import { APP } from '#lib/config.js'
+import type { PageQuery } from '#lib/components/data-table/index.js'
 
 /* ―― » A list endpoint's query → Prisma args ( the server half of <DataTable> + TableSource;
         billing-app's page.ts helpers, folded into one call ). Everything the browser can ask

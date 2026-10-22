@@ -1,16 +1,16 @@
 <script lang="ts">
 	import UserPlusIcon from '@lucide/svelte/icons/user-plus'
-	import { Button } from '$lib/components/ui/button'
-	import * as Dialog from '$lib/components/ui/dialog'
-	import * as Field from '$lib/components/ui/field'
-	import { Input } from '$lib/components/ui/input'
-	import * as Select from '$lib/components/ui/select'
-	import { Spinner } from '$lib/components/ui/spinner'
-	import { apiForm } from '$lib/forms'
-	import { http } from '$lib/http'
-	import { m } from '$lib/paraglide/messages'
-	import { DEFAULT_ROLE, type RoleName } from '$lib/permissions'
-	import { newUserSchema, ROLE_NAMES, roleLabel } from '$lib/users'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as Dialog from '#lib/components/ui/dialog/index.js'
+	import * as Field from '#lib/components/ui/field/index.js'
+	import { Input } from '#lib/components/ui/input/index.js'
+	import * as Select from '#lib/components/ui/select/index.js'
+	import { Spinner } from '#lib/components/ui/spinner/index.js'
+	import { apiForm } from '#lib/forms.js'
+	import { http } from '#lib/http.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { DEFAULT_ROLE, type RoleName } from '#lib/permissions.js'
+	import { newUserSchema, ROLE_NAMES, roleLabel } from '#lib/users.js'
 
 	// canInvite: the workspace can send mail, so the password may be left out.
 	let { canInvite, onadded } : { canInvite : boolean, onadded : () => void } = $props()

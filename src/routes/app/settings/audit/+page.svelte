@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { ColumnDef } from '@tanstack/table-core'
-	import { AUDIT_RESOURCES, auditResourceLabel, type AuditRow } from '$lib/audit'
-	import { AuditEntry } from '$lib/components/audit'
-	import { DataTable, dateRangeFilter, facetedFilter, TableSource, textCell } from '$lib/components/data-table'
-	import { renderComponent } from '$lib/components/ui/data-table'
-	import { date } from '$lib/format'
-	import { m } from '$lib/paraglide/messages'
+	import { AUDIT_RESOURCES, auditResourceLabel, type AuditRow } from '#lib/audit.js'
+	import { AuditEntry } from '#lib/components/audit/index.js'
+	import { DataTable, dateRangeFilter, facetedFilter, TableSource, textCell } from '#lib/components/data-table/index.js'
+	import { renderComponent } from '#lib/components/ui/data-table/index.js'
+	import { date } from '#lib/format.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let { data } = $props()
 

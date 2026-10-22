@@ -1,9 +1,9 @@
 <script lang="ts">
 	import KeyRoundIcon from '@lucide/svelte/icons/key-round'
 	import MonitorSmartphoneIcon from '@lucide/svelte/icons/monitor-smartphone'
-	import { date } from '$lib/format'
-	import { m } from '$lib/paraglide/messages'
-	import { deviceLabel, methodLabel, type SignInRow } from '$lib/sign-ins'
+	import { date } from '#lib/format.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { deviceLabel, methodLabel, type SignInRow } from '#lib/sign-ins.js'
 	import OutcomeBadge from './OutcomeBadge.svelte'
 
 	// A person's latest sign-ins, theirs and attempts on their email alike: the device, how,

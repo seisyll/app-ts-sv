@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import type { RequestEvent } from '@sveltejs/kit'
-import type { PageQuery } from '$lib/components/data-table'
-import type { TenantRef } from '$lib/server/db'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import type { PageQuery } from '#lib/components/data-table/index.js'
+import type { TenantRef } from '#lib/server/db/index.js'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 import { changesBetween } from './audit'
 
 describe( 'changesBetween', () => {
@@ -82,7 +82,7 @@ describe( 'audit', () => {
 
 	it( 'never fails the change it describes', async() => {
 		// The log the service sees: the test database reset the module registry.
-		const error = vi.spyOn( ( await import( '$lib/server/log' ) ).log, 'error' )
+		const error = vi.spyOn( ( await import( '#lib/server/log.js' ) ).log, 'error' )
 
 		await expect( inA( () => service.audit( { locals: { session: async() => { throw new Error( 'down' ) } } } as never, { action: 'account.password' } ) ) ).resolves.toBeUndefined()
 		expect( error ).toHaveBeenCalled()

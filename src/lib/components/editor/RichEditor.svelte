@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { MediaRow } from '$lib/media'
+	import type { MediaRow } from '#lib/media.js'
 
 	// What the editor's node views reach through `editor.storage`.
 	declare module '@tiptap/core' {
@@ -43,17 +43,17 @@
 	import TrashIcon from '@lucide/svelte/icons/trash-2'
 	import UnderlineIcon from '@lucide/svelte/icons/underline'
 	import Undo2Icon from '@lucide/svelte/icons/undo-2'
-	import { MediaPicker } from '$lib/components/media'
-	import { Button } from '$lib/components/ui/button'
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
-	import * as InputGroup from '$lib/components/ui/input-group'
-	import * as Popover from '$lib/components/ui/popover'
-	import { Toggle } from '$lib/components/ui/toggle'
-	import { EMPTY_RICH_TEXT } from '$lib/editor/document'
-	import { renderRichText } from '$lib/editor/render'
-	import { richTextExtensions, RichImage, safeHref, Variable, type RichText } from '$lib/editor/schema'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	import { MediaPicker } from '#lib/components/media/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.js'
+	import * as InputGroup from '#lib/components/ui/input-group/index.js'
+	import * as Popover from '#lib/components/ui/popover/index.js'
+	import { Toggle } from '#lib/components/ui/toggle/index.js'
+	import { EMPTY_RICH_TEXT } from '#lib/editor/document.js'
+	import { renderRichText } from '#lib/editor/render.js'
+	import { richTextExtensions, RichImage, safeHref, Variable, type RichText } from '#lib/editor/schema.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 	import ImageView from './ImageView.svelte'
 	import VariableView from './VariableView.svelte'
 	import './rich-text.css'
@@ -61,7 +61,7 @@
 	/* ―― » The rich-text editor ( from the fundraiser app's HTMLEditor and EmailEditor ), one
 	        per instance — several can share a page. `value` is TipTap JSON: bind it, or give
 	        `name` and it posts as JSON with its form. Validate it on the server with
-	        richTextSchema ( $lib/editor/document ) and show it with renderRichText + <RichText />.
+	        richTextSchema ( #lib/editor/document ) and show it with renderRichText + <RichText />.
 
 	          images     — the image button and node, picking from the media library
 	          variables  — a menu of {{name}} chips ( email / notification templates )

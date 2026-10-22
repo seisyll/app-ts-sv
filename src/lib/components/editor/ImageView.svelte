@@ -6,8 +6,8 @@
 	import AlignRightIcon from '@lucide/svelte/icons/align-right'
 	import ImageUpIcon from '@lucide/svelte/icons/image-up'
 	import TrashIcon from '@lucide/svelte/icons/trash-2'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 
 	/* ―― » The fundraiser app's resizable image ( modelled on the Edra editor ): when selected,
 	        corner handles resize it — width only, so the aspect ratio can't drift — and a small

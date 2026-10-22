@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { HelpLink, HelpSheet } from '$lib/components/help'
-	import * as Card from '$lib/components/ui/card'
-	import { HELP_ARTICLES } from '$lib/help'
-	import { m } from '$lib/paraglide/messages'
+	import { HelpLink, HelpSheet } from '#lib/components/help/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { HELP_ARTICLES } from '#lib/help/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 </script>
 
 <Card.Root>

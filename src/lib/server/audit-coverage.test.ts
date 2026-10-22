@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { routeHandlers } from '$lib/test/route-handlers'
+import { routeHandlers } from '#lib/test/route-handlers.js'
 
 /* ―― » A tripwire, not a test of behaviour ( billing-app's audit-coverage ). The trail is
         append-only, which makes a MISSING entry invisible: nothing errors, the page just has

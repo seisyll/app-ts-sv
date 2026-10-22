@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { auditChangeLines, auditSentence, type AuditRow } from '$lib/audit'
+	import { auditChangeLines, auditSentence, type AuditRow } from '#lib/audit.js'
 
 	// One entry of the trail: the sentence in the reader's language, then what changed —
 	// "Role: member → admin", "Secret key: changed" — one line each.

@@ -2,9 +2,9 @@
 	import BookOpenIcon from '@lucide/svelte/icons/book-open'
 	import type { Snippet } from 'svelte'
 	import { page } from '$app/state'
-	import { helpAvailable, helpEntry, helpHref } from '$lib/help'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	import { helpAvailable, helpEntry, helpHref } from '#lib/help/index.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 
 	/* ―― » "How does this work?" next to the thing itself: opens a help article over the page
 	        ( HelpSheet, ?help=<id> ) without leaving it. Renders nothing where the article
@@ -23,8 +23,7 @@
 	<a
 		href={helpHref( page.url, doc )}
 		data-sveltekit-replacestate
-		data-sveltekit-noscroll
-		data-sveltekit-keepfocus
+		data-sveltekit-reset="false"
 		class={cn( 'inline-flex w-fit items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline', className )}
 	>
 		<BookOpenIcon class="size-3.5" />

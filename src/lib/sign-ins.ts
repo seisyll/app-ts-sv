@@ -1,4 +1,4 @@
-import { m } from '$lib/paraglide/messages'
+import { m } from '#lib/paraglide/messages.js'
 
 /* ―― » The sign-in log's vocabulary, shared by the server ( src/lib/server/sign-ins.ts ) and
         its pages. */

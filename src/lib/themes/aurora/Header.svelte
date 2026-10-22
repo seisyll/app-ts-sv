@@ -1,8 +1,8 @@
 <script lang="ts">
 	import MenuIcon from '@lucide/svelte/icons/menu'
 	import XIcon from '@lucide/svelte/icons/x'
-	import LocaleSwitcher from '$lib/layout/LocaleSwitcher.svelte'
-	import { m } from '$lib/paraglide/messages'
+	import LocaleSwitcher from '#lib/layout/LocaleSwitcher.svelte'
+	import { m } from '#lib/paraglide/messages.js'
 	import type { Site } from '../contract'
 	import Mark from './Mark.svelte'
 

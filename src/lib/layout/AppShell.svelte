@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { ComponentProps, Snippet } from 'svelte'
 	import { page } from '$app/state'
-	import * as Breadcrumb from '$lib/components/ui/breadcrumb'
-	import { Separator } from '$lib/components/ui/separator'
-	import * as Sidebar from '$lib/components/ui/sidebar'
+	import * as Breadcrumb from '#lib/components/ui/breadcrumb/index.js'
+	import { Separator } from '#lib/components/ui/separator/index.js'
+	import * as Sidebar from '#lib/components/ui/sidebar/index.js'
 	import AppSidebar from './AppSidebar.svelte'
 	import { navTrail } from './nav'
 	import './sidebar-motion.css'

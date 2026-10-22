@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner'
-	import { RichEditor, RichText, type EditorVariable } from '$lib/components/editor'
-	import { Button } from '$lib/components/ui/button'
-	import * as Card from '$lib/components/ui/card'
-	import { Spinner } from '$lib/components/ui/spinner'
-	import * as ToggleGroup from '$lib/components/ui/toggle-group'
-	import type { RichText as RichTextDoc } from '$lib/editor/schema'
-	import { errorMessage, http, isHttpError } from '$lib/http'
-	import { m } from '$lib/paraglide/messages'
+	import { RichEditor, RichText, type EditorVariable } from '#lib/components/editor/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { Spinner } from '#lib/components/ui/spinner/index.js'
+	import * as ToggleGroup from '#lib/components/ui/toggle-group/index.js'
+	import type { RichText as RichTextDoc } from '#lib/editor/schema.js'
+	import { errorMessage, http, isHttpError } from '#lib/http.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	// The editor, then what the SERVER makes of it: /api/hello/editor validates with
 	// richTextSchema and renders for the app and for an email. Images come from the

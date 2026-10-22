@@ -1,10 +1,10 @@
 <script lang="ts">
 	import SearchIcon from '@lucide/svelte/icons/search'
-	import { Input } from '$lib/components/ui/input'
-	import { Label } from '$lib/components/ui/label'
-	import * as Select from '$lib/components/ui/select'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	import { Input } from '#lib/components/ui/input/index.js'
+	import { Label } from '#lib/components/ui/label/index.js'
+	import * as Select from '#lib/components/ui/select/index.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 	import type { SearchColumnOption } from './types'
 
 	let {

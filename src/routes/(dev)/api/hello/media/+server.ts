@@ -1,4 +1,4 @@
-import { dev } from '$app/environment'
+import { dev } from '$app/env'
 import { error, json } from '@sveltejs/kit'
 import { mockMedia } from '../../../demo-data'
 import type { RequestHandler } from './$types'

@@ -1,7 +1,7 @@
 import { getContext, setContext } from 'svelte'
-import { http } from '$lib/http'
-import type { NotificationItem, NotificationPage } from '$lib/notifications'
-import { m } from '$lib/paraglide/messages'
+import { http } from '#lib/http.js'
+import type { NotificationItem, NotificationPage } from '#lib/notifications.js'
+import { m } from '#lib/paraglide/messages.js'
 
 /* ―― » The bell's and the inbox's shared state ( the fundraiser app's store ): one per /app
         layout, handed down by context — not a module singleton, so concurrent server renders

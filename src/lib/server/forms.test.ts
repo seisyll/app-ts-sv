@@ -21,6 +21,7 @@ describe( 'readJson', () => {
 
 		expect( isHttpError( thrown, 400 ) ).toBe( true )
 		expect( thrown.body ).toEqual( {
+			status : 400,
 			message: 'Please fix the highlighted fields.',
 			errors : { name: [ 'Required' ], email: [ 'Enter a valid email address' ] }
 		} )

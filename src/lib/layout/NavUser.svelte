@@ -21,11 +21,11 @@
 <script lang="ts">
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down'
 	import LogOutIcon from '@lucide/svelte/icons/log-out'
-	import * as Avatar from '$lib/components/ui/avatar'
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
-	import * as Sidebar from '$lib/components/ui/sidebar'
-	import { initials } from '$lib/format'
-	import { m } from '$lib/paraglide/messages'
+	import * as Avatar from '#lib/components/ui/avatar/index.js'
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.js'
+	import * as Sidebar from '#lib/components/ui/sidebar/index.js'
+	import { initials } from '#lib/format.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let {
 		user,

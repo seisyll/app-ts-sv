@@ -1,6 +1,6 @@
-import { debounce } from '$lib/debounce'
-import { errorMessage, http } from '$lib/http'
-import { m } from '$lib/paraglide/messages'
+import { debounce } from '#lib/debounce.js'
+import { errorMessage, http } from '#lib/http.js'
+import { m } from '#lib/paraglide/messages.js'
 import { PAGE_SIZE_DEFAULT, toPageQuery, toSearchParams, type Paged, type TableQuery } from './query'
 
 export type TableSourceOptions<T, S> = {

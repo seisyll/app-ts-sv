@@ -1,10 +1,10 @@
 <script lang="ts">
 	import SearchIcon from '@lucide/svelte/icons/search'
-	import { buttonVariants } from '$lib/components/ui/button'
-	import { Kbd, KbdGroup } from '$lib/components/ui/kbd'
-	import * as Sidebar from '$lib/components/ui/sidebar'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	import { buttonVariants } from '#lib/components/ui/button/index.js'
+	import { Kbd, KbdGroup } from '#lib/components/ui/kbd/index.js'
+	import * as Sidebar from '#lib/components/ui/sidebar/index.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 	import CommandPalette from './CommandPalette.svelte'
 	import type { NavSearchGroup } from './nav'
 

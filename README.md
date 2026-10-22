@@ -108,7 +108,7 @@ export default defineClient( { extends: core, modules: { users: true, media: tru
     `if ( MODULES.media )` and `{#if MODULES.media}` drop the disabled branch and the
     imports only it used.
   - Server code outside a module reaches mail and notifications through their gates,
-    `$lib/server/mail/gate` and `$lib/server/notifications/gate`, which load the module
+    `#lib/server/mail/gate` and `#lib/server/notifications/gate`, which load the module
     with a dynamic import behind the flag.
   - A build without mail contains no nodemailer and no TipTap. `bun run build` with a
     small client is the way to check.
@@ -121,9 +121,9 @@ export default defineClient( { extends: core, modules: { users: true, media: tru
   - Turning a module off also turns off any module that requires it.
   - Changes land within a minute (the tenant cache).
   - Settings shows each module as on, off for this workspace, or not in the build.
-- **Runtime checks:** `isBuilt( id )` (`$lib/modules`) answers for this build;
+- **Runtime checks:** `isBuilt( id )` (`#lib/modules`) answers for this build;
   `activeModules()`, `moduleActive( id )` and `requireModule( id )`
-  (`$lib/server/modules`) answer for the current workspace. Only the literal
+  (`#lib/server/modules`) answer for the current workspace. Only the literal
   `MODULES.<id>` is replaced at build, so `MODULES[ id ]` is a runtime error.
 - **Adding a module:**
   - Add a registry entry and a label in `moduleLabel`.
@@ -138,8 +138,8 @@ export default defineClient( { extends: core, modules: { users: true, media: tru
 `/` is the public site: a landing page (hero, features, how it works, stats, testimonials,
 pricing, FAQ, call to action) with a header and footer. Its look is a **theme**, and only
 the active theme is built: the client config's `theme` (see Modules and clients; `aurora`
-by default) becomes the `$theme` alias (`svelte.config.js`), and the `(site)` routes import
-nothing else. A build without the `site` module has no public site at all.
+by default) is what `#theme` resolves to (`vite.config.ts`; package.json's entry names the
+default, for tools), and the `(site)` routes import nothing else. A build without the `site` module has no public site at all.
 
 | Theme | Look |
 |---|---|
@@ -168,11 +168,11 @@ nothing else. A build without the `site` module has no public site at all.
   - **Footer** — a tagline (blank keeps `site_tagline`), contact email and phone, and
     links to X, Facebook, Instagram, LinkedIn, YouTube, WhatsApp and GitHub (`https://`
     only; blank ones are hidden). A theme's Footer gets them as `site.contact` and
-    `site.social`, with `NetworkIcon` ( `$lib/components/site` ) for the marks.
+    `site.social`, with `NetworkIcon` ( `#lib/components/site` ) for the marks.
 - **Detach:** turn the `site` module off in the client config. To delete it for good,
   remove `src/routes/(site)`, `src/routes/app/settings/site`, `src/lib/themes`,
-  `src/lib/site.ts`, `src/lib/server/site.ts`, `src/params/site_page.ts`, `/hello/site`,
-  `$theme` in `svelte.config.js`, the `site_*` messages, and the `site_settings` and
+  `src/lib/site.ts`, `src/lib/server/site.ts`, the `site_page` matcher in `src/params.ts`,
+  `/hello/site`, `#theme` in `package.json` and `vite.config.ts`, the `site_*` messages, and the `site_settings` and
   `site_pages` tables ( `prisma/schema/Site.prisma` ). The `@fontsource-variable` packages
   other than Inter are aurora's.
 
@@ -251,7 +251,7 @@ fundraiser app's storage, grid and lightbox, with billing-app's rules for what g
 - **Components** (`src/lib/components/media`): `MediaField` (value = media id; `name` posts it
   with a form), `MediaPicker`, `MediaGrid`, `MediaLightbox` (zoom, pan, pinch, swipe, details,
   delete), `MediaDropzone`, `uploadMedia()`, `MediaFeed`.
-- **Avatars** (`src/lib/server/avatars.ts`, `$lib/components/avatar`): on the Profile page a
+- **Avatars** (`src/lib/server/avatars.ts`, `#lib/components/avatar`): on the Profile page a
   person chooses a picture, crops it square in a dialog (`AvatarCropper`: drag, zoom, or the
   arrow and +/− keys) and saves a 512 px WebP — stored as one of the workspace's media files
   (listed in the library, counted in its quota) and made public, since it's shown wherever
@@ -278,7 +278,7 @@ A TipTap editor (from the fundraiser app) that stores **JSON** and renders on th
 ```
 
 ```ts
-const schema = v.object( { body: richTextSchema } )            // validate on save ( $lib/editor/document )
+const schema = v.object( { body: richTextSchema } )            // validate on save ( #lib/editor/document )
 const html = renderRichText( body )                             // in a load → <RichText {html} />
 const mail = renderEmailHTML( body, { baseUrl, values: { customer_name: 'Ada' } } )
 ```
@@ -293,7 +293,7 @@ const mail = renderEmailHTML( body, { baseUrl, values: { customer_name: 'Ada' } 
 - **Images** come from the media library (the picker), resizable and alignable in place.
 - **Email HTML** is inline-styled, with absolute URLs and variables filled in (escaped).
   A recipient has no session, so an image in an email must be a **public** file (see Media);
-  `mediaIdsIn( doc )` (`$lib/editor/document`) lists the files a document shows, for savers
+  `mediaIdsIn( doc )` (`#lib/editor/document`) lists the files a document shows, for savers
   that publish them (site pages, Mail).
 - **Not built:** Markdown output, collaborative editing, tables, alt-text editing, keyboard
   resizing of images.
@@ -668,7 +668,7 @@ sign-up forms, and **Connected accounts** on the profile page.
 - **Apple:** the client secret is a JWT signed with your key that lasts at most six months —
   `bun run apple:secret -- --team … --key-id … --client-id … --key AuthKey.p8` makes one; set a
   reminder to make the next. Apple posts its answer from `appleid.apple.com`, so
-  `svelte.config.js` trusts that origin for form posts (only in a build with the module).
+  `config/kit.ts` trusts that origin for form posts (only in a build with the module).
 - **Not built:** more providers (better-auth has ~35: a provider here is one entry in
   `socialProviders()`, a label and an icon), per-workspace OAuth apps.
 - **Detach:** turn the `social` module off (no providers, whatever the environment says), or
@@ -741,7 +741,7 @@ Cron jobs inside the app process (`src/lib/server/jobs`, on croner), in `APP.tim
   `src/lib/server/redis.ts`), so only one runs it. Without Redis it simply runs — so a job
   must be harmless to run twice.
 - **Per workspace:** a job goes through the workspaces with `eachTenant( fn )`
-  (`$lib/server/db`), each under its own row-level security, never across them.
+  (`#lib/server/db`), each under its own row-level security, never across them.
 - **Watched:** every run is logged (with `job` on its lines) and its outcome kept in
   `job_runs`; Settings shows each job's schedule, next run and last result — in single
   tenancy, where the admin is the operator.
@@ -769,7 +769,7 @@ failed' )` — `err` keeps its stack.
 
 ## SEO
 
-- **`<Seo>`** (`$lib/components/seo`): a page's title, description, canonical URL (this host,
+- **`<Seo>`** (`#lib/components/seo`): a page's title, description, canonical URL (this host,
   no query), Open Graph and Twitter tags, and optional JSON-LD — in the server-rendered HTML
   crawlers read. Render it from **pages only**: `<svelte:head>` appends, so a layout writing
   meta too would leave duplicates. The home page sends `Organization` data (name, address,
@@ -786,7 +786,7 @@ failed' )` — `err` keeps its stack.
 
 ## Security
 
-- **Content security policy** (`svelte.config.js`, enforced): scripts only from the app — its
+- **Content security policy** (`config/kit.ts`, enforced): scripts only from the app — its
   inline ones carry a per-request nonce — plus the captcha providers in a build with
   `captcha`. Inline styles are allowed (Svelte transitions need them); images from anywhere
   over https (rich text may show one); no framing (`frame-ancestors 'none'`), no plugins,
@@ -851,8 +851,8 @@ Put the test next to the file it tests. Component tests have no SvelteKit runtim
 route `$app/*` to the test kit in `src/lib/test/`:
 
 ```ts
-vi.mock( '$app/state', () => import( '$lib/test/app-state.svelte' ) )      // page, navigating, setPath()
-vi.mock( '$app/navigation', () => import( '$lib/test/app-navigation' ) )   // goto spy, attemptNavigation()
+vi.mock( '$app/state', () => import( '#lib/test/app-state.svelte.js' ) )      // page, navigating, setPath()
+vi.mock( '$app/navigation', () => import( '#lib/test/app-navigation.js' ) )   // goto spy, attemptNavigation()
 ```
 
 `render()` from `vitest-browser-svelte` returns a promise — `await` it. Query the way a

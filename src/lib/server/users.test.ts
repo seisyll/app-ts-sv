@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import type { PageQuery } from '$lib/components/data-table'
-import type { TenantRef } from '$lib/server/db'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import type { PageQuery } from '#lib/components/data-table/index.js'
+import type { TenantRef } from '#lib/server/db/index.js'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 
 // The SMTP boundary, for an invite that can't be sent.
 const smtp = vi.hoisted( () => ( { fail: null as Error | null } ) )

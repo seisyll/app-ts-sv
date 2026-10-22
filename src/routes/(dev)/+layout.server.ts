@@ -1,7 +1,7 @@
-import { dev } from '$app/environment'
+import { dev } from '$app/env'
 import { error } from '@sveltejs/kit'
-import { parseAppearance } from '$lib/appearance'
-import { APPEARANCE_COOKIE } from '$lib/server/appearance'
+import { parseAppearance } from '#lib/appearance.js'
+import { APPEARANCE_COOKIE } from '#lib/server/appearance.js'
 import type { LayoutServerLoad } from './$types'
 
 // Playground only: every page under (dev) 404s outside `vite dev`. The look on screen ( the

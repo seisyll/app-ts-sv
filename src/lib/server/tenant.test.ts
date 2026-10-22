@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { isHttpError } from '@sveltejs/kit'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 import { normaliseHost, subdomainOf } from './tenant'
 
 describe( 'normaliseHost / subdomainOf', () => {

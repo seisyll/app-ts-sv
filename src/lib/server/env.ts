@@ -1,5 +1,5 @@
-import { parseBytes } from '$lib/bytes'
-import { log } from '$lib/server/log'
+import { parseBytes } from '#lib/bytes.js'
+import { log } from '#lib/server/log.js'
 
 /* ―― » The environment, checked once when the server starts ( hooks.server.ts `init`, from
         billing-app's env.ts ). Everything else still reads process.env where it's used; this

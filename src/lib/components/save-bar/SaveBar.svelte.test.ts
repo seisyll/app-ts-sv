@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
 import { render } from 'vitest-browser-svelte'
-import { attemptNavigation, goto, resetNavigation } from '$lib/test/app-navigation'
+import { attemptNavigation, goto, resetNavigation } from '#lib/test/app-navigation.js'
 import SaveBar from './SaveBar.svelte'
 
 // No SvelteKit runtime in a component test: route `$app/*` to the test kit.
-vi.mock( '$app/navigation', () => import( '$lib/test/app-navigation' ) )
-vi.mock( '$app/state', () => import( '$lib/test/app-state.svelte' ) )
+vi.mock( '$app/navigation', () => import( '#lib/test/app-navigation.js' ) )
+vi.mock( '$app/state', () => import( '#lib/test/app-state.svelte.js' ) )
 
 const save = () => page.getByRole( 'button', { name: 'Save' } )
 const discard = () => page.getByRole( 'button', { name: 'Discard' } )

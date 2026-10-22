@@ -1,10 +1,10 @@
 <script lang="ts">
 	import TrashIcon from '@lucide/svelte/icons/trash-2'
-	import { DataTable, runBulk, TableSource, type BulkAction } from '$lib/components/data-table'
-	import { HelpLink } from '$lib/components/help'
-	import { http } from '$lib/http'
-	import { m } from '$lib/paraglide/messages'
-	import type { UserRow } from '$lib/users'
+	import { DataTable, runBulk, TableSource, type BulkAction } from '#lib/components/data-table/index.js'
+	import { HelpLink } from '#lib/components/help/index.js'
+	import { http } from '#lib/http.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import type { UserRow } from '#lib/users.js'
 	import AddUserDialog from './AddUserDialog.svelte'
 	import { userColumns, userFilters, userSearch } from './columns'
 

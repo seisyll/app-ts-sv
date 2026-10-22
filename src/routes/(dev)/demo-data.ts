@@ -1,5 +1,5 @@
-import type { MediaRow } from '$lib/media'
-import type { NotificationItem } from '$lib/notifications'
+import type { MediaRow } from '#lib/media.js'
+import type { NotificationItem } from '#lib/notifications.js'
 
 // Deterministic fake customers for the playground ( no faker: same rows every run ).
 export type Customer = {

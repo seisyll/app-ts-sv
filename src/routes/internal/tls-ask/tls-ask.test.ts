@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 
 // What Caddy may fetch a certificate for, and what /health says ( PGlite, real migrations ).
 describe( 'deploy endpoints', () => {

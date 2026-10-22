@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 import { render } from 'vitest-browser-svelte'
 import { toast } from 'svelte-sonner'
-import { HttpError } from '$lib/http'
-import ApiFormFixture from '$lib/test/fixtures/ApiFormFixture.svelte'
+import { HttpError } from '#lib/http.js'
+import ApiFormFixture from '#lib/test/fixtures/ApiFormFixture.svelte'
 
 vi.mock( 'svelte-sonner', () => ( { toast: { success: vi.fn(), error: vi.fn() } } ) )
 

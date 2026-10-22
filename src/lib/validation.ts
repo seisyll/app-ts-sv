@@ -1,5 +1,5 @@
 import * as v from 'valibot'
-import { m } from '$lib/paraglide/messages'
+import { m } from '#lib/paraglide/messages.js'
 
 /* ―― » Localised default messages for valibot, through valibot's own i18n hooks. Schemas
         stay plain — v.pipe( v.string(), v.nonEmpty(), v.email() ) — and every message is

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { PageQuery } from '$lib/components/data-table'
+import type { PageQuery } from '#lib/components/data-table/index.js'
 import { listArgs, startOfDay, type ListSpec } from './list'
 
 const query = ( overrides : Partial<PageQuery> = {} ) : PageQuery => ( { skip: 20, take: 10, search: '', searchBy: 'all', filters: {}, ...overrides } )

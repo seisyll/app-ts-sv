@@ -1,5 +1,5 @@
 import type { Cookies } from '@sveltejs/kit'
-import { dev } from '$app/environment'
+import { dev } from '$app/env'
 import {
 	appearanceClasses,
 	DEFAULT_SETTING,
@@ -14,9 +14,9 @@ import {
 	type AppearanceOverride,
 	type AppearanceSetting,
 	type AppearanceState
-} from '$lib/appearance'
-import { currentTenant, db } from '$lib/server/db'
-import { moduleActive } from '$lib/server/modules'
+} from '#lib/appearance.js'
+import { currentTenant, db } from '#lib/server/db/index.js'
+import { moduleActive } from '#lib/server/modules.js'
 
 /* ―― » The appearance cookie is an SSR CACHE, never the truth: <html> needs its classes in
         the server-rendered response ( applied in the browser, every load would flash the

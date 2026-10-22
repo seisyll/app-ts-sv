@@ -1,11 +1,11 @@
 import { message, superValidate } from 'sveltekit-superforms'
 import { valibot } from 'sveltekit-superforms/adapters'
-import { m } from '$lib/paraglide/messages'
-import { audit, changesBetween } from '$lib/server/audit'
-import { validateForm } from '$lib/server/forms'
-import { requirePermission } from '$lib/server/guards'
-import { loadSiteSetting, saveSiteSetting, writtenSitePages } from '$lib/server/site'
-import { SITE_PAGE_KEYS, SITE_PAGES, SOCIAL_NETWORK_IDS, SOCIAL_NETWORKS, siteSettingsSchema, type SiteSettingsInput } from '$lib/site'
+import { m } from '#lib/paraglide/messages.js'
+import { audit, changesBetween } from '#lib/server/audit.js'
+import { validateForm } from '#lib/server/forms.js'
+import { requirePermission } from '#lib/server/guards.js'
+import { loadSiteSetting, saveSiteSetting, writtenSitePages } from '#lib/server/site.js'
+import { SITE_PAGE_KEYS, SITE_PAGES, SOCIAL_NETWORK_IDS, SOCIAL_NETWORKS, siteSettingsSchema, type SiteSettingsInput } from '#lib/site.js'
 import type { Actions, PageServerLoad } from './$types'
 
 // The trail reads one field per link, named for its network: "GitHub: — → https://…".

@@ -45,7 +45,7 @@ export async function createTestDatabase() {
 	process.env.DATABASE_POOL_MAX = '1'
 	vi.resetModules()
 
-	const db = await import( '$lib/server/db' )
+	const db = await import( '#lib/server/db/index.js' )
 
 	return {
 		...db,

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import UploadIcon from '@lucide/svelte/icons/upload'
-	import { cn } from '$lib/utils'
+	import { cn } from '#lib/utils.js'
 
 	/* ―― » Drop files, or click to choose them: a <label> around a real file input, so the
 	        keyboard and screen readers get the native picker. No upload library — the

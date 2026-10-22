@@ -3,12 +3,12 @@
 	import DicesIcon from '@lucide/svelte/icons/dices'
 	import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert'
 	import UsersIcon from '@lucide/svelte/icons/users'
-	import { Figure, LifecycleRail, MonthPicker, StatBreakdown, StatCards, TrendChart, UnitGrid } from '$lib/components/dashboard'
-	import { Button } from '$lib/components/ui/button'
-	import * as Field from '$lib/components/ui/field'
-	import { Switch } from '$lib/components/ui/switch'
-	import { currentMonth, lastMonths, monthLabel } from '$lib/months'
-	import { m } from '$lib/paraglide/messages'
+	import { Figure, LifecycleRail, MonthPicker, StatBreakdown, StatCards, TrendChart, UnitGrid } from '#lib/components/dashboard/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as Field from '#lib/components/ui/field/index.js'
+	import { Switch } from '#lib/components/ui/switch/index.js'
+	import { currentMonth, lastMonths, monthLabel } from '#lib/months.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	// The dashboard pieces on made-up figures. Reroll changes every number ( watch them roll );
 	// "Read failed" shows what a page says when the query behind a figure throws.

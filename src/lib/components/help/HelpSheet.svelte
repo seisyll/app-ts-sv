@@ -2,11 +2,11 @@
 	import './help-article.css'
 	import { goto } from '$app/navigation'
 	import { page } from '$app/state'
-	import * as Sheet from '$lib/components/ui/sheet'
-	import { Skeleton } from '$lib/components/ui/skeleton'
-	import { helpHref } from '$lib/help'
-	import { errorMessage, http } from '$lib/http'
-	import { m } from '$lib/paraglide/messages'
+	import * as Sheet from '#lib/components/ui/sheet/index.js'
+	import { Skeleton } from '#lib/components/ui/skeleton/index.js'
+	import { helpHref } from '#lib/help/index.js'
+	import { errorMessage, http } from '#lib/http.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	/* ―― » The help article named by ?help=<id>, over whatever page is open ( mounted once,
 	        in the /app layout ). The URL is its only state: HelpLink and the help centre link
@@ -36,7 +36,7 @@
 		)
 	} )
 
-	const close = () => goto( helpHref( page.url, null ), { replaceState: true, noScroll: true, keepFocus: true } )
+	const close = () => goto( helpHref( page.url, null ), { replace: true, reset: false } )
 </script>
 
 <Sheet.Root open={!!id} onOpenChange={( open ) => !open && close()}>

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import CheckIcon from '@lucide/svelte/icons/check'
-	import { Badge } from '$lib/components/ui/badge'
-	import { Button } from '$lib/components/ui/button'
-	import * as Card from '$lib/components/ui/card'
-	import { getLocale } from '$lib/paraglide/runtime'
+	import { Badge } from '#lib/components/ui/badge/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { getLocale } from '#lib/paraglide/runtime.js'
 	import type { HomeContent } from '../contract'
 
 	let { content } : { content : HomeContent } = $props()

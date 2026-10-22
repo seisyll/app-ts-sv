@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
 import { render } from 'vitest-browser-svelte'
-import { IMAGE_EDGE, prepareImage, type MediaRow } from '$lib/media'
+import { IMAGE_EDGE, prepareImage, type MediaRow } from '#lib/media.js'
 import MediaField from './MediaField.svelte'
 import MediaGrid from './MediaGrid.svelte'
 import MediaLightbox from './MediaLightbox.svelte'

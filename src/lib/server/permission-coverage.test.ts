@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { routeHandlers } from '$lib/test/route-handlers'
+import { routeHandlers } from '#lib/test/route-handlers.js'
 
 /* ―― » A ratchet on who may call what ( the fundraiser app's API permission sweep, crossed
         with billing-app's authorization ratchet ). Removing a check changes nothing anyone

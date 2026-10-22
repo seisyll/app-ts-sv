@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { isHttpError, isRedirect, type RequestEvent } from '@sveltejs/kit'
-import { hasPermission } from '$lib/permissions'
+import { hasPermission } from '#lib/permissions.js'
 import type { Session } from './auth'
 import { requireApiPermission, requireApiUser, requirePermission, requireUser, safeRedirect } from './guards'
 

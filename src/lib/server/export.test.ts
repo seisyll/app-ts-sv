@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { PageQuery } from '$lib/components/data-table'
+import type { PageQuery } from '#lib/components/data-table/index.js'
 import { describeQuery, exportAll, exportFormat, exportResponse, type ExportColumn } from './export'
 
 type Row = { name : string, amount : number, joined : Date }

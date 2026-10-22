@@ -1,4 +1,4 @@
-import { SOCIAL_PROVIDERS, type SocialProvider } from '$lib/social'
+import { SOCIAL_PROVIDERS, type SocialProvider } from '#lib/social.js'
 
 /* ―― » Social sign-in ( better-auth's providers ), on per deployment: a provider is on when its
         credentials are in the environment. Anyone may use one — a new person gets an account
@@ -19,6 +19,10 @@ export function socialProviders( env : Record<string, string | undefined> = proc
 		...( env.APPLE_CLIENT_ID && env.APPLE_CLIENT_SECRET ? { apple: { clientId: env.APPLE_CLIENT_ID, clientSecret: env.APPLE_CLIENT_SECRET, appBundleIdentifier: env.APPLE_APP_BUNDLE_IDENTIFIER || undefined } } : {} )
 	}
 }
+
+// Where a sign-in or a link sends the person: the only external redirects the app makes
+// ( the same origins form-action allows, config/kit.ts ).
+export const PROVIDER_ORIGINS = [ 'https://accounts.google.com', 'https://appleid.apple.com' ]
 
 // The providers this deployment offers, in the template's order.
 export const enabledSocialProviders = () : SocialProvider[] => {

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { MaskInput } from 'maska'
-	import * as InputGroup from '$lib/components/ui/input-group'
-	import { APP } from '$lib/config'
-	import { getLocale } from '$lib/paraglide/runtime'
+	import * as InputGroup from '#lib/components/ui/input-group/index.js'
+	import { APP } from '#lib/config.js'
+	import { getLocale } from '#lib/paraglide/runtime.js'
 
 	/* ―― » An amount of money ( the fundraiser app's CurrencyInput, in any currency ): the digits
 	        group as they are typed ( maska's number mode, in the reader's locale ), the currency's

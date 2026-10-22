@@ -1,6 +1,6 @@
-import { m } from '$lib/paraglide/messages'
-import { db, eachTenant } from '$lib/server/db'
-import { purgeSignIns } from '$lib/server/sign-ins'
+import { m } from '#lib/paraglide/messages.js'
+import { db, eachTenant } from '#lib/server/db/index.js'
+import { purgeSignIns } from '#lib/server/sign-ins.js'
 
 export type Job = {
 	// Unique, stable: its lock and its row in job_runs.

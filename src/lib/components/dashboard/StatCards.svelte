@@ -15,7 +15,7 @@
 </script>
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card'
+	import * as Card from '#lib/components/ui/card/index.js'
 	import Figure from './Figure.svelte'
 
 	/* ―― » The figure row a dashboard opens with ( billing-app's StatCards ): one component, so

@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit'
-import { mediaUrl } from '$lib/media'
-import { m } from '$lib/paraglide/messages'
-import { db } from '$lib/server/db'
-import { deleteMedia, saveMedia, setMediaPublic, sniff } from '$lib/server/media'
+import { mediaUrl } from '#lib/media.js'
+import { m } from '#lib/paraglide/messages.js'
+import { db } from '#lib/server/db/index.js'
+import { deleteMedia, saveMedia, setMediaPublic, sniff } from '#lib/server/media.js'
 
 /* ―― » Uploaded avatars ( the fundraiser app's, one per person ). The picture is cropped
         square in the browser and stored as one of the workspace's media files — listed in

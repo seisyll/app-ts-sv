@@ -1,7 +1,8 @@
-import { error, redirect, type Handle } from '@sveltejs/kit'
-import { moduleDefinition, routeIsUnder, routeOwner, withRequirements } from '$config/modules'
-import { BUILT_MODULES, isBuilt, MODULE_IDS, type ModuleId } from '$lib/modules'
-import { currentTenant } from '$lib/server/db'
+import { error, redirect } from '@sveltejs/kit'
+import type { Handle } from '@sveltejs/kit/hooks'
+import { moduleDefinition, routeIsUnder, routeOwner, withRequirements } from '#config/modules.js'
+import { BUILT_MODULES, isBuilt, MODULE_IDS, type ModuleId } from '#lib/modules.js'
+import { currentTenant } from '#lib/server/db/index.js'
 
 /* ―― » Modules for the current workspace: what the build ships, minus what this tenant has
         switched off ( tenants.modules_off ), minus anything left without a module it

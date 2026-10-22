@@ -1,7 +1,7 @@
 import { marked } from 'marked'
-import { helpAvailable, helpEntry, HELP_ARTICLES, type HelpCategory } from '$lib/help'
-import { baseLocale, getLocale } from '$lib/paraglide/runtime'
-import { activeModules } from '$lib/server/modules'
+import { helpAvailable, helpEntry, HELP_ARTICLES, type HelpCategory } from '#lib/help/index.js'
+import { baseLocale, getLocale } from '#lib/paraglide/runtime.js'
+import { activeModules } from '#lib/server/modules.js'
 
 // Every article in every language, read at build time ( the text stays on the server ).
 const FILES = import.meta.glob<string>( '/src/lib/help/content/*/*.md', { query: '?raw', import: 'default', eager: true } )

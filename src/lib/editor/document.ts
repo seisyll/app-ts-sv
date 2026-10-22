@@ -1,7 +1,7 @@
 import { getSchema } from '@tiptap/core'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import * as v from 'valibot'
-import { m } from '$lib/paraglide/messages'
+import { m } from '#lib/paraglide/messages.js'
 import { richTextExtensions, safeHref, safeImageSrc, VARIABLE_NAME, type RichText } from './schema'
 
 /* ―― » The trust boundary for rich text. A stored document must be one the schema can build

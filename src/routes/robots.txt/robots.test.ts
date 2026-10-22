@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 
 // What crawlers are told on a host ( PGlite, real migrations ).
 describe( 'robots.txt and sitemap.xml', () => {

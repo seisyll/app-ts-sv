@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { initials } from '$lib/format'
-	import { cn } from '$lib/utils'
+	import { initials } from '#lib/format.js'
+	import { cn } from '#lib/utils.js'
 
 	// The workspace's square: its logo, or its initials in the same square so a row keeps its
 	// shape either way. Decorative ( empty alt ): the name always comes next.

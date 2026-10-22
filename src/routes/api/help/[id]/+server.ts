@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit'
-import { requireApiUser } from '$lib/server/guards'
-import { helpArticle } from '$lib/server/help'
+import { requireApiUser } from '#lib/server/guards.js'
+import { helpArticle } from '#lib/server/help.js'
 import type { RequestHandler } from './$types'
 
 // GET — one help article as HTML, for the sheet that opens over any page ( HelpSheet ).

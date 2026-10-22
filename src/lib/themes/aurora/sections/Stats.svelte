@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getLocale } from '$lib/paraglide/runtime'
+	import { getLocale } from '#lib/paraglide/runtime.js'
 	import type { HomeContent } from '../../contract'
 	import { countUp, reveal } from '../actions'
 

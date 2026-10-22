@@ -3,6 +3,11 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
+	"imports": {
+		"#lib/*": "./src/lib/*",
+		"#config/*": "./config/*",
+		"#theme": "./src/lib/themes/aurora/index.js"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -46,8 +51,8 @@
 		"@lucide/svelte": "^1.61.0",
 		"@number-flow/svelte": "^0.4.2",
 		"@stylistic/eslint-plugin": "^5.10.0",
-		"@sveltejs/adapter-node": "^5.5.7",
-		"@sveltejs/kit": "^2.70.2",
+		"@sveltejs/adapter-node": "^6.0.0",
+		"@sveltejs/kit": "^3.1.0",
 		"@sveltejs/vite-plugin-svelte": "^7.3.1",
 		"@tailwindcss/vite": "^4.3.3",
 		"@tanstack/table-core": "^8.21.3",

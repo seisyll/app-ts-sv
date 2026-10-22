@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { MaskInput, type MaskInputOptions } from 'maska'
 	import type { HTMLInputAttributes } from 'svelte/elements'
-	import { Input } from '$lib/components/ui/input'
+	import { Input } from '#lib/components/ui/input/index.js'
 
 	/* ―― » An Input with a mask ( the fundraiser app's, on maska ): the person sees the shape
 	        ( +62 812-3456-7890, 1234 5678 ) while typing; `unmasked` is the plain value. With

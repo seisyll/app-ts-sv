@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { CaptchaWidget } from '$lib/components/captcha'
-	import { CAPTCHA_PROVIDERS, type CaptchaProvider } from '$lib/captcha'
-	import { Button } from '$lib/components/ui/button'
-	import * as Card from '$lib/components/ui/card'
-	import { m } from '$lib/paraglide/messages'
+	import { CaptchaWidget } from '#lib/components/captcha/index.js'
+	import { CAPTCHA_PROVIDERS, type CaptchaProvider } from '#lib/captcha.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	// The providers' own test keys: always pass, work on any host, verify against their test
 	// secrets only. reCAPTCHA v3 has none, so it isn't here.

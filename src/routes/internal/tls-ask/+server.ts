@@ -1,6 +1,6 @@
 import { error, text } from '@sveltejs/kit'
-import { prisma } from '$lib/server/db'
-import { normaliseHost, subdomainOf, tenancy } from '$lib/server/tenant'
+import { prisma } from '#lib/server/db/index.js'
+import { normaliseHost, subdomainOf, tenancy } from '#lib/server/tenant.js'
 
 /* ―― » Caddy's on-demand TLS asks here before it requests a certificate for a host it has
         never seen ( deploy/Caddyfile ): 200 for an active workspace's custom domain or its

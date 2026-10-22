@@ -1,14 +1,14 @@
 <script lang="ts">
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left'
-	import { Button } from '$lib/components/ui/button'
-	import { Switch } from '$lib/components/ui/switch'
-	import * as ToggleGroup from '$lib/components/ui/toggle-group'
-	import * as aurora from '$lib/themes/aurora'
-	import { homeContent, siteChrome } from '$lib/themes/content'
-	import type { ThemeModule } from '$lib/themes/contract'
-	import * as plain from '$lib/themes/plain'
-	import { m } from '$lib/paraglide/messages'
-	import { SOCIAL_NETWORKS, type PublicSite } from '$lib/site'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import { Switch } from '#lib/components/ui/switch/index.js'
+	import * as ToggleGroup from '#lib/components/ui/toggle-group/index.js'
+	import * as aurora from '#lib/themes/aurora/index.js'
+	import { homeContent, siteChrome } from '#lib/themes/content.js'
+	import type { ThemeModule } from '#lib/themes/contract.js'
+	import * as plain from '#lib/themes/plain/index.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import { SOCIAL_NETWORKS, type PublicSite } from '#lib/site.js'
 	import { DEMO_LOGO } from '../../demo-data'
 
 	// Every theme side by side, without switching the client's theme and restarting. The list is also a

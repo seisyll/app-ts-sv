@@ -1,5 +1,5 @@
-import { APP } from '$lib/config'
-import { getLocale } from '$lib/paraglide/runtime'
+import { APP } from '#lib/config.js'
+import { getLocale } from '#lib/paraglide/runtime.js'
 
 export const money = ( value : number, currency : string = APP.currency, options : Intl.NumberFormatOptions = {} ) =>
 	new Intl.NumberFormat( getLocale(), { style: 'currency', currency, ...options } ).format( value )

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { page } from '$app/state'
-	import { shareImage } from '$theme'
-	import { Seo } from '$lib/components/seo'
-	import * as Card from '$lib/components/ui/card'
-	import { m } from '$lib/paraglide/messages'
+	import { shareImage } from '#theme'
+	import { Seo } from '#lib/components/seo/index.js'
+	import * as Card from '#lib/components/ui/card/index.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	const title = 'Pricing · Acme'
 	const description = 'Three plans, every module included. Start free; pay per seat when your team grows.'

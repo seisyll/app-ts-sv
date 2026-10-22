@@ -1,9 +1,9 @@
 <script lang="ts">
-	import * as Avatar from '$lib/components/ui/avatar'
-	import { Badge } from '$lib/components/ui/badge'
-	import { initials } from '$lib/format'
-	import { m } from '$lib/paraglide/messages'
-	import type { UserRow } from '$lib/users'
+	import * as Avatar from '#lib/components/ui/avatar/index.js'
+	import { Badge } from '#lib/components/ui/badge/index.js'
+	import { initials } from '#lib/format.js'
+	import { m } from '#lib/paraglide/messages.js'
+	import type { UserRow } from '#lib/users.js'
 
 	let { user, you } : { user : UserRow, you : boolean } = $props()
 </script>

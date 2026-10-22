@@ -9,9 +9,9 @@ declare global {
 		}
 		interface Locals {
 			// This request's tenant, looked up on first call ( see hooks.server.ts ).
-			tenant  : () => Promise<import( '$lib/server/db' ).TenantRef>
+			tenant  : () => Promise<import( '#lib/server/db/index.js' ).TenantRef>
 			// The signed-in session or null, looked up on first call. Prefer the guards.
-			session : () => Promise<import( '$lib/server/auth' ).Session | null>
+			session : () => Promise<import( '#lib/server/auth.js' ).Session | null>
 		}
 		// interface PageData {}
 		// interface PageState {}

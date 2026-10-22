@@ -2,8 +2,8 @@
 	import { untrack } from 'svelte'
 	import { prefersReducedMotion } from 'svelte/motion'
 	import { navigating } from '$app/state'
-	import { m } from '$lib/paraglide/messages'
-	import { cn } from '$lib/utils'
+	import { m } from '#lib/paraglide/messages.js'
+	import { cn } from '#lib/utils.js'
 
 	/* ―― » The app-wide "something is loading" bar. SvelteKit runs `load` BEFORE painting
 	        the next page, so without it a slow load reads as a click that didn't take.

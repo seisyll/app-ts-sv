@@ -1,9 +1,9 @@
 import { error, json } from '@sveltejs/kit'
-import { appearanceOverrideSchema, resolveAppearance } from '$lib/appearance'
-import { m } from '$lib/paraglide/messages'
-import { loadAppearance, rememberAppearance, saveUserAppearance } from '$lib/server/appearance'
-import { readJson } from '$lib/server/forms'
-import { requireApiUser } from '$lib/server/guards'
+import { appearanceOverrideSchema, resolveAppearance } from '#lib/appearance.js'
+import { m } from '#lib/paraglide/messages.js'
+import { loadAppearance, rememberAppearance, saveUserAppearance } from '#lib/server/appearance.js'
+import { readJson } from '#lib/server/forms.js'
+import { requireApiUser } from '#lib/server/guards.js'
 import type { RequestHandler } from './$types'
 
 // PUT — the caller's own appearance ( the header picker ): { palette, style, radius }, each

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state'
-	import { Button } from '$lib/components/ui/button'
-	import { NO_OVERRIDE } from '$lib/appearance'
-	import { AppearancePicker, LocaleSwitcher, ThemeToggle } from '$lib/layout'
-	import { isBuilt, type ModuleId } from '$lib/modules'
-	import { m } from '$lib/paraglide/messages'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import { NO_OVERRIDE } from '#lib/appearance.js'
+	import { AppearancePicker, LocaleSwitcher, ThemeToggle } from '#lib/layout/index.js'
+	import { isBuilt, type ModuleId } from '#lib/modules.js'
+	import { m } from '#lib/paraglide/messages.js'
 
 	let { data, children } = $props()
 

@@ -1,12 +1,12 @@
 import { error, redirect } from '@sveltejs/kit'
 import { message, setError, superValidate } from 'sveltekit-superforms'
 import { valibot } from 'sveltekit-superforms/adapters'
-import { mailTemplateSchema } from '$lib/mail'
-import { m } from '$lib/paraglide/messages'
-import { currentTenant } from '$lib/server/db'
-import { audit } from '$lib/server/audit'
-import { validateForm } from '$lib/server/forms'
-import { requirePermission } from '$lib/server/guards'
+import { mailTemplateSchema } from '#lib/mail.js'
+import { m } from '#lib/paraglide/messages.js'
+import { currentTenant } from '#lib/server/db/index.js'
+import { audit } from '#lib/server/audit.js'
+import { validateForm } from '#lib/server/forms.js'
+import { requirePermission } from '#lib/server/guards.js'
 import {
 	defaultMailContent,
 	isMailTemplateKey,
@@ -18,7 +18,7 @@ import {
 	sampleMailValues,
 	saveMailTemplate,
 	type MailTemplateKey
-} from '$lib/server/mail'
+} from '#lib/server/mail/index.js'
 import type { Actions, PageServerLoad } from './$types'
 
 function templateKey( key : string ) : MailTemplateKey {

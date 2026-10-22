@@ -1,6 +1,6 @@
 import { error, redirect, type RequestEvent } from '@sveltejs/kit'
-import { hasPermission, type Permission } from '$lib/permissions'
-import type { Session } from '$lib/server/auth'
+import { hasPermission, type Permission } from '#lib/permissions.js'
+import type { Session } from '#lib/server/auth.js'
 
 /* ―― » Page and endpoint guards ( from the fundraiser app's Access.ts ). The session comes
         from event.locals.session(), looked up once per request in hooks.server.ts.

@@ -1,5 +1,5 @@
 import * as v from 'valibot'
-import { m } from '$lib/paraglide/messages'
+import { m } from '#lib/paraglide/messages.js'
 
 /* ―― » Appearance: three knobs over CLOSED catalogs ( from billing-app, ADR 0010 ).
           palette — a frozen set of colour tokens, light and dark ( src/lib/styles/palettes.css )

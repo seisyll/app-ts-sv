@@ -1,5 +1,6 @@
-import type { ModuleId } from '$lib/modules'
-import { m } from '$lib/paraglide/messages'
+import type { ReadonlyURL } from '$app/state'
+import type { ModuleId } from '#lib/modules.js'
+import { m } from '#lib/paraglide/messages.js'
 
 /* ―― » The help centre's articles ( the fundraiser app's Pusat Bantuan, in Markdown ). Each
         is a file per language, content/<locale>/<id>.md, whose first line is its "# Title";
@@ -33,8 +34,8 @@ export const helpEntry = ( id : string ) => HELP_ARTICLES.find( ( entry ) => ent
 
 // The current page with the article open over it ( ?help=<id> ): shareable, and what
 // HelpLink points at.
-export function helpHref( url : URL, id : string | null ) : string {
-	const next = new URL( url )
+export function helpHref( url : ReadonlyURL, id : string | null ) : string {
+	const next = new URL( url.href )
 
 	if ( id )
 		next.searchParams.set( 'help', id )

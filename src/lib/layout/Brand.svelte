@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Sidebar from '$lib/components/ui/sidebar'
+	import * as Sidebar from '#lib/components/ui/sidebar/index.js'
 	import BrandMark from './BrandMark.svelte'
 
 	// Whose app this is. A link home, not a switcher: one user, one tenant.

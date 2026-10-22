@@ -1,7 +1,7 @@
 import { fail } from '@sveltejs/kit'
-import { requireUser } from '$lib/server/guards'
-import { mailReady } from '$lib/server/mail/gate'
-import { listPreferences, NOTIFICATION_TYPES, setPreferences } from '$lib/server/notifications'
+import { requireUser } from '#lib/server/guards.js'
+import { mailReady } from '#lib/server/mail/gate.js'
+import { listPreferences, NOTIFICATION_TYPES, setPreferences } from '#lib/server/notifications/index.js'
 import type { Actions, PageServerLoad } from './$types'
 
 // Which notification types this person receives, in the app and by email.

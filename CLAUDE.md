@@ -1,6 +1,6 @@
 # app-ts-sv
 
-SvelteKit 2 + Svelte 5 template for web apps and SaaS: Bun, Tailwind 4, shadcn-svelte, Prisma 7
+SvelteKit 3 + Svelte 5 template for web apps and SaaS: Bun, Tailwind 4, shadcn-svelte, Prisma 7
 on Postgres with row-level security, better-auth, paraglide i18n. `README.md` explains every
 module; `DESIGN.md` holds the visual rules. Read the section for what you're touching first.
 
@@ -16,7 +16,7 @@ module; `DESIGN.md` holds the visual rules. Read the section for what you're tou
   DESIGN.md has the rulesets. A project made from this template runs `/impeccable init` once
   to write its own `PRODUCT.md`; when impeccable documents the project's visual system in
   DESIGN.md, extend the existing rules there rather than replacing them.
-- **Tenant data goes through `db`, not `prisma`.** `db` ( `$lib/server/db` ) scopes every query
+- **Tenant data goes through `db`, not `prisma`.** `db` ( `#lib/server/db` ) scopes every query
   to the request's tenant; `prisma` is the raw client for the control plane and tests. A new
   tenant-scoped table calls `SELECT app_enable_tenant_rls( '<table>' )` in its migration.
   Write migrations with `prisma migrate diff` and review them; tests assert as the app role.
@@ -33,6 +33,8 @@ module; `DESIGN.md` holds the visual rules. Read the section for what you're tou
   used as `m.key()`. English is the base locale.
 - **Validate at the boundary with valibot**: `readJson( request, schema )` in endpoints,
   `validateForm` in actions — the same schema the browser used.
+- **Imports**: `#lib/…`, `#config/…` and `#theme` are package.json subpath imports ( SvelteKit 3
+  has no `$lib` ); name the file, `.js` for a `.ts` one: `'#lib/server/db/index.js'`.
 - **House style**: tabs, spaces inside parens, aligned colons in multi-line objects, LF.
   Comments explain why, in the `/* ―― » … */` banner for longer notes. Match the surrounding code.
 - **Dev-only code** lives in `src/routes/(dev)` ( the `/hello` playground — show every new UI

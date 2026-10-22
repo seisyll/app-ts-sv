@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit'
-import { requireApiUser } from '$lib/server/guards'
-import { listNotifications } from '$lib/server/notifications'
+import { requireApiUser } from '#lib/server/guards.js'
+import { listNotifications } from '#lib/server/notifications/index.js'
 import type { RequestHandler } from './$types'
 
 // GET — the caller's newest notifications and unread count ( ?limit=, at most 50 ).

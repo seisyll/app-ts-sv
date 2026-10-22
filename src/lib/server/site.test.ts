@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import type { RichText } from '$lib/editor/schema'
-import type { TenantRef } from '$lib/server/db'
-import type { SiteSettingsInput } from '$lib/site'
-import { createTestDatabase, type TestDatabase } from '$lib/test/database'
+import type { RichText } from '#lib/editor/schema.js'
+import type { TenantRef } from '#lib/server/db/index.js'
+import type { SiteSettingsInput } from '#lib/site.js'
+import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
 
 const doc = ( text : string, src ?: string ) : RichText => ( {
 	type   : 'doc',
@@ -19,7 +19,7 @@ describe( 'site', () => {
 	let b : TenantRef
 	let site : typeof import( './site' )
 	// The runtime site.ts sees: the test database resets the module registry.
-	let runtime : typeof import( '$lib/paraglide/runtime' )
+	let runtime : typeof import( '#lib/paraglide/runtime.js' )
 	const ids : Record<string, string> = {}
 
 	beforeAll( async() => {
@@ -34,7 +34,7 @@ describe( 'site', () => {
 		await t.asApp()
 
 		site = await import( './site' )
-		runtime = await import( '$lib/paraglide/runtime' )
+		runtime = await import( '#lib/paraglide/runtime.js' )
 	}, 60_000 )
 
 	afterAll( async() => {

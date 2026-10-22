@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner'
-	import * as Avatar from '$lib/components/ui/avatar'
-	import { Button } from '$lib/components/ui/button'
-	import * as Dialog from '$lib/components/ui/dialog'
-	import { Spinner } from '$lib/components/ui/spinner'
-	import { initials } from '$lib/format'
-	import { errorMessage } from '$lib/http'
-	import { m } from '$lib/paraglide/messages'
+	import * as Avatar from '#lib/components/ui/avatar/index.js'
+	import { Button } from '#lib/components/ui/button/index.js'
+	import * as Dialog from '#lib/components/ui/dialog/index.js'
+	import { Spinner } from '#lib/components/ui/spinner/index.js'
+	import { initials } from '#lib/format.js'
+	import { errorMessage } from '#lib/http.js'
+	import { m } from '#lib/paraglide/messages.js'
 	import AvatarCropper from './AvatarCropper.svelte'
 
 	/* ―― » Someone's own picture: what shows now ( an upload, a sign-in provider's, or their

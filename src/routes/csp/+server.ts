@@ -1,6 +1,6 @@
-import { log } from '$lib/server/log'
+import { log } from '#lib/server/log.js'
 
-/* ―― » Where browsers report what the content security policy blocked ( svelte.config.js,
+/* ―― » Where browsers report what the content security policy blocked ( config/kit.ts,
         `report-uri` ). Logged, one line each, so a policy too tight for a new feature shows
         up in the server log instead of as a silently broken page. Anyone can post here: a
         report is capped, never stored, and answered with nothing. */

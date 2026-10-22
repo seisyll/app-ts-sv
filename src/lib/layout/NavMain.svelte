@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state'
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right'
-	import * as Collapsible from '$lib/components/ui/collapsible'
-	import * as Sidebar from '$lib/components/ui/sidebar'
-	import { Spinner } from '$lib/components/ui/spinner'
-	import { isPending } from '$lib/components/nav-progress'
+	import * as Collapsible from '#lib/components/ui/collapsible/index.js'
+	import * as Sidebar from '#lib/components/ui/sidebar/index.js'
+	import { Spinner } from '#lib/components/ui/spinner/index.js'
+	import { isPending } from '#lib/components/nav-progress/index.js'
 	import type { NavGroup, NavItem } from './nav'
 
 	let { group } : { group : NavGroup } = $props()

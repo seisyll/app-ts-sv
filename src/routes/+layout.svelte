@@ -1,12 +1,12 @@
 <script lang="ts">
 	import '../app.css'
 	// The appearance palettes and radii; html-scoped, so they outrank app.css's :root.
-	import '$lib/styles/palettes.css'
+	import '#lib/styles/palettes.css'
 	// Scroll edges that say there is more ( sidebar, command palette, tall dialogs ). Unlayered.
-	import '$lib/layout/scroll-fade.css'
+	import '#lib/layout/scroll-fade.css'
 	import { ModeWatcher } from 'mode-watcher'
-	import { NavProgress } from '$lib/components/nav-progress'
-	import { Toaster } from '$lib/components/ui/sonner'
+	import { NavProgress } from '#lib/components/nav-progress/index.js'
+	import { Toaster } from '#lib/components/ui/sonner/index.js'
 
 	let { data, children } = $props()
 </script>
