@@ -24,7 +24,7 @@ const config : UserConfig = {
 		// The exception, svelte-tiptap: found late, it was bundled apart from the @tiptap/*
 		// above, and the first editor page after a cold start met two ProseMirrors ( "Adding
 		// different instances of a keyed plugin" ) until reloaded.
-		include: [ '@tanstack/table-core', '@internationalized/date', 'clsx', 'tailwind-merge', 'tailwind-variants', 'better-auth/plugins/access', 'better-auth/plugins/admin/access',
+		include: [ '@tanstack/svelte-table > @tanstack/table-core', '@internationalized/date', 'clsx', 'tailwind-merge', 'tailwind-variants', 'better-auth/plugins/access', 'better-auth/plugins/admin/access',
 			'@tiptap/core', '@tiptap/starter-kit', '@tiptap/extension-image', '@tiptap/extension-text-align', '@tiptap/extension-typography', '@tiptap/extensions', '@tiptap/static-renderer/pm/html-string', 'svelte-tiptap', 'd3-scale' ],
 		// Per-icon deep imports: pre-bundling them re-optimizes on every new icon.
 		exclude: [ '@lucide/svelte' ]

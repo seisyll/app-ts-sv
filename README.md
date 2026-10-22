@@ -464,6 +464,9 @@ await audit( event, { action: 'captcha.settings', changes: changesBetween( befor
   keys). Written with `replaceState`: reload and share keep the view, Back leaves the list.
   The load must read the same query so the server render matches:
   `listUsers( toPageQuery( fromUrlParams( url.searchParams ) ) )` (see `/app/users`).
+- **Columns** are TanStack Table 9's `ColumnDef<DataTableFeatures, Row>[]`, with
+  `renderComponent` / `renderSnippet` for cells, all from `@tanstack/svelte-table`. What every
+  table can do is `features.ts`; `meta.title` names a column in the Columns menu.
 - A column with a string `header` gets a sort button; `enableSorting: false` opts out.
 - **Export** (`exportTitle`, server mode): CSV, Excel and PDF of every row matching the current
   search, facets and sort. The endpoint answers `?export=csv|xlsx|json` with

@@ -1,13 +1,13 @@
-import type { ColumnDef } from '@tanstack/table-core'
+import { renderComponent, type ColumnDef } from '@tanstack/svelte-table'
 import {
 	dateRangeFilter,
 	facetedFilter,
 	rowNumberColumn,
 	selectColumn,
 	textCell,
+	type DataTableFeatures,
 	type FacetedFilterConfig
 } from '#lib/components/data-table/index.js'
-import { renderComponent } from '#lib/components/ui/data-table/index.js'
 import { date, money } from '#lib/format.js'
 import { m } from '#lib/paraglide/messages.js'
 import type { Customer } from '../../demo-data'
@@ -20,7 +20,7 @@ const strong = textCell( 'font-medium' )
 
 // Functions, not constants: headers and labels must be built in the request's locale.
 // Plain string headers get sort buttons from <DataTable> automatically.
-export const customerColumns = ( { select = false } = {} ) : ColumnDef<Customer>[] => [
+export const customerColumns = ( { select = false } = {} ) : ColumnDef<DataTableFeatures, Customer>[] => [
 	...( select ? [ selectColumn<Customer>() ] : [] ),
 	rowNumberColumn<Customer>(),
 	{ accessorKey: 'name', header: m.demo_table_name(), cell: ( { row } ) => strong( row.original.name ) },

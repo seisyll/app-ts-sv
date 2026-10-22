@@ -1,12 +1,13 @@
 import { describe, expect, it, vi } from 'vitest'
-import type { Row } from '@tanstack/table-core'
+import type { Row } from '@tanstack/svelte-table'
 import { runBulk } from './bulk'
 import { escapeHtml } from './cells'
 import { calendarDay, dateRangeFilter, facetedFilter, facetOptions } from './columns'
+import type { DataTableFeatures } from './features'
 
 vi.mock( 'svelte-sonner', () => ( { toast: { promise: vi.fn() } } ) )
 
-const rowWith = ( value : unknown ) => ( { getValue: () => value } ) as unknown as Row<unknown>
+const rowWith = ( value : unknown ) => ( { getValue: () => value } ) as unknown as Row<DataTableFeatures, Record<string, unknown>>
 
 describe( 'facetOptions', () => {
 	it( 'uses the value as label unless mapped', () => {

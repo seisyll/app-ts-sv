@@ -1,6 +1,5 @@
-import type { ColumnDef } from '@tanstack/table-core'
-import { dateRangeFilter, facetedFilter, selectColumn, textCell, type FacetedFilterConfig } from '#lib/components/data-table/index.js'
-import { renderComponent } from '#lib/components/ui/data-table/index.js'
+import { renderComponent, type ColumnDef } from '@tanstack/svelte-table'
+import { dateRangeFilter, facetedFilter, selectColumn, textCell, type DataTableFeatures, type FacetedFilterConfig } from '#lib/components/data-table/index.js'
 import { date } from '#lib/format.js'
 import { m } from '#lib/paraglide/messages.js'
 import { ROLE_NAMES, roleLabel, type UserRow } from '#lib/users.js'
@@ -13,7 +12,7 @@ type Options = { me : string, onchange : () => void }
 const muted = textCell( 'text-muted-foreground' )
 
 // Functions, not constants: headers and labels are built in the request's locale.
-export const userColumns = ( { me, onchange } : Options ) : ColumnDef<UserRow>[] => [
+export const userColumns = ( { me, onchange } : Options ) : ColumnDef<DataTableFeatures, UserRow>[] => [
 	selectColumn<UserRow>(),
 	{ accessorKey: 'name', header: m.users_name(), cell: ( { row } ) => renderComponent( UserCell, { user: row.original, you: row.original.id === me } ) },
 	{ accessorKey: 'email', header: m.users_email(), cell: ( { row } ) => muted( row.original.email ) },

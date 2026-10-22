@@ -1,5 +1,5 @@
 import { createRawSnippet } from 'svelte'
-import { renderSnippet } from '#lib/components/ui/data-table/index.js'
+import { renderSnippet } from '@tanstack/svelte-table'
 
 export function escapeHtml( value : string ) : string {
 	return value

@@ -35,9 +35,6 @@ const SRC_STYLES = join( SOURCE, 'docs', 'src', 'lib', 'registry', 'styles' )
 const DEST_UI = join( ROOT, 'src', 'lib', 'components', 'ui' )
 const DEST_STYLES = join( ROOT, 'src', 'lib', 'styles' )
 
-// Folders under ui/ that are ours ( shadcn's table render helpers ), never synced.
-const OURS = [ 'data-table' ]
-
 // Upstream still names a few icons by lucide's OLD file names.
 const ICON_RENAMES : Record<string, string> = { 'loader-2': 'loader-circle', 'more-horizontal': 'ellipsis' }
 
@@ -132,7 +129,7 @@ function transform( body : string, file : string ) : string {
 }
 
 const upstream = readdirSync( SRC_UI, { withFileTypes: true } ).filter( ( entry ) => entry.isDirectory() ).map( ( entry ) => entry.name )
-const ours = readdirSync( DEST_UI, { withFileTypes: true } ).filter( ( entry ) => entry.isDirectory() && !OURS.includes( entry.name ) ).map( ( entry ) => entry.name )
+const ours = readdirSync( DEST_UI, { withFileTypes: true } ).filter( ( entry ) => entry.isDirectory() ).map( ( entry ) => entry.name )
 const folders = [ ...new Set( [ ...ours, ...extra ] ) ]
 
 for ( const folder of folders ) {

@@ -1,12 +1,11 @@
 <script lang="ts">
-	import type { ColumnDef } from '@tanstack/table-core'
+	import { renderComponent, type ColumnDef } from '@tanstack/svelte-table'
 	import LogInIcon from '@lucide/svelte/icons/log-in'
 	import ShieldAlertIcon from '@lucide/svelte/icons/shield-alert'
 	import WifiIcon from '@lucide/svelte/icons/wifi'
 	import { StatCards, TrendChart } from '#lib/components/dashboard/index.js'
-	import { DataTable, dateRangeFilter, facetedFilter, TableSource, textCell } from '#lib/components/data-table/index.js'
+	import { DataTable, dateRangeFilter, facetedFilter, TableSource, textCell, type DataTableFeatures } from '#lib/components/data-table/index.js'
 	import { OutcomeBadge } from '#lib/components/sign-ins/index.js'
-	import { renderComponent } from '#lib/components/ui/data-table/index.js'
 	import { date } from '#lib/format.js'
 	import { m } from '#lib/paraglide/messages.js'
 	import { getLocale } from '#lib/paraglide/runtime.js'
@@ -18,7 +17,7 @@
 	const source = new TableSource<SignInRow>( { path: '/api/sign-ins', initial: data.entries } )
 	const muted = textCell( 'text-muted-foreground tabular-nums whitespace-nowrap' )
 
-	const columns : ColumnDef<SignInRow>[] = [
+	const columns : ColumnDef<DataTableFeatures, SignInRow>[] = [
 		{ accessorKey: 'at', header: m.audit_when(), filterFn: dateRangeFilter, cell: ( { row } ) => muted( date( row.original.at ) ) },
 		{ accessorKey: 'email', header: m.auth_email() },
 		{ accessorKey: 'outcome', header: m.signins_outcome(), filterFn: facetedFilter, cell: ( { row } ) => renderComponent( OutcomeBadge, { outcome: row.original.outcome } ) },

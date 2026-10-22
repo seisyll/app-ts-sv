@@ -1,5 +1,5 @@
-<script lang="ts" generics="TData, TValue">
-	import type { Column } from '@tanstack/table-core'
+<script lang="ts" generics="TData extends RowData, TValue extends CellData">
+	import type { CellData, Column, RowData } from '@tanstack/svelte-table'
 	import CheckIcon from '@lucide/svelte/icons/check'
 	import FunnelPlusIcon from '@lucide/svelte/icons/funnel-plus'
 	import { Badge } from '#lib/components/ui/badge/index.js'
@@ -9,6 +9,7 @@
 	import { Separator } from '#lib/components/ui/separator/index.js'
 	import { m } from '#lib/paraglide/messages.js'
 	import { cn } from '#lib/utils.js'
+	import type { DataTableFeatures } from './features'
 	import type { FacetedFilterOption } from './types'
 
 	let {
@@ -16,7 +17,7 @@
 		title,
 		options
 	} : {
-		column  : Column<TData, TValue>
+		column  : Column<DataTableFeatures, TData, TValue>
 		title   : string
 		options : FacetedFilterOption[]
 	} = $props()

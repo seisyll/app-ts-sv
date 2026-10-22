@@ -1,9 +1,8 @@
 <script lang="ts">
-	import type { ColumnDef } from '@tanstack/table-core'
+	import { renderComponent, type ColumnDef } from '@tanstack/svelte-table'
 	import { AUDIT_RESOURCES, auditResourceLabel, type AuditRow } from '#lib/audit.js'
 	import { AuditEntry } from '#lib/components/audit/index.js'
-	import { DataTable, dateRangeFilter, facetedFilter, TableSource, textCell } from '#lib/components/data-table/index.js'
-	import { renderComponent } from '#lib/components/ui/data-table/index.js'
+	import { DataTable, dateRangeFilter, facetedFilter, TableSource, textCell, type DataTableFeatures } from '#lib/components/data-table/index.js'
 	import { date } from '#lib/format.js'
 	import { m } from '#lib/paraglide/messages.js'
 
@@ -13,7 +12,7 @@
 	const source = new TableSource<AuditRow>( { path: '/api/audit', initial: data.entries } )
 	const muted = textCell( 'text-muted-foreground tabular-nums whitespace-nowrap' )
 
-	const columns : ColumnDef<AuditRow>[] = [
+	const columns : ColumnDef<DataTableFeatures, AuditRow>[] = [
 		{ accessorKey: 'at', header: m.audit_when(), filterFn: dateRangeFilter, cell: ( { row } ) => muted( date( row.original.at ) ) },
 		{ accessorKey: 'actorName', header: m.audit_who() },
 		{ id: 'what', header: m.audit_what(), enableSorting: false, meta: { title: m.audit_what() }, accessorFn: ( row ) => row.action, cell: ( { row } ) => renderComponent( AuditEntry, { entry: row.original } ) },

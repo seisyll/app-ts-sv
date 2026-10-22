@@ -1,7 +1,7 @@
-<script lang="ts" generics="TData">
+<script lang="ts" generics="TData extends RowData">
 	import { untrack } from 'svelte'
 	import { parseDate } from '@internationalized/date'
-	import type { Table } from '@tanstack/table-core'
+	import type { RowData, Table } from '@tanstack/svelte-table'
 	import type { DateRange } from 'bits-ui'
 	import CalendarPlusIcon from '@lucide/svelte/icons/calendar-plus'
 	import XIcon from '@lucide/svelte/icons/x'
@@ -11,12 +11,13 @@
 	import { APP } from '#lib/config.js'
 	import { date } from '#lib/format.js'
 	import { m } from '#lib/paraglide/messages.js'
+	import type { DataTableFeatures } from './features'
 
 	let {
 		table,
 		columnId
 	} : {
-		table    : Table<TData>
+		table    : Table<DataTableFeatures, TData>
 		columnId : string
 	} = $props()
 

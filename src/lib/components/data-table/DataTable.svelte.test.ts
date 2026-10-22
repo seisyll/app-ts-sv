@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
 import { render } from 'vitest-browser-svelte'
-import type { ColumnDef } from '@tanstack/table-core'
+import type { ColumnDef } from '@tanstack/svelte-table'
 import { dateRangeFilter, facetedFilter, rowNumberColumn, selectColumn } from './columns'
 import DataTable from './DataTable.svelte'
+import type { DataTableFeatures } from './features'
 import type { TableQuery } from './query'
 import { TableSource } from './table-source.svelte'
 import { replaceState, resetNavigation } from '#lib/test/app-navigation.js'
@@ -22,7 +23,7 @@ const PEOPLE : Person[] = Array.from( { length: 25 }, ( _, index ) => ( {
 	status: index % 3 === 0 ? 'trial' : 'active'
 } ) )
 
-const COLUMNS : ColumnDef<Person>[] = [
+const COLUMNS : ColumnDef<DataTableFeatures, Person>[] = [
 	selectColumn<Person>(),
 	rowNumberColumn<Person>(),
 	{ accessorKey: 'name', header: 'Name' },
@@ -128,7 +129,7 @@ describe( 'DataTable — date range', () => {
 			name     : `Row ${ day }`,
 			createdAt: `${ month }-${ String( day ).padStart( 2, '0' ) }T12:00:00Z`
 		} ) )
-		const columns : ColumnDef<typeof rows[number]>[] = [
+		const columns : ColumnDef<DataTableFeatures, typeof rows[number]>[] = [
 			{ accessorKey: 'name', header: 'Name' },
 			{ accessorKey: 'createdAt', header: 'Created', filterFn: dateRangeFilter }
 		]

@@ -1,13 +1,4 @@
 import type { Component } from 'svelte'
-import type { RowData } from '@tanstack/table-core'
-
-declare module '@tanstack/table-core' {
-	// `meta.title`: the column's name in the Columns menu when its header isn't a string.
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars -- must match TanStack's signature
-	interface ColumnMeta<TData extends RowData, TValue> {
-		title ?: string
-	}
-}
 
 export type SearchColumnOption = { value : string, label : string }
 

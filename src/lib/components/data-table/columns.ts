@@ -1,8 +1,8 @@
-import type { ColumnDef, Row } from '@tanstack/table-core'
-import { renderComponent } from '#lib/components/ui/data-table/index.js'
+import { renderComponent, type ColumnDef, type Row, type RowData } from '@tanstack/svelte-table'
 import { APP } from '#lib/config.js'
 import { m } from '#lib/paraglide/messages.js'
 import DataTableCheckbox from './DataTableCheckbox.svelte'
+import type { DataTableFeatures } from './features'
 
 // Faceted-filter options from plain values; `labels` maps stored values to display text.
 export function facetOptions( values : readonly string[], labels ?: Record<string, string> ) {
@@ -10,7 +10,7 @@ export function facetOptions( values : readonly string[], labels ?: Record<strin
 }
 
 // filterFn for a faceted column: the row's value is one of the selected values.
-export function facetedFilter<T>( row : Row<T>, columnId : string, value : unknown ) : boolean {
+export function facetedFilter<T extends RowData>( row : Row<DataTableFeatures, T>, columnId : string, value : unknown ) : boolean {
 	if ( !Array.isArray( value ) || value.length === 0 )
 		return true
 
@@ -28,7 +28,7 @@ export function calendarDay( date : Date ) : string {
 }
 
 // filterFn for a date column driven by <DataTableDateRangeFilter>: inclusive [ from, to ] days.
-export function dateRangeFilter<T>( row : Row<T>, columnId : string, value : unknown ) : boolean {
+export function dateRangeFilter<T extends RowData>( row : Row<DataTableFeatures, T>, columnId : string, value : unknown ) : boolean {
 	if ( !Array.isArray( value ) || value.length !== 2 )
 		return true
 
@@ -45,14 +45,14 @@ export function dateRangeFilter<T>( row : Row<T>, columnId : string, value : unk
 
 // "#" column numbered by position on screen, continuing across pages ( row.index alone
 // restarts at 1 on every page in server mode, and follows the source order in memory ).
-export function rowNumberColumn<T>( header = '#' ) : ColumnDef<T> {
+export function rowNumberColumn<T extends RowData>( header = '#' ) : ColumnDef<DataTableFeatures, T> {
 	return {
 		id           : 'rowNumber',
 		header,
 		enableSorting: false,
 		enableHiding : false,
 		cell         : ( { row, table } ) => {
-			const { pageIndex, pageSize } = table.getState().pagination
+			const { pageIndex, pageSize } = table.atoms.pagination.get()
 			const position = table.getRowModel().rows.findIndex( ( candidate ) => candidate.id === row.id )
 
 			return pageIndex * pageSize + position + 1
@@ -61,7 +61,7 @@ export function rowNumberColumn<T>( header = '#' ) : ColumnDef<T> {
 }
 
 // Checkbox column for row selection ( pair with <DataTable enableSelection> ).
-export function selectColumn<T>() : ColumnDef<T> {
+export function selectColumn<T extends RowData>() : ColumnDef<DataTableFeatures, T> {
 	return {
 		id           : 'select',
 		enableSorting: false,

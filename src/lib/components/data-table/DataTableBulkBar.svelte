@@ -1,5 +1,5 @@
-<script lang="ts" generics="TData">
-	import type { Table } from '@tanstack/table-core'
+<script lang="ts" generics="TData extends RowData">
+	import type { RowData, Table } from '@tanstack/svelte-table'
 	import { cubicOut } from 'svelte/easing'
 	import { prefersReducedMotion } from 'svelte/motion'
 	import { fly } from 'svelte/transition'
@@ -11,13 +11,14 @@
 	import { Separator } from '#lib/components/ui/separator/index.js'
 	import { m } from '#lib/paraglide/messages.js'
 	import type { BulkAction, BulkConfirm } from './bulk'
+	import type { DataTableFeatures } from './features'
 
 	let {
 		table,
 		actions = [],
 		onsettled
 	} : {
-		table       : Table<TData>
+		table       : Table<DataTableFeatures, TData>
 		actions ?   : BulkAction<TData>[]
 		// After any action finishes — the table refreshes server rows here.
 		onsettled ? : () => void

@@ -5,4 +5,5 @@ export { fromUrlParams, parsePageQuery, toPageQuery, toSearchParams, toUrlParams
 export { calendarDay, dateRangeFilter, facetedFilter, facetOptions, rowNumberColumn, selectColumn } from './columns'
 export { runBulk, type BulkAction, type BulkConfirm, type BulkMenuItem, type RunBulkCopy } from './bulk'
 export { escapeHtml, textCell } from './cells'
+export type { DataTableFeatures } from './features'
 export type { DateRangeConfig, FacetedFilterConfig, FacetedFilterOption, SearchColumnOption, SearchConfig, SegmentOption } from './types'

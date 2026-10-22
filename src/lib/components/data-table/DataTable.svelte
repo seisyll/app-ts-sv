@@ -1,24 +1,21 @@
-<script lang="ts" generics="TData, TStats = undefined">
+<script lang="ts" generics="TData extends RowData, TStats = undefined">
 	import { untrack, type Snippet } from 'svelte'
 	import { browser } from '$app/env'
 	import { afterNavigate, replaceState } from '$app/navigation'
 	import { page } from '$app/state'
 	import {
-		getCoreRowModel,
-		getFacetedRowModel,
-		getFacetedUniqueValues,
-		getFilteredRowModel,
-		getPaginationRowModel,
-		getSortedRowModel,
+		createTable,
+		FlexRender,
 		type Column,
 		type ColumnDef,
 		type ColumnFiltersState,
+		type ColumnVisibilityState,
 		type PaginationState,
+		type RowData,
 		type RowSelectionState,
 		type SortingState,
-		type Table as TableType,
-		type VisibilityState
-	} from '@tanstack/table-core'
+		type Table as TableType
+	} from '@tanstack/svelte-table'
 	import ArrowDownIcon from '@lucide/svelte/icons/arrow-down'
 	import ArrowUpIcon from '@lucide/svelte/icons/arrow-up'
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down'
@@ -32,7 +29,6 @@
 	import XIcon from '@lucide/svelte/icons/x'
 	import { Badge } from '#lib/components/ui/badge/index.js'
 	import { Button } from '#lib/components/ui/button/index.js'
-	import { createSvelteTable, FlexRender } from '#lib/components/ui/data-table/index.js'
 	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.js'
 	import { Label } from '#lib/components/ui/label/index.js'
 	import * as Select from '#lib/components/ui/select/index.js'
@@ -45,6 +41,7 @@
 	import DataTableDateRangeFilter from './DataTableDateRangeFilter.svelte'
 	import DataTableFacetedFilter from './DataTableFacetedFilter.svelte'
 	import DataTableSearch from './DataTableSearch.svelte'
+	import { features, type DataTableFeatures } from './features'
 	import { fromUrlParams, PAGE_SIZE_DEFAULT, toUrlParams, URL_KEYS, type TableQuery } from './query'
 	import type { ExportFormat, TableSource } from './table-source.svelte'
 	import type { DateRangeConfig, FacetedFilterConfig, SearchConfig, SegmentOption } from './types'
@@ -88,12 +85,12 @@
 	} : {
 		source ?                  : TableSource<TData, TStats>
 		data ?                    : TData[]
-		columns                   : ColumnDef<TData>[]
+		columns                   : ColumnDef<DataTableFeatures, TData>[]
 		// Stable row identity; defaults to `row.id`, then the index.
 		getRowId ?                : ( row : TData, index : number ) => string
 		pageSize ?                : number
 		pageSizeOptions ?         : number[]
-		initialColumnVisibility ? : VisibilityState
+		initialColumnVisibility ? : ColumnVisibilityState
 		// localStorage key for column choices; defaults to the route, null disables.
 		visibilityKey ?           : string | null
 		search ?                  : SearchConfig
@@ -102,7 +99,7 @@
 		segments ?                : SegmentOption[]
 		segment ?                 : string
 		// The TanStack table, for controls outside the toolbar ( e.g. a chart that filters ).
-		instance ?                : TableType<TData>
+		instance ?                : TableType<DataTableFeatures, TData>
 		enableSelection ?         : boolean
 		bulkActions ?             : BulkAction<TData>[]
 		// Shows the Export menu ( server mode ): every row matching the current query.
@@ -129,7 +126,7 @@
 	let columnFilters = $state<ColumnFiltersState>( [] )
 	let rowSelection = $state<RowSelectionState>( {} )
 	// svelte-ignore state_referenced_locally
-	let columnVisibility = $state<VisibilityState>( initialColumnVisibility )
+	let columnVisibility = $state<ColumnVisibilityState>( initialColumnVisibility )
 	let searchValue = $state( '' )
 	let searchColumn = $state( 'all' )
 
@@ -222,7 +219,8 @@
 			pagination = { ...pagination, pageIndex: 0 }
 	}
 
-	const table : TableType<TData> = createSvelteTable( {
+	const table = createTable( {
+		features,
 		get columns() {
 			return columns
 		},
@@ -271,13 +269,7 @@
 
 			return inScope && String( row.getValue( columnId ) ?? '' ).toLowerCase().includes( query )
 		},
-		getCoreRowModel       : getCoreRowModel(),
-		getPaginationRowModel : getPaginationRowModel(),
-		getSortedRowModel     : getSortedRowModel(),
-		getFacetedRowModel    : getFacetedRowModel(),
-		getFacetedUniqueValues: getFacetedUniqueValues(),
-		getFilteredRowModel   : getFilteredRowModel(),
-		onPaginationChange    : ( updater ) => {
+		onPaginationChange: ( updater ) => {
 			const next = typeof updater === 'function' ? updater( pagination ) : updater
 
 			// A new page size re-slices from the top; staying on page 4 would skip rows.
@@ -409,7 +401,7 @@
 			const saved = localStorage.getItem( key )
 
 			if ( saved )
-				columnVisibility = JSON.parse( saved ) as VisibilityState
+				columnVisibility = JSON.parse( saved ) as ColumnVisibilityState
 		} catch {
 			// Corrupt or blocked storage: keep the configured default.
 		}
@@ -465,7 +457,7 @@
 	const hideable = $derived( table.getAllColumns().filter( ( column ) => column.getCanHide() && column.accessorFn !== undefined ) )
 	const hasToolbar = $derived( !!( search || filters.length || dateRange || exportTitle || toolbarActions || segments.length || hideable.length ) )
 
-	function columnLabel( column : Column<TData, unknown> ) : string {
+	function columnLabel( column : Column<DataTableFeatures, TData, unknown> ) : string {
 		const { meta, header } = column.columnDef
 
 		return meta?.title ?? ( typeof header === 'string' && header ? header : column.id )
@@ -641,7 +633,7 @@
 											{/if}
 										</button>
 									{:else}
-										<FlexRender content={title} context={header.getContext()} />
+										<FlexRender {header} />
 									{/if}
 								{/if}
 							</Table.Head>
@@ -654,7 +646,7 @@
 					<Table.Row class="border-border" data-state={row.getIsSelected() ? 'selected' : undefined}>
 						{#each row.getVisibleCells() as cell ( cell.id )}
 							<Table.Cell class="px-4 py-2.5">
-								<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
+								<FlexRender {cell} />
 							</Table.Cell>
 						{/each}
 					</Table.Row>
