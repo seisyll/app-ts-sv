@@ -18,9 +18,6 @@ import { vi } from 'vitest'
 
 const MIGRATIONS = path.resolve( 'prisma/migrations' )
 
-// PGlite's Postgres predates uuidv7() ( Postgres 18 ); tests only need unique ids.
-const UUIDV7_SHIM = 'CREATE OR REPLACE FUNCTION uuidv7() RETURNS uuid LANGUAGE sql VOLATILE AS $$ SELECT gen_random_uuid() $$;'
-
 const freePort = () => new Promise<number>( ( resolve, reject ) => {
 	const probe = createServer()
 
@@ -35,8 +32,6 @@ const freePort = () => new Promise<number>( ( resolve, reject ) => {
 
 export async function createTestDatabase() {
 	const pglite = await PGlite.create()
-
-	await pglite.exec( UUIDV7_SHIM )
 
 	for ( const dir of readdirSync( MIGRATIONS, { withFileTypes: true } ).filter( ( entry ) => entry.isDirectory() ).map( ( entry ) => entry.name ).sort() )
 		await pglite.exec( readFileSync( path.join( MIGRATIONS, dir, 'migration.sql' ), 'utf8' ) )
