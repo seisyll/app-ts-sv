@@ -52,9 +52,12 @@ try {
 
 			if ( change === 'all' )
 				off.clear()
-			else if ( ( change[ 0 ] === '+' || change[ 0 ] === '-' ) && MODULE_IDS.includes( id ) )
-				change[ 0 ] === '-' ? off.add( id ) : off.delete( id )
-			else
+			else if ( ( change[ 0 ] === '+' || change[ 0 ] === '-' ) && MODULE_IDS.includes( id ) ) {
+				if ( change[ 0 ] === '-' )
+					off.add( id )
+				else
+					off.delete( id )
+			} else
 				throw new Error( `"${ change }": use -<module>, +<module> or all. Modules: ${ MODULE_IDS.join( ', ' ) }.` )
 		}
 

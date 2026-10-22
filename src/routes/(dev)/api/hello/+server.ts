@@ -23,7 +23,8 @@ export type HelloResponse = {
 }
 
 export const GET : RequestHandler = () => {
-	if ( !dev ) error( 404 )
+	if ( !dev )
+		error( 404 )
 
 	return json( {
 		ok  : true,

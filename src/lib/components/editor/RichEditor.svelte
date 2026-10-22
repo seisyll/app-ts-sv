@@ -255,6 +255,7 @@
 		<EditorContent editor={$editor} />
 	{:else}
 		<!-- Server render and first paint: the same document, not yet editable. -->
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderRichText() output, escaped by construction -->
 		<div class="rich-text rich-editor__content">{@html fallback}</div>
 	{/if}
 

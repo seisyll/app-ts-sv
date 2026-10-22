@@ -128,7 +128,7 @@
 		if ( next.delta )
 			history.go( next.delta )
 		else
-			// eslint-disable-next-line svelte/no-navigation-without-resolve -- replays a URL SvelteKit already resolved ( base included )
+			// A URL SvelteKit already resolved ( base included ), replayed.
 			void goto( next.url )
 	}
 

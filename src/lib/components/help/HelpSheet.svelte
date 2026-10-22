@@ -47,6 +47,7 @@
 		</Sheet.Header>
 		<div class="px-4 pb-8">
 			{#if article}
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -- the app's own Markdown, rendered on the server -->
 				<div class="help-article">{@html article.html}</div>
 			{:else if failed}
 				<p class="text-sm text-muted-foreground">{failed}</p>

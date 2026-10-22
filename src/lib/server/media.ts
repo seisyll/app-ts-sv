@@ -80,6 +80,7 @@ export function mediaPath( tenantId : string, id : string, createdAt : Date, mim
 }
 
 // Display names only: no directories, no control characters, a sane length.
+// eslint-disable-next-line no-control-regex -- control characters are what it removes
 const cleanName = ( name : string ) => name.split( /[\\/]/ ).pop()!.replace( /[\u0000-\u001f\u007f]/g, '' ).trim().slice( 0, 200 ) || 'file'
 
 const SELECT = { id: true, kind: true, name: true, mime: true, size: true, width: true, height: true, public: true, createdAt: true, uploader: { select: { name: true } } } as const

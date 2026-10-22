@@ -1,0 +1,23 @@
+# ―― » Every push and pull request: the checks CLAUDE.md lists, in order — svelte-check, lint,
+#      the server and client tests ( the client ones in Playwright's Chromium ), the build.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      # The Prisma client is generated, not committed.
+      - run: bunx prisma generate
+      - run: bun run check
+      - run: bun run lint
+      # The Chromium the pinned Playwright expects, and what it needs from the OS.
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run test
+      - run: bun run build

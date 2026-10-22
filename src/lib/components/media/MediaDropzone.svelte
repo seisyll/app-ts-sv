@@ -36,7 +36,10 @@
 	)}
 	ondragenter={( event ) => { event.preventDefault(); dragging = true }}
 	ondragover={( event ) => event.preventDefault()}
-	ondragleave={( event ) => { if ( !event.currentTarget.contains( event.relatedTarget as Node | null ) ) dragging = false }}
+	ondragleave={( event ) => {
+		if ( !event.currentTarget.contains( event.relatedTarget as Node | null ) )
+			dragging = false
+	}}
 	ondrop={( event ) => { event.preventDefault(); dragging = false; take( event.dataTransfer?.files ) }}
 >
 	<UploadIcon class="size-5 text-muted-foreground" aria-hidden="true" />

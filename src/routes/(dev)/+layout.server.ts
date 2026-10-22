@@ -7,7 +7,8 @@ import type { LayoutServerLoad } from './$types'
 // Playground only: every page under (dev) 404s outside `vite dev`. The look on screen ( the
 // appearance cookie ) seeds the playground's picker, which only paints — no database here.
 export const load : LayoutServerLoad = ( { cookies } ) => {
-	if ( !dev ) error( 404 )
+	if ( !dev )
+		error( 404 )
 
 	return { appearance: parseAppearance( cookies.get( APPEARANCE_COOKIE ) ) }
 }

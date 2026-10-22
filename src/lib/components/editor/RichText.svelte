@@ -7,4 +7,5 @@
 	let { html, class: className } : { html : string, class ?: string } = $props()
 </script>
 
+<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderRichText() output only ( see above ) -->
 <div class={[ 'rich-text', className ]}>{@html html}</div>

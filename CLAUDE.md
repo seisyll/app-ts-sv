@@ -44,6 +44,7 @@ Browser checks sign in as the seeded demo admin ( `DEMO_EMAIL` / `DEMO_PASSWORD`
 
 ```bash
 bun run check        # svelte-check
+bun run lint         # eslint: the house style and correctness ( lint:fix repairs )
 bun run test         # server ( node + PGlite ) and client ( Chromium ) projects
 bun run build
 ```

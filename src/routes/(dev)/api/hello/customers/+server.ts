@@ -69,7 +69,7 @@ export const GET : RequestHandler = async( { url } ) => {
 		const header = [ 'id', 'name', 'email', 'plan', 'status', 'mrr', 'createdAt' ] as const
 		const csv = [ header.join( ',' ), ...rows.map( ( row ) => header.map( ( key ) => csvCell( row[ key ] ) ).join( ',' ) ) ].join( '\n' )
 
-		return new Response( `﻿${ csv }`, {
+		return new Response( `\ufeff${ csv }`, {
 			headers: { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': 'attachment; filename="customers.csv"' }
 		} )
 	}

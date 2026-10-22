@@ -6,6 +6,7 @@ SvelteKit + Svelte 5 + Tailwind 4 + shadcn-svelte template (Bun).
 bun install
 bun run dev      # http://localhost:5173/hello  ← UI/UX playground (dev only)
 bun run check
+bun run lint
 ```
 
 ## Defaults
@@ -854,6 +855,18 @@ vi.mock( '$app/navigation', () => import( '$lib/test/app-navigation' ) )   // go
 user would (`page.getByRole( 'button', { name: 'Save' } )`) and assert with
 `expect.element(…)`, which retries until the DOM settles. Playwright is pinned to the
 version whose Chromium is installed; after bumping it, run `bunx playwright install chromium`.
+
+## Lint and CI
+
+`bun run lint` (ESLint, `eslint.config.js`) checks the house style as the template writes
+it — tabs, no semicolons, single quotes, spaces inside parentheses, brackets, braces and
+`${ }`, an `if` body on its own line — plus typescript-eslint's and eslint-plugin-svelte's
+recommended rules; `bun run lint:fix` repairs what it can. Vendored `ui/` components,
+generated code and the agent skills are left alone. Colons aligned in a column stay a
+convention: the config says which rules can't describe the template's style, and why.
+
+`.github/workflows/ci.yml` runs on every push and pull request: install, `svelte-check`, lint,
+both test projects (with Playwright's Chromium) and the build.
 
 ## Dashboard shell
 

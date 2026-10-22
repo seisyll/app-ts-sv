@@ -24,8 +24,9 @@
 	const absolute = ( path : string ) => new URL( path, page.url.origin ).href
 	const url = $derived( absolute( canonical ?? page.url.pathname ) )
 	// Data, not code ( the content security policy doesn't apply ) — but a closing script tag
-	// inside it would still end the tag early, so every "<" is escaped.
-	const ld = $derived( jsonLd ? JSON.stringify( jsonLd ).replaceAll( '<', '\\u003c' ) : null )
+	// inside it would still end the tag early, so every "<" is escaped. ( Its own
+	// closing tag is spelled in pieces, or this very block would end there. )
+	const ld = $derived( jsonLd ? `<script type="application/ld+json">${ JSON.stringify( jsonLd ).replaceAll( '<', '\\u003c' ) }</${ 'script' }>` : null )
 </script>
 
 <svelte:head>
@@ -45,6 +46,7 @@
 		<meta name="twitter:card" content="summary" />
 	{/if}
 	{#if ld}
-		{@html `<script type="application/ld+json">${ ld }</script>`}
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -- JSON with every "<" escaped ( above ) -->
+		{@html ld}
 	{/if}
 </svelte:head>

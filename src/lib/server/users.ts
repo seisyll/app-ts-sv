@@ -62,8 +62,7 @@ export async function changeUser( auth : Auth, headers : Headers, actorId : stri
 			error( 404, 'Not found' )
 
 		await removeAvatar( userId )
-	}
-	else if ( change.action === 'set-role' )
+	} else if ( change.action === 'set-role' )
 		await auth.api.setRole( { body: { userId, role: change.role }, headers } )
 	else if ( change.action === 'ban' )
 		await auth.api.banUser( { body: { userId, banReason: change.reason || undefined }, headers } )

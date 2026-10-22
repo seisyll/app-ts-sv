@@ -26,7 +26,8 @@
 		try {
 			const res = await fetch( '/api/hello' )
 
-			if ( !res.ok ) throw new Error( `HTTP ${ res.status }` )
+			if ( !res.ok )
+				throw new Error( `HTTP ${ res.status }` )
 
 			fresh = await res.json()
 			toast.success( m.hello_api_ok() )

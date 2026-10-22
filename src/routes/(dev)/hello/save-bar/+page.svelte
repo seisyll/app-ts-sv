@@ -31,7 +31,8 @@
 		try {
 			await new Promise( ( resolve ) => setTimeout( resolve, 900 ) )
 
-			if ( failSaves ) throw new Error( 'Simulated failure' )
+			if ( failSaves )
+				throw new Error( 'Simulated failure' )
 
 			settings.commit()
 			toast.success( m.demo_save_ok() )
