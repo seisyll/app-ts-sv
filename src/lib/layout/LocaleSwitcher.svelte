@@ -15,7 +15,7 @@
 <!-- The code on the trigger says what's active at a glance; the menu names each language in
      its own language, so a visitor who can't read the current one still finds theirs. -->
 <DropdownMenu.Root>
-	<DropdownMenu.Trigger class={cn( buttonVariants( { variant: 'ghost', size } ), 'gap-1.5' )} aria-label={m.hello_language()}>
+	<DropdownMenu.Trigger class={cn( buttonVariants( { variant: 'ghost', size } ), 'locale-switcher-trigger gap-1.5' )} aria-label={m.hello_language()}>
 		<LanguagesIcon data-icon="inline-start" />
 		<span class="text-xs font-medium tracking-wide">{locale.toUpperCase()}</span>
 	</DropdownMenu.Trigger>
@@ -35,3 +35,31 @@
 		</DropdownMenu.Group>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>
+
+<!-- The icon's two scripts ( 文 and A ) draw apart on hover and while the menu is open, as if
+     one were sliding over to the other. Its first four paths are 文, the last two A. -->
+<!-- Global: the class reaches the trigger as a plain string, outside this component's scope. -->
+<style>
+	@media ( prefers-reduced-motion: no-preference ) {
+		/* A's stroke touches the viewBox edge: let the shift draw past it instead of clipping. */
+		:global( .locale-switcher-trigger svg ) {
+			overflow: visible;
+		}
+
+		:global( .locale-switcher-trigger svg path ) {
+			transition: translate 150ms cubic-bezier( 0.16, 1, 0.3, 1 );
+		}
+
+		:global( .locale-switcher-trigger:is( :hover, [data-state='open'] ) svg path ) {
+			transition-duration: 200ms;
+		}
+
+		:global( .locale-switcher-trigger:is( :hover, [data-state='open'] ) svg path:nth-of-type( -n + 4 ) ) {
+			translate: -1.5px -1.5px;
+		}
+
+		:global( .locale-switcher-trigger:is( :hover, [data-state='open'] ) svg path:nth-of-type( n + 5 ) ) {
+			translate: 1.5px 1.5px;
+		}
+	}
+</style>
