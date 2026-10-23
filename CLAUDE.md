@@ -4,6 +4,20 @@ SvelteKit 3 + Svelte 5 template for web apps and SaaS: Bun, Tailwind 4, shadcn-s
 on Postgres with row-level security, better-auth, paraglide i18n. `README.md` explains every
 module; `DESIGN.md` holds the visual rules. Read the section for what you're touching first.
 
+## Required skills
+
+Load these at the start of every task in this project, not only when one seems to fit:
+
+- **`/caveman`**: terse replies.
+- **`/ponytail`**: the laziest solution that works. It never cuts validation, security or the
+  rules below.
+- **`/graphify`** ( graphify-windows ): ask the knowledge graph in `graphify-out/` before
+  reading code broadly. Build it the first time it's missing, and rebuild it after large changes.
+- **`/svelte-code-writer`**: for every `.svelte`, `.svelte.ts` or `.svelte.js` file. Run its
+  autofixer before you finish.
+- **`/impeccable`** ( soft ): use it for any UI work, such as components, themes or styles.
+  It's required for pages: see `src/routes/CLAUDE.md`.
+
 ## Rules that override a skill's defaults
 
 - **ui/ components are vendored, never `shadcn-svelte add`.** `src/lib/components/ui` is the
@@ -58,4 +72,6 @@ Project skills live in `.claude/skills`. Installed from their authors' repos wit
 shadcn-svelte, best-practices + security ( better-auth ), prisma-cli, prisma-client-api,
 supabase-postgres-best-practices, vitest. Plus `impeccable` ( its own installer ) and
 `spec-chore` ( ours: the coverage chore ). Refresh with `npx skilld update` and
-`npx impeccable update`; stop the dev server first on Windows.
+`npx impeccable update`; stop the dev server first on Windows. `caveman` and `graphify` are
+user-level skills ( `~/.claude/skills` ) and `ponytail` is a plugin, so a fresh machine installs
+them itself.
