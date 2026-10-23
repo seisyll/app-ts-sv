@@ -1,0 +1,35 @@
+# graphify's scope ( /graphify ). This file replaces .gitignore for graphify, so it repeats
+# what matters from there.
+node_modules
+/.svelte-kit
+/build
+/src/lib/paraglide
+project.inlang/cache
+/src/lib/server/db/generated
+/uploads
+/coverage
+.vitest
+.env
+.env.*
+
+# Other checkouts and vendored third-party docs
+/.claude/
+/.skills/
+/.impeccable/
+
+# Test artefacts
+.vitest-attachments/
+__screenshots__/
+
+# Large generated files
+bun.lock
+
+# Vendored shadcn-svelte components ( bun run sync:ui ), not this project's code
+/src/lib/components/ui/
+
+# Images: theme share cards only, nothing architectural
+*.png
+project.inlang/.lix/
+
+# i18n catalogues: one node per message key, no structure
+/messages/

@@ -45,3 +45,7 @@ deploy/backups
 
 # Impeccable live mode: its config and session journals ( local per checkout )
 /.impeccable/
+
+# graphify ( /graphify ): the knowledge graph, its cache and this machine's Python path.
+# Rebuilt locally; .graphifyignore sets what it reads
+/graphify-out/
