@@ -31,6 +31,35 @@ pinned in `.skills/skilld-lock.yaml` ) — design work goes through `/impeccable
 runs `/impeccable init` once to write its `PRODUCT.md`. Refresh with `npx skilld update` and
 `npx impeccable update` ( on Windows, stop the dev server first ).
 
+### Code graph (graphify)
+
+[graphify](https://github.com/safishamsi/graphify) turns the repo into a knowledge graph in
+`graphify-out/`: `graph.json`, `graph.html` to browse it, and `GRAPH_REPORT.md` with its hubs
+and communities. The agent asks the graph before it reads code broadly. The graph is
+optional, and a machine without it works the same.
+
+- **Setup:** Python, `pip install graphifyy==0.8.18`, and the `/graphify` skill in
+  `~/.claude/skills`, which is user-level and not part of this repo.
+- **What it reads:** `.graphifyignore` sets the scope. It leaves out worktrees, vendored
+  skills and `ui/`, test artefacts, images and the message catalogues.
+  `graphify-out/` is git-ignored, so every checkout builds its own graph.
+
+```bash
+python scripts/graphify/build.py          # build or rebuild: no LLM, keeps community names
+python scripts/graphify/label.py          # list the communities
+python scripts/graphify/label.py names.json  # apply { "<community>": "Name", … }
+```
+
+- **When docs change:** run `/graphify . --update` first. Doc concepts need the skill's agents.
+  Then run `build.py` again. Code needs no agents.
+- **Why the scripts, not graphify's own graph step:** stock graphify doesn't resolve
+  package.json `imports`. To it, `#lib/server/forms.js` and `#lib/forms.js` look like the same
+  file, and neither links to the real one. Docs that mention a file also land on any npm package
+  with the same name (`config/kit.ts` ends up as `@sveltejs/kit`). `build.py` fixes both.
+- **Upgrading graphify:** the scripts patch its private helpers, tested with 0.8.18. A different
+  version prints a warning, and a version that changed those helpers stops with the line to install.
+  Rebuild and check the result before you upgrade for good.
+
 ## Playground
 
 `src/routes/(dev)/` holds the playground and its mock API (`/api/hello`, fixed JSON, no
