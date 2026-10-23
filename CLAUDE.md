@@ -12,7 +12,14 @@ Load these at the start of every task in this project, not only when one seems t
 - **`/ponytail`**: the laziest solution that works. It never cuts validation, security or the
   rules below.
 - **`/graphify`** ( graphify-windows ): ask the knowledge graph in `graphify-out/` before
-  reading code broadly. Build it the first time it's missing, and rebuild it after large changes.
+  reading code broadly. Build and rebuild it with `scripts/graphify/`, not graphify's own
+  graph step: stock graphify can't resolve `#lib/…` imports, and it merges files with npm
+  packages of the same name ( see `build.py` ).
+  - **First time, or docs changed:** run `/graphify .` ( `--update` once it exists ) for the doc
+    extraction, then `python scripts/graphify/build.py`.
+  - **Code changed:** `python scripts/graphify/build.py`. It needs no LLM and keeps community names.
+  - **Naming communities:** `python scripts/graphify/label.py` lists them. Write the new names
+    to a JSON file and pass it in: `label.py names.json`.
 - **`/svelte-code-writer`**: for every `.svelte`, `.svelte.ts` or `.svelte.js` file. Run its
   autofixer before you finish.
 - **`/impeccable`** ( soft ): use it for any UI work, such as components, themes or styles.
