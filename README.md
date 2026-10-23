@@ -38,27 +38,19 @@ runs `/impeccable init` once to write its `PRODUCT.md`. Refresh with `npx skilld
 and communities. The agent asks the graph before it reads code broadly. The graph is
 optional, and a machine without it works the same.
 
-- **Setup:** Python, `pip install graphifyy==0.9.94`, and the `/graphify` skill in
+- **Setup:** Python, `pip install graphifyy` (0.9.94 or newer: older versions don't resolve
+  package.json `imports`, so `#lib/…` links went nowhere), and the `/graphify` skill in
   `~/.claude/skills`, which is user-level and not part of this repo.
 - **What it reads:** `.graphifyignore` sets the scope. It leaves out worktrees, vendored
   skills and `ui/`, test artefacts, images and the message catalogues.
   `graphify-out/` is git-ignored, so every checkout builds its own graph.
 
 ```bash
-python scripts/graphify/build.py          # build or rebuild: no LLM, keeps community names
-python scripts/graphify/label.py          # list the communities
-python scripts/graphify/label.py names.json  # apply { "<community>": "Name", … }
+graphify update .     # after code changes: no LLM
 ```
 
-- **When docs change:** run `/graphify . --update` first. Doc concepts need the skill's agents.
-  Then run `build.py` again. Code needs no agents.
-- **Why the scripts, not graphify's own graph step:** stock graphify doesn't resolve
-  package.json `imports`. To it, `#lib/server/forms.js` and `#lib/forms.js` look like the same
-  file, and neither links to the real one. Docs that mention a file also land on any npm package
-  with the same name (`config/kit.ts` ends up as `@sveltejs/kit`). `build.py` fixes both.
-- **Upgrading graphify:** the scripts patch its private helpers, tested with 0.9.94. A different
-  version prints a warning, and a version that changed those helpers stops with the line to install.
-  Rebuild and check the result before you upgrade for good.
+- **When docs change, or the first time:** run `/graphify .` (`--update` once the graph
+  exists). Doc concepts need the skill's agents.
 
 ## Playground
 

@@ -11,18 +11,11 @@ Load these at the start of every task in this project, not only when one seems t
 - **`/caveman`**: terse replies.
 - **`/ponytail`**: the laziest solution that works. It never cuts validation, security or the
   rules below.
-- **`/graphify`**: ask the knowledge graph in `graphify-out/` before
-  reading code broadly. Build and rebuild it with `scripts/graphify/`, not graphify's own
-  graph step: stock graphify can't resolve `#lib/…` imports, and it merges files with npm
-  packages of the same name ( see `build.py` ). The graph is optional: without graphify
-  ( `pip install graphifyy==0.9.94`, the version the scripts were tested with ) or its skill,
-  skip it and read the code. Before upgrading graphify, rebuild and check the result: the scripts
-  patch graphify's private helpers, and they stop with a message when those helpers change.
-  - **First time, or docs changed:** run `/graphify .` ( `--update` once it exists ) for the doc
-    extraction, then `python scripts/graphify/build.py`.
-  - **Code changed:** `python scripts/graphify/build.py`. It needs no LLM and keeps community names.
-  - **Naming communities:** `python scripts/graphify/label.py` lists them. Write the new names
-    to a JSON file and pass it in: `label.py names.json`.
+- **`/graphify`**: ask the knowledge graph in `graphify-out/` before reading code broadly. The
+  graph is optional: without graphify ( `pip install graphifyy`, 0.9.94 or newer: older ones
+  can't resolve `#lib/…` imports ) or its skill, skip it and read the code.
+  - **First time, or docs changed:** `/graphify .` ( `--update` once it exists ).
+  - **Code changed:** `graphify update .` ( no LLM ).
 - **`/svelte-code-writer`**: for every `.svelte`, `.svelte.ts` or `.svelte.js` file. Run its
   autofixer before you finish.
 - **`/impeccable`** ( soft ): use it for any UI work, such as components, themes or styles.
