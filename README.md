@@ -38,7 +38,7 @@ runs `/impeccable init` once to write its `PRODUCT.md`. Refresh with `npx skilld
 and communities. The agent asks the graph before it reads code broadly. The graph is
 optional, and a machine without it works the same.
 
-- **Setup:** Python, `pip install graphifyy==0.8.18`, and the `/graphify` skill in
+- **Setup:** Python, `pip install graphifyy==0.9.94`, and the `/graphify` skill in
   `~/.claude/skills`, which is user-level and not part of this repo.
 - **What it reads:** `.graphifyignore` sets the scope. It leaves out worktrees, vendored
   skills and `ui/`, test artefacts, images and the message catalogues.
@@ -56,7 +56,7 @@ python scripts/graphify/label.py names.json  # apply { "<community>": "Name", â€
   package.json `imports`. To it, `#lib/server/forms.js` and `#lib/forms.js` look like the same
   file, and neither links to the real one. Docs that mention a file also land on any npm package
   with the same name (`config/kit.ts` ends up as `@sveltejs/kit`). `build.py` fixes both.
-- **Upgrading graphify:** the scripts patch its private helpers, tested with 0.8.18. A different
+- **Upgrading graphify:** the scripts patch its private helpers, tested with 0.9.94. A different
   version prints a warning, and a version that changed those helpers stops with the line to install.
   Rebuild and check the result before you upgrade for good.
 

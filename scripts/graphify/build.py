@@ -25,7 +25,7 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 # The version these fixes were written against: they reach into graphify's private helpers.
-TESTED = '0.8.18'
+TESTED = '0.9.94'
 
 try:
 	installed = version( 'graphifyy' )
