@@ -21,20 +21,39 @@ import os
 import re
 import sys
 from datetime import datetime, timezone
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
-import graphify.extract as gx
-from graphify.analyze import god_nodes, suggest_questions, surprising_connections
-from graphify.build import build_from_json
-from graphify.cache import check_semantic_cache
-from graphify.cluster import cluster, score_all
-from graphify.detect import detect, save_manifest
-from graphify.export import to_html, to_json
-from graphify.report import generate
+# The version these fixes were written against: they reach into graphify's private helpers.
+TESTED = '0.8.18'
+
+try:
+	installed = version( 'graphifyy' )
+except PackageNotFoundError:
+	sys.exit( f'graphify isn\'t installed. The graph is optional; to build it: pip install graphifyy=={ TESTED }' )
+
+import graphify.extract as gx  # noqa: E402
+from graphify.analyze import god_nodes, suggest_questions, surprising_connections  # noqa: E402
+from graphify.build import build_from_json  # noqa: E402
+from graphify.cache import check_semantic_cache  # noqa: E402
+from graphify.cluster import cluster, score_all  # noqa: E402
+from graphify.detect import detect, save_manifest  # noqa: E402
+from graphify.export import to_html, to_json  # noqa: E402
+from graphify.report import generate  # noqa: E402
+
+PRIVATE = [ '_resolve_js_module_path', '_resolve_js_import_path', '_make_id', '_DISPATCH' ]
+missing = [ name for name in PRIVATE if not hasattr( gx, name ) ]
+
+if missing or '.svelte' not in getattr( gx, '_DISPATCH', {} ):
+	sys.exit( f'graphify { installed } changed what this script patches ( { ", ".join( missing ) or "_DISPATCH[.svelte]" } ). Install the tested version: pip install graphifyy=={ TESTED }' )
+
+if installed != TESTED:
+	print( f'graphify { installed }: these fixes were tested with { TESTED }. Check the result, or: pip install graphifyy=={ TESTED }' )
 
 ROOT = Path( __file__ ).resolve().parents[ 2 ]
 OUT = ROOT / 'graphify-out'
-IMPORTS = json.loads( ( ROOT / 'package.json' ).read_text( encoding='utf-8' ) )[ 'imports' ]
+# A project without subpath imports has nothing to resolve.
+IMPORTS = json.loads( ( ROOT / 'package.json' ).read_text( encoding='utf-8' ) ).get( 'imports', {} )
 CORPUS = set()
 
 

@@ -10,16 +10,19 @@ import json
 import sys
 from pathlib import Path
 
-from networkx.readwrite import json_graph
-
 sys.path.insert( 0, str( Path( __file__ ).parent ) )
 
+# build first: it explains a missing or changed graphify ( networkx comes with it ).
 from build import OUT, ROOT, write_outputs  # noqa: E402
 from graphify.detect import detect  # noqa: E402
+from networkx.readwrite import json_graph  # noqa: E402
 
 
 def main() -> None:
-	G = json_graph.node_link_graph( json.loads( ( OUT / 'graph.json' ).read_text( encoding='utf-8' ) ), edges='links' )
+	if not ( OUT / 'labels.json' ).exists():
+		sys.exit( 'No graph yet: run python scripts/graphify/build.py first.' )
+
+	G =json_graph.node_link_graph( json.loads( ( OUT / 'graph.json' ).read_text( encoding='utf-8' ) ), edges='links' )
 	communities = collections.defaultdict( list )
 
 	for node, data in G.nodes( data=True ):
