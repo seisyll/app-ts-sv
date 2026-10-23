@@ -75,6 +75,9 @@ Project skills live in `.claude/skills`. Installed from their authors' repos wit
 shadcn-svelte, best-practices + security ( better-auth ), prisma-cli, prisma-client-api,
 supabase-postgres-best-practices, vitest. Plus `impeccable` ( its own installer ) and
 `spec-chore` ( ours: the coverage chore ). Refresh with `npx skilld update` and
-`npx impeccable update`; stop the dev server first on Windows. `caveman` and `graphify` are
-user-level skills ( `~/.claude/skills` ) and `ponytail` is a plugin, so a fresh machine installs
-them itself.
+`npx impeccable update`; stop the dev server first on Windows. `caveman` and `ponytail` come
+from the skills CLI ( locked in `skills-lock.json`, refresh with `npx skills update -p` );
+`graphify` is its own installer's Linux copy ( `graphify install --platform claude`, then copy
+`~/.claude/skills/graphify` here ). They're in the repo so cloud sessions have them: a cloud
+session reads nothing from `~/.claude` and installs no plugins. `scripts/cloud-setup.sh` ( a
+SessionStart hook, cloud only ) installs dependencies and builds the graph there.

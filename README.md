@@ -38,9 +38,10 @@ runs `/impeccable init` once to write its `PRODUCT.md`. Refresh with `npx skilld
 and communities. The agent asks the graph before it reads code broadly. The graph is
 optional, and a machine without it works the same.
 
-- **Setup:** Python, `pip install graphifyy` (0.9.94 or newer: older versions don't resolve
-  package.json `imports`, so `#lib/…` links went nowhere), and the `/graphify` skill in
-  `~/.claude/skills`, which is user-level and not part of this repo.
+- **Setup:** Python and `pip install graphifyy` (0.9.94 or newer: older versions don't resolve
+  package.json `imports`, so `#lib/…` links went nowhere). The `/graphify` skill is in
+  `.claude/skills`. In a cloud session, `scripts/cloud-setup.sh` installs graphify and builds the
+  graph in the background.
 - **What it reads:** `.graphifyignore` sets the scope. It leaves out worktrees, vendored
   skills and `ui/`, test artefacts, images and the message catalogues.
   `graphify-out/` is git-ignored, so every checkout builds its own graph.
