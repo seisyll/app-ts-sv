@@ -3,11 +3,11 @@ import { mkdtemp, readdir, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import sharp from 'sharp'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import type { PageQuery } from '#lib/components/data-table/index.js'
 import type { TenantRef } from '#lib/server/db/index.js'
 import { createTestDatabase, type TestDatabase } from '#lib/test/database.js'
-import { processImage, sniff } from './media'
+import { downloadName, inTurn, processImage, sniff } from './media'
 
 const bytes = ( ...values : number[] ) => new Uint8Array( [ ...values, ...new Array( 16 ).fill( 0 ) ] )
 const text = ( value : string ) => new TextEncoder().encode( value )
@@ -40,6 +40,7 @@ describe( 'processImage', () => {
 			.toBuffer()
 		const result = await processImage( photo )
 		const full = await sharp( result.full ).metadata()
+		const medium = await sharp( result.medium ).metadata()
 		const thumb = await sharp( result.thumb ).metadata()
 
 		expect( full.format ).toBe( 'webp' )
@@ -47,6 +48,7 @@ describe( 'processImage', () => {
 		expect( [ result.width, result.height ] ).toEqual( [ 1280, 2560 ] )
 		expect( full.exif ).toBeUndefined()
 		expect( full.orientation ).toBeUndefined()
+		expect( Math.max( medium.width, medium.height ) ).toBe( 750 )
 		expect( Math.max( thumb.width, thumb.height ) ).toBe( 480 )
 	} )
 
@@ -55,6 +57,42 @@ describe( 'processImage', () => {
 
 		expect( await processImage( small ) ).toMatchObject( { width: 300, height: 200 } )
 		await expect( processImage( new Uint8Array( [ 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3 ] ) ) ).rejects.toThrow()
+	} )
+} )
+
+describe( 'downloadName', () => {
+	it( 'keeps the name but takes the extension of what the file is', () => {
+		expect( downloadName( 'invoice.hta', 'application/pdf' ) ).toBe( 'invoice.pdf' )
+		expect( downloadName( 'invoice.final.bat ', 'application/pdf' ) ).toBe( 'invoice.final.pdf' )
+		expect( downloadName( '.hta', 'application/pdf' ) ).toBe( 'file.pdf' )
+		expect( downloadName( 'photo.svg', 'image/webp' ) ).toBe( 'photo.webp' )
+		expect( downloadName( 'odd.exe', 'text/html' ) ).toBe( 'odd.bin' )
+	} )
+} )
+
+describe( 'inTurn', () => {
+	it( 'runs two at a time, the rest wait their turn', async() => {
+		const turn = inTurn( 2 )
+		const opened : ( () => void )[] = []
+		let running = 0
+		let most = 0
+		const work = () => turn( () => new Promise<void>( ( done ) => {
+			running++
+			most = Math.max( most, running )
+			opened.push( () => {
+				running--
+				done()
+			} )
+		} ) )
+		const all = Promise.all( [ work(), work(), work(), work() ] )
+
+		await vi.waitFor( () => expect( opened ).toHaveLength( 2 ) )
+		// Each one that ends lets the next in, never a third alongside.
+		opened.splice( 0 ).forEach( ( done ) => done() )
+		await vi.waitFor( () => expect( opened ).toHaveLength( 2 ) )
+		opened.splice( 0 ).forEach( ( done ) => done() )
+		await all
+		expect( most ).toBe( 2 )
 	} )
 } )
 
@@ -90,7 +128,7 @@ describe( 'media storage', () => {
 		await rm( root, { recursive: true, force: true } )
 	} )
 
-	it( 'stores an image as WebP with a thumbnail, in its tenant\'s folder', async() => {
+	it( 'stores an image as WebP with medium and thumbnail copies, in its tenant\'s folder', async() => {
 		const photo = await jpeg( 800, 600 )
 		const row = await inA( () => media.saveMedia( photo, ada ) )
 
@@ -98,7 +136,7 @@ describe( 'media storage', () => {
 
 		const month = row.createdAt.slice( 0, 7 ).replace( '-', path.sep )
 
-		expect( ( await readdir( path.join( root, a.id, month ) ) ).sort() ).toEqual( [ `${ row.id }-thumb.webp`, `${ row.id }.webp` ] )
+		expect( ( await readdir( path.join( root, a.id, month ) ) ).sort() ).toEqual( [ `${ row.id }-medium.webp`, `${ row.id }-thumb.webp`, `${ row.id }.webp` ] )
 	} )
 
 	it( 'stores a PDF as sent, and cleans the display name', async() => {
@@ -113,6 +151,15 @@ describe( 'media storage', () => {
 		await expect( inA( () => media.saveMedia( new File( [ new Uint8Array( [ 0xff, 0xd8, 0xff, 1, 2, 3 ] ) ], 'broken.jpg' ), ada ) ) ).rejects.toMatchObject( { status: 415 } )
 		await expect( inA( () => media.saveMedia( new File( [ '%PDF-', new Uint8Array( 11 * 1024 * 1024 ) ], 'huge.pdf' ), ada ) ) ).rejects.toMatchObject( { status: 413 } )
 		expect( ( await inA( () => media.listMedia( query( 'image' ) ) ) ).total ).toBe( 1 )
+	} )
+
+	it( 'downloads a document under the extension of what it is, whatever its name says', async() => {
+		const row = await inA( () => media.saveMedia( new File( [ '%PDF-1.4\n%%EOF' ], 'invoice.hta' ), ada ) )
+		const { GET } = await import( '../../routes/media/[id]/[[variant]]/+server' )
+		const response = await inA( async() => GET( { params: { id: row.id }, locals: { session: async() => ( { user: { role: 'member' }, session: {} } ) } } as never ) ) as Response
+
+		expect( response.headers.get( 'content-disposition' ) ).toBe( 'attachment; filename*=UTF-8\'\'invoice.pdf' )
+		await response.body?.cancel()
 	} )
 
 	it( 'serves a file only to its own tenant', async() => {
@@ -134,7 +181,8 @@ describe( 'media storage', () => {
 
 		expect( image.public ).toBe( false )
 		expect( ( await get() ).status ).toBe( 401 )
-		expect( ( await get( 'member' ) as Response ).headers.get( 'cache-control' ) ).toMatch( /^private/ )
+		// Never kept: access can end, and the computer may be shared.
+		expect( ( await get( 'member' ) as Response ).headers.get( 'cache-control' ) ).toBe( 'private, no-store' )
 
 		expect( await inB( () => media.setMediaPublic( image.id, true ) ) ).toBeNull()
 		expect( await inA( () => media.setMediaPublic( image.id, true ) ) ).toMatchObject( { id: image.id, public: true } )
@@ -155,7 +203,17 @@ describe( 'media storage', () => {
 		expect( existsSync( file ) ).toBe( true )
 		expect( await inA( () => media.deleteMedia( image.id ) ) ).toBe( 'photo.jpg' )
 		expect( existsSync( file ) ).toBe( false )
+		expect( existsSync( file.replace( '.webp', '-medium.webp' ) ) ).toBe( false )
 		expect( existsSync( file.replace( '.webp', '-thumb.webp' ) ) ).toBe( false )
 		expect( await inA( () => media.readMedia( image.id ) ) ).toBeNull()
+	} )
+
+	it( 'falls back to the full file for a medium copy it never made', async() => {
+		const row = await inA( async() => media.saveMedia( await jpeg( 100, 100 ), ada ) )
+		const month = row.createdAt.slice( 0, 7 ).replace( '-', path.sep )
+
+		await rm( path.join( root, a.id, month, `${ row.id }-medium.webp` ) )
+
+		expect( ( await inA( () => media.readMedia( row.id, 'medium' ) ) )?.size ).toBe( row.size )
 	} )
 } )

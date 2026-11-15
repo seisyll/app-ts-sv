@@ -21,6 +21,8 @@
 	import ZoomOutIcon from '@lucide/svelte/icons/zoom-out'
 	import * as AlertDialog from '#lib/components/ui/alert-dialog/index.js'
 	import * as Avatar from '#lib/components/ui/avatar/index.js'
+	import { Toaster } from '#lib/components/ui/sonner/index.js'
+	import { Spinner } from '#lib/components/ui/spinner/index.js'
 	import { date, initials } from '#lib/format.js'
 	import { formatBytes, type MediaRow } from '#lib/media.js'
 	import { m } from '#lib/paraglide/messages.js'
@@ -279,8 +281,7 @@
 		}
 	}
 
-	// The absolute address, for an email or another site. Said in place: a toast would sit
-	// under the dialog's top layer.
+	// The absolute address, for an email or another site. Said in place, on the button.
 	async function copyLink() {
 		if ( !current )
 			return
@@ -460,6 +461,9 @@
 				</aside>
 			</div>
 		</div>
+		<!-- The page's toasts sit under this modal ( the top layer ), and the page behind it is
+		     inert: a delete's or a failure's toast shows here instead. -->
+		<Toaster />
 	{/if}
 </dialog>
 
@@ -473,7 +477,10 @@
 		</AlertDialog.Header>
 		<AlertDialog.Footer>
 			<AlertDialog.Cancel disabled={deleting}>{m.table_cancel()}</AlertDialog.Cancel>
-			<AlertDialog.Action variant="destructive" disabled={deleting} onclick={remove}>{deleting ? m.media_deleting() : m.media_delete()}</AlertDialog.Action>
+			<AlertDialog.Action variant="destructive" disabled={deleting} onclick={remove}>
+				{#if deleting}<Spinner data-icon="inline-start" />{/if}
+				{deleting ? m.media_deleting() : m.media_delete()}
+			</AlertDialog.Action>
 		</AlertDialog.Footer>
 	</AlertDialog.Content>
 </AlertDialog.Root>
