@@ -1,4 +1,11 @@
 {
+	"enabledPlugins": {
+		"ruflo-core@ruflo": true,
+		"ruflo-rag-memory@ruflo": true
+	},
+	"env": {
+		"CLAUDE_FLOW_MCP_TOOLS": "memory"
+	},
 	"hooks": {
 		"SessionStart": [
 			{
