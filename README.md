@@ -255,7 +255,7 @@ with a preview, saved with the rest under the SaveBar.
 Uploads of images and PDFs, a library at `/app/media`, and an image field for forms. The
 fundraiser app's storage, grid and lightbox, with billing-app's rules for what gets stored.
 
-- **On disk:** `UPLOAD_ROOT/<tenant>/<yyyy>/<mm>/<id>[-thumb].<ext>`, named by the `media` row's
+- **On disk:** `UPLOAD_ROOT/<tenant>/<yyyy>/<mm>/<id>[-medium|-thumb].<ext>`, named by the `media` row's
   id (under RLS) — no client input ever reaches a path. In Docker, mount `UPLOAD_ROOT` as a
   writable volume. Back it up with the database: a row without its file shows as missing.
 - **What is accepted** is decided by the bytes, not the name or Content-Type: PNG, JPEG, WebP,
@@ -263,10 +263,14 @@ fundraiser app's storage, grid and lightbox, with billing-app's rules for what g
   script. 10 MB per file (`MAX_BYTES` in `src/lib/media.ts`); set `BODY_SIZE_LIMIT` above it.
 - **Images** are shrunk in the browser first when large (and JPEGs re-encoded, so EXIF/GPS
   never leaves the device), then the server re-does it as the guarantee: sharp turns them
-  upright, strips metadata, stores WebP at most 2560px plus a 480px thumbnail (an animated GIF
-  keeps its first frame). **PDFs** are stored as sent and always downloaded.
-- **Serving:** `/media/<id>` and `/media/<id>/thumb`, to signed-in members of the workspace
-  (`media: [ 'list' ]`), private and immutable caching; a `sandbox` CSP; `nosniff` on every
+  upright, strips metadata, stores WebP at most 2560px plus a 750px medium copy (what the
+  editor inserts) and a 480px thumbnail (an animated GIF keeps its first frame). Two images
+  decode at a time per server (`IMAGE_DECODES`), so a burst of big uploads can't starve the
+  thread pool. **PDFs** are stored as sent and always downloaded, under their name with the
+  extension of what they are (`invoice.hta` saves as `invoice.pdf`).
+- **Serving:** `/media/<id>`, `/media/<id>/medium` and `/media/<id>/thumb`, to signed-in
+  members of the workspace (`media: [ 'list' ]`), never stored by the browser (`no-store`:
+  access can end, and the computer may be shared); a `sandbox` CSP; `nosniff` on every
   response. The row is read through RLS first, so another workspace's id is a 404.
 - **Public files** (`media.public`): served to anyone on the workspace's host, cached
   publicly for a day — a logo, an image in an email. Files start private; an admin switches

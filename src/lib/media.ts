@@ -21,9 +21,12 @@ export const MAX_BYTES : Record<MediaKind, number> = {
 	document: 10 * 1024 * 1024
 }
 
-// The longest side an image is stored at, and its thumbnail's.
+// The longest side an image is stored at, its medium copy's ( an image in a page or an email ) and its thumbnail's.
 export const IMAGE_EDGE = 2560
+export const MEDIUM_EDGE = 750
 export const THUMB_EDGE = 480
+
+export type MediaVariant = 'thumb' | 'medium'
 
 // One file as the app sees it. The URLs are built by the server, so a component never
 // needs to know where files live ( the playground serves its own ).
@@ -43,7 +46,11 @@ export type MediaRow = {
 	thumbUrl  : string
 }
 
-export const mediaUrl = ( id : string, variant ?: 'thumb' ) => `/media/${ id }${ variant ? `/${ variant }` : '' }`
+export const mediaUrl = ( id : string, variant ?: MediaVariant ) => `/media/${ id }${ variant ? `/${ variant }` : '' }`
+
+// What a page or an email shows of an image: its medium copy. A row served from elsewhere
+// ( the playground's ) keeps its own url.
+export const mediumUrl = ( row : MediaRow ) => row.url === mediaUrl( row.id ) ? mediaUrl( row.id, 'medium' ) : row.url
 
 // "1.4 MB" ( #lib/bytes, where scripts can reach it ).
 export { formatBytes } from './bytes'

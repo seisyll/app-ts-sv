@@ -44,6 +44,7 @@
 	import UnderlineIcon from '@lucide/svelte/icons/underline'
 	import Undo2Icon from '@lucide/svelte/icons/undo-2'
 	import { MediaPicker } from '#lib/components/media/index.js'
+	import { mediumUrl } from '#lib/media.js'
 	import { Button } from '#lib/components/ui/button/index.js'
 	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.js'
 	import * as InputGroup from '#lib/components/ui/input-group/index.js'
@@ -223,7 +224,7 @@
 			{#if images || variables.length}
 				<div class="flex items-center">
 					{#if images}
-						<Button variant="ghost" size="icon-sm" aria-label={m.editor_image()} title={m.editor_image()} onclick={() => pick( ( row ) => run( ( c ) => c.setImage( { src: row.url, alt: row.name.replace( /\.[^.]+$/, '' ) } ) )() )}><ImagePlusIcon /></Button>
+						<Button variant="ghost" size="icon-sm" aria-label={m.editor_image()} title={m.editor_image()} onclick={() => pick( ( row ) => run( ( c ) => c.setImage( { src: mediumUrl( row ), alt: row.name.replace( /\.[^.]+$/, '' ) } ) )() )}><ImagePlusIcon /></Button>
 					{/if}
 					{#if variables.length}
 						<DropdownMenu.Root>

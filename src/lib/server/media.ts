@@ -5,14 +5,14 @@ import { Readable } from 'node:stream'
 import { error } from '@sveltejs/kit'
 import sharp from 'sharp'
 import type { Paged, PageQuery } from '#lib/components/data-table/index.js'
-import { IMAGE_EDGE, MAX_BYTES, mediaUrl, THUMB_EDGE, type MediaKind, type MediaRow } from '#lib/media.js'
+import { IMAGE_EDGE, MAX_BYTES, MEDIUM_EDGE, mediaUrl, THUMB_EDGE, type MediaKind, type MediaRow, type MediaVariant } from '#lib/media.js'
 import { m } from '#lib/paraglide/messages.js'
 import { currentTenant, db, tenantTransaction } from '#lib/server/db/index.js'
 import { listArgs, type ListSpec } from '#lib/server/list.js'
 import { ensureRoom } from '#lib/server/storage.js'
 
 /* ―― » Uploads on disk ( from the fundraiser app's /api/upload, with billing-app's ADR 0011
-        rules ). Files live at UPLOAD_ROOT/<tenant>/<yyyy>/<mm>/<id>[-thumb].<ext>:
+        rules ). Files live at UPLOAD_ROOT/<tenant>/<yyyy>/<mm>/<id>[-medium|-thumb].<ext>:
           • named by the database id — nothing a client sends ever reaches a path;
           • read only through readMedia(), which finds the row first, so RLS decides who
             can fetch a file, exactly as it decides who can see the row;
@@ -20,12 +20,12 @@ import { ensureRoom } from '#lib/server/storage.js'
             nothing. The allow-list is binary signatures, so SVG and HTML ( text ) can't
             match it: that is the XSS door closed by construction, not by a blocklist.
         Images are re-encoded by sharp: turned upright, metadata ( EXIF GPS ) stripped,
-        WebP at most IMAGE_EDGE, plus a THUMB_EDGE thumbnail. PDFs are stored as sent and
-        always served as downloads.
+        WebP at most IMAGE_EDGE, plus MEDIUM_EDGE ( what the editor inserts ) and THUMB_EDGE
+        copies. PDFs are stored as sent and always served as downloads.
 
-        Env: UPLOAD_ROOT ( default ./uploads ). In Docker, a writable volume.
-        ponytail: no per-workspace quota, no streaming uploads, no image variants beyond the
-        thumbnail; the fundraiser app's StorageUsage is the model for a quota. */
+        Env: UPLOAD_ROOT ( default ./uploads ). In Docker, a writable volume. IMAGE_DECODES:
+        how many images one server decodes at once ( default 2 ).
+        ponytail: no streaming uploads. */
 
 export const uploadRoot = () => path.resolve( process.env.UPLOAD_ROOT || 'uploads' )
 
@@ -55,22 +55,55 @@ export function sniff( bytes : Uint8Array ) : Sniffed | null {
 // A decode ceiling: a small file that unpacks to a huge bitmap ( a "pixel flood" ) is refused.
 const MAX_PIXELS = 50_000_000
 
-export type ProcessedImage = { full : Buffer, thumb : Buffer, width : number, height : number }
+export type ProcessedImage = { full : Buffer, medium : Buffer, thumb : Buffer, width : number, height : number }
 
 // Upright ( EXIF orientation applied ), no metadata ( sharp writes none unless asked ), WebP.
 // An animated GIF keeps its first frame.
 export async function processImage( bytes : Uint8Array ) : Promise<ProcessedImage> {
-	const source = sharp( bytes, { limitInputPixels: MAX_PIXELS, failOn: 'error' } ).rotate()
-	const full = await source.clone().resize( IMAGE_EDGE, IMAGE_EDGE, { fit: 'inside', withoutEnlargement: true } ).webp( { quality: 85 } ).toBuffer( { resolveWithObject: true } )
-	const thumb = await source.clone().resize( THUMB_EDGE, THUMB_EDGE, { fit: 'inside', withoutEnlargement: true } ).webp( { quality: 75 } ).toBuffer()
+	return decodeInTurn( async() => {
+		const source = sharp( bytes, { limitInputPixels: MAX_PIXELS, failOn: 'error' } ).rotate()
+		const sized = ( edge : number ) => source.clone().resize( edge, edge, { fit: 'inside', withoutEnlargement: true } )
+		const full = await sized( IMAGE_EDGE ).webp( { quality: 85 } ).toBuffer( { resolveWithObject: true } )
+		const medium = await sized( MEDIUM_EDGE ).webp( { quality: 80 } ).toBuffer()
+		const thumb = await sized( THUMB_EDGE ).webp( { quality: 75 } ).toBuffer()
 
-	return { full: full.data, thumb, width: full.info.width, height: full.info.height }
+		return { full: full.data, medium, thumb, width: full.info.width, height: full.info.height }
+	} )
 }
+
+// Runs each piece of work once fewer than `max` from the same queue are running; the rest wait their turn.
+export function inTurn( max : number ) {
+	let running = 0
+	const waiting : ( () => void )[] = []
+
+	return async <T>( work : () => Promise<T> ) : Promise<T> => {
+		while ( running >= max )
+			await new Promise<void>( ( resolve ) => waiting.push( resolve ) )
+
+		running++
+
+		try {
+			return await work()
+		} finally {
+			running--
+			waiting.shift()?.()
+		}
+	}
+}
+
+/* ―― » A few images at a time, per server: sharp decodes on the thread pool that file reads,
+        the database driver and password hashing share, and a burst of huge uploads would hold
+        all of it. IMAGE_DECODES raises it where there are cores to spare. */
+const decodeInTurn = inTurn( Number( process.env.IMAGE_DECODES ) || 2 )
 
 const EXTENSION : Record<string, string> = { 'image/webp': 'webp', 'application/pdf': 'pdf' }
 
+// The name a file saves under: the uploader's, with the extension of what it is. A "PDF" sent
+// as invoice.hta must not reach someone's disk as something Windows would run.
+export const downloadName = ( name : string, mime : string ) : string => `${ name.replace( /\.[^.]*$/, '' ) || 'file' }.${ EXTENSION[ mime ] ?? 'bin' }`
+
 // Where a file lives. `id` is a database uuid, checked again here so nothing else can.
-export function mediaPath( tenantId : string, id : string, createdAt : Date, mime : string, variant ?: 'thumb' ) : string {
+export function mediaPath( tenantId : string, id : string, createdAt : Date, mime : string, variant ?: MediaVariant ) : string {
 	if ( !/^[0-9a-f-]{36}$/.test( id ) || !/^[0-9a-f-]{36}$/.test( tenantId ) )
 		throw new Error( 'mediaPath: not a uuid' )
 
@@ -130,7 +163,10 @@ export async function saveMedia( file : File, uploaderId : string ) : Promise<Me
 		await writeFile( full, stored )
 
 		if ( image )
-			await writeFile( mediaPath( tenantId, row.id, row.createdAt, mime, 'thumb' ), image.thumb )
+			await Promise.all( [
+				writeFile( mediaPath( tenantId, row.id, row.createdAt, mime, 'medium' ), image.medium ),
+				writeFile( mediaPath( tenantId, row.id, row.createdAt, mime, 'thumb' ), image.thumb )
+			] )
 
 		return row
 	} )
@@ -158,15 +194,22 @@ export async function listMedia( query : PageQuery ) : Promise<Paged<MediaRow>> 
 
 // A file to send, or null when this tenant has no such media ( RLS hides other tenants' ).
 // Whether the caller may have it is the route's call: `public`, or a member's session.
-export async function readMedia( id : string, variant ?: 'thumb' ) {
+export async function readMedia( id : string, variant ?: MediaVariant ) {
 	const media = await db.media.findUnique( { where: { id }, select: { tenantId: true, kind: true, name: true, mime: true, public: true, createdAt: true } } )
 
 	if ( !media || ( variant && media.kind !== 'image' ) )
 		return null
 
-	const file = mediaPath( media.tenantId, id, media.createdAt, media.mime, variant )
+	const sizeOf = ( file : string ) => stat( file ).then( ( info ) => info.size, () => null )
+	let file = mediaPath( media.tenantId, id, media.createdAt, media.mime, variant )
 	// A row whose file is gone ( a lost volume ) answers like a missing one, not a broken stream.
-	const size = await stat( file ).then( ( info ) => info.size, () => null )
+	let size = await sizeOf( file )
+
+	// Stored before there were medium copies.
+	if ( size === null && variant === 'medium' ) {
+		file = mediaPath( media.tenantId, id, media.createdAt, media.mime )
+		size = await sizeOf( file )
+	}
 
 	if ( size === null )
 		return null
@@ -193,7 +236,8 @@ export async function deleteMedia( id : string ) : Promise<string | null> {
 
 	await db.media.delete( { where: { id } } )
 
-	const files = [ mediaPath( media.tenantId, id, media.createdAt, media.mime ), ...( media.kind === 'image' ? [ mediaPath( media.tenantId, id, media.createdAt, media.mime, 'thumb' ) ] : [] ) ]
+	const variants : ( MediaVariant | undefined )[] = media.kind === 'image' ? [ undefined, 'medium', 'thumb' ] : [ undefined ]
+	const files = variants.map( ( variant ) => mediaPath( media.tenantId, id, media.createdAt, media.mime, variant ) )
 
 	await Promise.all( files.map( ( file ) => rm( file, { force: true } ) ) )
 

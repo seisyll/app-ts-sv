@@ -6,6 +6,7 @@
 	import AlignRightIcon from '@lucide/svelte/icons/align-right'
 	import ImageUpIcon from '@lucide/svelte/icons/image-up'
 	import TrashIcon from '@lucide/svelte/icons/trash-2'
+	import { mediumUrl } from '#lib/media.js'
 	import { m } from '#lib/paraglide/messages.js'
 	import { cn } from '#lib/utils.js'
 
@@ -49,7 +50,7 @@
 		addEventListener( 'pointerup', up )
 	}
 
-	const replace = () => editor.storage.image.pick?.( ( row ) => updateAttributes( { src: row.url, alt: row.name.replace( /\.[^.]+$/, '' ) } ) )
+	const replace = () => editor.storage.image.pick?.( ( row ) => updateAttributes( { src: mediumUrl( row ), alt: row.name.replace( /\.[^.]+$/, '' ) } ) )
 
 	const corners = [
 		{ id: 'top-left', left: true, class: '-top-1.5 -left-1.5 cursor-nwse-resize' },
