@@ -49,3 +49,8 @@ deploy/backups
 # graphify ( /graphify ): the knowledge graph, its cache and this machine's Python path.
 # Rebuilt locally; .graphifyignore sets what it reads
 /graphify-out/
+
+# ruflo memory
+.swarm/
+.claude-flow/
+.claude/memory.db
