@@ -109,9 +109,7 @@ export default defineConfig( async( { mode, command } ) => {
 				// Cookie first ( set by the locale switcher ), then the configured default.
 				// Add 'preferredLanguage' before 'baseLocale' to honour the browser language —
 				// and in package.json's `i18n` script, which compiles the same for svelte-check.
-				strategy       : [ 'cookie', 'baseLocale' ],
-				// Paraglide 3 defaults to virtual message modules, which the build loads outside Vite.
-				outputStructure: 'message-modules'
+				strategy: [ 'cookie', 'baseLocale' ]
 			} )
 		]
 	}

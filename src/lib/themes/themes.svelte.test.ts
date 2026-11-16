@@ -14,14 +14,9 @@ const themes : ThemeModule[] = [ aurora, plain ]
 describe.each( themes.map( ( theme ) => [ theme.id, theme ] as const ) )( 'theme %s', ( _, theme ) => {
 	it( 'share image: a 1200×630 picture for link previews', async() => {
 		const image = new Image()
-		// load, not decode(): decode() waits on Chromium's decode scheduling, which stalled in CI.
-		const loaded = new Promise( ( resolve, reject ) => {
-			image.onload = resolve
-			image.onerror = reject
-		} )
 
 		image.src = theme.shareImage
-		await loaded
+		await image.decode()
 		expect( [ image.naturalWidth, image.naturalHeight ] ).toEqual( [ 1200, 630 ] )
 	} )
 
